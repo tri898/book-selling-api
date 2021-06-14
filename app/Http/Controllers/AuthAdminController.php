@@ -3,15 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\Models\Admin;
+use App\Http\Controllers\BaseController as BaseController;
+use App\Http\Resources\User as UserResource;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Hash;
 
-class AuthAdminController extends Controller
+class AuthAdminController extends BaseController
 {
-    public function login(Request $request) {
+    public function login(Request $request)
+    {
+        // validation
         $fields = $request->validate([
-            'email' => 'required|email',
+            'email' => 'required|email|max:100',
             'password' => 'required|string|min:6|max:100'
         ]);
 
@@ -20,29 +23,22 @@ class AuthAdminController extends Controller
 
         // Check password
         if(!$admin || !Hash::check($fields['password'], $admin->password)) {
-            return response([
-                'message' => 'Login unsuccessful. The email or password is incorrect.'
-            ], 401);
+
+            return $this->sendError('Login unsuccessful. The email or password is incorrect.', 401); 
         }
 
         $records['name'] = $admin->name;
         $records['token']  = $admin->createToken('admin_token', ['admin'])->plainTextToken;
 
-        $response = [
-            'message' => 'Admin login successfully.',
-            'data' => $records
-        ];
-
-        return response($response, 201);
+        return $this->sendResponse('Admin login successfully.', $records,200);
     }
 
-    public function logout(Request $request) {
+    public function logout(Request $request)
+    {
+        // delete token
         auth()->user()->tokens()->delete();
-        $response = [
-            'message' => 'Logged out.'
-        ];
-
-        return response($response, 204);
+    
+        return $this->sendResponse('Logout',[],204);
     }
   
     

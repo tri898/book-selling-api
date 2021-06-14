@@ -18,10 +18,12 @@ use Illuminate\Support\Facades\Route;
 |
 */
 // Public routes
-        // Reg and login
-Route::post('/register', [AuthUserController::class, 'register']);
-Route::post('/login', [AuthUserController::class, 'login']);
-Route::post('/admin/login', [AuthAdminController::class, 'login']);
+Route::post('/admin/login', [AuthAdminController::class, 'login']); 
+
+Route::post('user/register', [AuthUserController::class, 'register']);
+Route::post('user/login', [AuthUserController::class, 'login']);
+Route::post('user/forgot-password', [UserController::class, 'forgotPassword']);
+Route::put('user/recover-password/{token}', [UserController::class, 'recoverPassword']);
         // Book
 Route::get('/products', [ProductController::class, 'index']);
 Route::get('/products/{id}', [ProductController::class, 'show']);
@@ -40,9 +42,10 @@ Route::group(['middleware' => ['auth:admins']], function () {
 // Protected routes user
 Route::group(['middleware' => ['auth:users']], function () {
   
-    Route::post('/logout', [AuthUserController::class, 'logout']);
-    Route::get('/profile', [UserController::class, 'profile']);
-    Route::put('/update-profile', [UserController::class, 'updateProfile']);
+    Route::post('user/logout', [AuthUserController::class, 'logout']);
+    Route::get('user/profile', [UserController::class, 'profile']);
+    Route::put('user/update-profile', [UserController::class, 'updateProfile']);
+    Route::put('user/change-password', [UserController::class, 'changePassword']);
 });
 
 

@@ -57,6 +57,7 @@ class ProductController extends Controller
      */
     public function update(Request $request, $id)
     {
+        $user = auth()->user();
         $product = Product::find($id);
         $product->update($request->all());
         return $product;
