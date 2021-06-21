@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Product;
+use App\Models\Author;
 use Illuminate\Http\Request;
 
-class ProductController extends Controller
+class AuthorController extends Controller
 {
         /**
          * Display a listing of the resource.
@@ -13,8 +13,8 @@ class ProductController extends Controller
          * @return \Illuminate\Http\Response
          */
         public function index() {
-            $products =  Product::all(); 
-                return $products;
+            $authors =  Author::all(); 
+                return $authors;
         }
         /**
          * Store a newly created resource in storage.
@@ -26,11 +26,11 @@ class ProductController extends Controller
         {
             $request->validate([
                 'name' => 'required',
-                'slug' => 'required',
-                'price' => 'required'
+                'description' => 'required',
+                'slug' => 'required'
             ]);
 
-            return Product::create($request->all());
+            return Author::create($request->all());
         }
          /**
      * Display the specified resource.
@@ -40,12 +40,12 @@ class ProductController extends Controller
      */
     public function show($id)
     {
-        $product = Product::find($id);
+        $author = Author::find($id);
   
-        if (is_null($product)) {
-            return 'Product not found.';
+        if (is_null($author)) {
+            return 'Author not found.';
         }
-        return $product;
+        return $author;
     }
 
     /**
@@ -57,10 +57,10 @@ class ProductController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $user = auth()->user();
-        $product = Product::find($id);
-        $product->update($request->all());
-        return $product;
+        $admin = auth()->user();
+        $author = Product::find($id);
+        $author->update($request->all());
+        return $author;
     }
 
     /**
@@ -71,7 +71,7 @@ class ProductController extends Controller
      */
     public function destroy($id)
     {
-        return Product::destroy($id);
+        return Author::destroy($id);
     }
 
      /**
@@ -82,6 +82,6 @@ class ProductController extends Controller
      */
     public function search($name)
     {
-        return Product::where('name', 'like', '%'.$name.'%')->get();
+        return Author::where('name', 'like', '%'.$name.'%')->get();
     }
 }

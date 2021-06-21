@@ -1,5 +1,5 @@
 <?php
-use App\Http\Controllers\ProductController;
+use App\Http\Controllers\AuthorController;
 use App\Http\Controllers\AuthAdminController;
 use App\Http\Controllers\ AuthUserController;
 use App\Http\Controllers\ AdminController;
@@ -17,36 +17,50 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-// Public routes
+/*
+|----------------------------------------------------------------
+|Public Route
+|----------------------------------------------------------------
+*/
+//admin login route
 Route::post('/admin/login', [AuthAdminController::class, 'login']); 
-
+//user route
 Route::post('user/register', [AuthUserController::class, 'register']);
 Route::post('user/login', [AuthUserController::class, 'login']);
 Route::post('user/forgot-password', [UserController::class, 'forgotPassword']);
 Route::put('user/recover-password/{token}', [UserController::class, 'recoverPassword']);
-        // Book
-Route::get('/products', [ProductController::class, 'index']);
-Route::get('/products/{id}', [ProductController::class, 'show']);
-Route::get('/products/search/{name}', [ProductController::class, 'search']);
+// Author table
+Route::get('/authors', [AuthorController::class, 'index']);
+Route::get('/authors/{id}', [AuthorController::class, 'show']);
+Route::get('/authors/search/{name}', [AuthorController::class, 'search']);
 
-// Protected routes admin
+/*
+|----------------------------------------------------------------
+|Admin Protected Route
+|----------------------------------------------------------------
+*/
 Route::group(['middleware' => ['auth:admins']], function () {
     Route::post('admin/logout', [AuthAdminController::class, 'logout']);
     Route::get('admin/users-list', [AdminController::class, 'usersList']);
     Route::put('admin/update-status-user/{id}', [AdminController::class, 'updateStatus']);
-
-    Route::post('/products', [ProductController::class, 'store']);
-    Route::put('/products/{id}', [ProductController::class, 'update']);
-    Route::delete('/products/{id}', [ProductController::class, 'destroy']);
+    // Manage Author
+    Route::post('/authors', [AuthorController::class, 'store']);
+    Route::put('/authors/{id}', [AuthorController::class, 'update']);
+    Route::delete('/authors/{id}', [AuthorController::class, 'destroy']);
 });
-// Protected routes user
+/*
+|----------------------------------------------------------------
+|User Protected Route
+|----------------------------------------------------------------
+*/
 Route::group(['middleware' => ['auth:users']], function () {
-  
     Route::post('user/logout', [AuthUserController::class, 'logout']);
     Route::get('user/profile', [UserController::class, 'profile']);
     Route::put('user/update-profile', [UserController::class, 'updateProfile']);
     Route::put('user/change-password', [UserController::class, 'changePassword']);
 });
+
+
 
 
 

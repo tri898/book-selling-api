@@ -41,7 +41,5 @@ class AdminController extends BaseController
         $user->update(['status' => $fields['status']]);
 
         return $this->sendResponse('User status updated successfully.', new UserResource($user),200); 
-        
-    }
-    
+    } 
 }
