@@ -3,9 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Author;
+use App\Http\Controllers\BaseController as BaseController;
+use App\Http\Resources\Author as AuthorResource;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 
-class AuthorController extends Controller
+class AuthorController extends BaseController
 {
         /**
          * Display a listing of the resource.
@@ -13,8 +16,8 @@ class AuthorController extends Controller
          * @return \Illuminate\Http\Response
          */
         public function index() {
-            $authors =  Author::all(); 
-                return $authors;
+            $records =  Author::all();         
+                return $this->sendResponse('Authors list retrieved successfully.', AuthorResource::collection($records),200);  
         }
         /**
          * Store a newly created resource in storage.
@@ -24,13 +27,16 @@ class AuthorController extends Controller
          */
         public function store(Request $request)
         {
-            $request->validate([
-                'name' => 'required',
-                'description' => 'required',
-                'slug' => 'required'
+            $fields = $request->validate([
+                'name' => 'required|string|unique:authors|max:100',
+                'description' => 'required|string|max:1000'
             ]);
-
-            return Author::create($request->all());
+            $author = Author::create([
+                'name' => $fields['name'],
+                'description' =>$fields['description'],
+                'slug' => Str::slug($fields['name'])
+            ]);
+            return $this->sendResponse('Author create successfully.', new AuthorResource($author),201);
         }
          /**
      * Display the specified resource.
@@ -45,7 +51,7 @@ class AuthorController extends Controller
         if (is_null($author)) {
             return 'Author not found.';
         }
-        return $author;
+        return $this->sendResponse('Author retrieved successfully.', new AuthorResource($author),200);  
     }
 
     /**
@@ -57,10 +63,20 @@ class AuthorController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $admin = auth()->user();
-        $author = Product::find($id);
-        $author->update($request->all());
-        return $author;
+        $fields = $request->validate([
+            'name' => 'required|string|max:100',
+            'description' => 'required|string|max:1000'
+        ]);
+        $author = Author::find($id);
+        if (is_null($author)) {
+            return 'Author not found.';
+        }
+        $author->update([
+            'name' => $fields['name'],
+            'description' =>$fields['description'],
+            'slug' => Str::slug($fields['name'])
+        ]);
+        return $this->sendResponse('Author updated successfully.', $author,200);
     }
 
     /**
@@ -71,7 +87,12 @@ class AuthorController extends Controller
      */
     public function destroy($id)
     {
-        return Author::destroy($id);
+        $author = Author::find($id);
+        if (is_null($author)) {
+            return 'Author not found.';
+        }
+        $author->delete();
+        return $this->sendResponse('Author deleted successfully.', [],204);
     }
 
      /**
@@ -82,6 +103,8 @@ class AuthorController extends Controller
      */
     public function search($name)
     {
-        return Author::where('name', 'like', '%'.$name.'%')->get();
+        $author=  Author::where('name', 'like', '%'.$name.'%')->get();
+
+        return $this->sendResponse('Found the results.', AuthorResource::collection($author),200);
     }
 }
