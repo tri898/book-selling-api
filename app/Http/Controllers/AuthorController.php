@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Str;
+use Illuminate\Http\Request;
 use App\Models\Author;
 use App\Http\Controllers\BaseController as BaseController;
 use App\Http\Resources\Author as AuthorResource;
-use Illuminate\Support\Str;
-use Illuminate\Http\Request;
+use Validator;
 
 class AuthorController extends BaseController
 {
@@ -27,14 +28,18 @@ class AuthorController extends BaseController
          */
         public function store(Request $request)
         {
-            $fields = $request->validate([
-                'name' => 'required|string|unique:authors|max:100',
+            $fields = $request->all();
+            $validator = Validator::make($fields, [
+                'name' => 'required|string|max:100',
                 'description' => 'required|string|max:1000'
             ]);
+            if($validator->fails()){
+                return $this->sendError('Validation Error.', $validator->errors(), 422);       
+            }
             $author = Author::create([
                 'name' => $fields['name'],
                 'description' =>$fields['description'],
-                'slug' => Str::slug($fields['name'])
+                'slug' => Str::slug($fields['name']) . '-' . Str::random(10)
             ]);
             return $this->sendResponse('Author create successfully.', new AuthorResource($author),201);
         }
@@ -49,7 +54,7 @@ class AuthorController extends BaseController
         $author = Author::find($id);
   
         if (is_null($author)) {
-            return 'Author not found.';
+            return $this->sendError('No author found',[], 404); 
         }
         return $this->sendResponse('Author retrieved successfully.', new AuthorResource($author),200);  
     }
@@ -63,20 +68,24 @@ class AuthorController extends BaseController
      */
     public function update(Request $request, $id)
     {
-        $fields = $request->validate([
+        $fields = $request->all();
+        $validator = Validator::make($fields, [
             'name' => 'required|string|max:100',
             'description' => 'required|string|max:1000'
         ]);
         $author = Author::find($id);
         if (is_null($author)) {
-            return 'Author not found.';
+            return $this->sendError('No author found',[], 404); 
+        }
+        if($validator->fails()){
+            return $this->sendError('Validation Error.', $validator->errors(), 422);       
         }
         $author->update([
             'name' => $fields['name'],
             'description' =>$fields['description'],
-            'slug' => Str::slug($fields['name'])
+            'slug' => Str::slug($fields['name']) . '-' . Str::random(10)
         ]);
-        return $this->sendResponse('Author updated successfully.', $author,200);
+        return $this->sendResponse('Author updated successfully.',  new AuthorResource($author),200);
     }
 
     /**
@@ -89,7 +98,7 @@ class AuthorController extends BaseController
     {
         $author = Author::find($id);
         if (is_null($author)) {
-            return 'Author not found.';
+            return $this->sendError('No author found',[], 404); 
         }
         $author->delete();
         return $this->sendResponse('Author deleted successfully.', [],204);

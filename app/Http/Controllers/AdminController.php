@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Http\Controllers\BaseController as BaseController;
 use App\Http\Resources\User as UserResource;
+use Validator;
 class AdminController extends BaseController
 {
      /**
@@ -28,14 +29,18 @@ class AdminController extends BaseController
          */
     public function updateStatus(Request $request, $id)
     {
-        $fields = $request->validate([
+        $fields = $request->all();
+        $validator = Validator::make($fields, [
             'status' => 'required|numeric|boolean'
         ]);
 
         $user = User::find($id);
         // check id user
         if (is_null($user)) {
-            return $this->sendError('User not found.', 200); 
+            return $this->sendError('User not found.',[], 404); 
+        }
+        if($validator->fails()){
+            return $this->sendError('Validation Error.', $validator->errors(), 422);       
         }
         // update status
         $user->update(['status' => $fields['status']]);

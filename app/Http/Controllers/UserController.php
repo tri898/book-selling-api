@@ -2,14 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
-use App\Models\PasswordReset;
-use App\Http\Controllers\BaseController as BaseController;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Mail;
 use Carbon\Carbon;
+use App\Models\User;
+use App\Models\PasswordReset;
+use App\Http\Controllers\BaseController as BaseController;
+use Validator;
+
 class UserController extends BaseController
 {
     /**
@@ -38,21 +40,25 @@ class UserController extends BaseController
      */
     public function updateProfile(Request $request)
     {
-        $fields = $request->validate([
+        $fields = $request->all();
+        $validator = Validator::make($fields, [
             'name' => 'required|string|max:50',
             'address' => 'required|string|min:10|max:100',
             'phone' => 'required|numeric|digits:10',
-            'email' => 'required|email|email|max:100'
+            // 'email' => 'required|email|unique:users,email, ' .auth()->user()->id
 
         ]);
+        if($validator->fails()){
+            return $this->sendError('Validation Error.', $validator->errors(), 422);       
+        }
         $user = auth()->user();
         $user->update([
             'name' => $fields['name'],
             'address' => $fields['address'],
             'phone' => $fields['phone'],
-            'email' => $fields['email']
+            // 'email' => $fields['email']
             ]);
-
+            //record data
         $records['name'] = $user->name;
         $records['address'] = $user->address;
         $records['phone'] = $user->phone;
@@ -61,12 +67,18 @@ class UserController extends BaseController
         return $this->sendResponse('Profile user updated successfully.', $records,200);
         
     }
-    public function changePassword(Request $request) {
-        $fields = $request->validate([
+    public function changePassword(Request $request)
+    {
+        $fields = $request->all();
+        $validator = Validator::make($fields, [
             'old_password' => 'required|string|min:6|max:100',
             'new_password' => 'required|string|min:6|max:100|confirmed'
         ]);
+        if($validator->fails()){
+            return $this->sendError('Validation Error.', $validator->errors(), 422);       
+        }
         $user = auth()->user();
+        // check old password
         $checkPassword = Hash::check($fields['old_password'], $user->password);
 
         if($checkPassword) {
@@ -76,20 +88,23 @@ class UserController extends BaseController
 
                 return $this->sendResponse('Change password successfully.', [],200);
         }
-         return $this->sendError('The current password is incorrect.', 401); 
+         return $this->sendError('The old password is incorrect.',[], 401); 
        
     }
     public function forgotPassword(Request $request)
     {
         // validation
-        $fields = $request->validate([
+        $fields = $request->all();
+        $validator = Validator::make($fields, [
             'email' => 'required|email|max:100'
         ]);
-      
-          // Check user exist
+        if($validator->fails()){
+            return $this->sendError('Validation Error.', $validator->errors(), 422);       
+        }
+          // Check email exists
           $user = User::where('email', $fields['email'])->first();
           if(!$user) {
-              return $this->sendError('User does not exist.', 200); 
+              return $this->sendError('Email does not exists.',[], 404); 
           }
           //Check status user
           $checkStatus= User::where('email', $fields['email'])->where('status',1)->first();     //isActive: 1
@@ -97,9 +112,9 @@ class UserController extends BaseController
                 $email = $checkStatus->email;  
             }
             else {
-                return $this->sendError('User has been disabled.', 200); 
+                return $this->sendError('User has been disabled.',[], 401); 
             }
-            //add token to database
+            //create or update token to table forgot password
         $passwordReset = PasswordReset::updateOrCreate(
             ['email' => $email],
             ['token' => Str::random(30)]
@@ -121,17 +136,20 @@ class UserController extends BaseController
     public function recoverPassword(Request $request,$token)
     {
         // validation
-        $fields = $request->validate([
+        $fields = $request->all();
+        $validator = Validator::make($fields, [
             'password' => 'string|min:6|max:100|confirmed'
         ]);
-
+        if($validator->fails()){
+            return $this->sendError('Validation Error.', $validator->errors(), 422);       
+        }
         $passwordReset = PasswordReset::where('token',$token)->first();
 
         if($passwordReset) {
             if (Carbon::parse($passwordReset->updated_at)->addMinutes(5)->isPast()) {
                 $passwordReset->delete();
 
-                return $this->sendError('This password reset token has expired.', 401); 
+                return $this->sendError('This password reset token has expired.',[], 401); 
             }
             if($request->has('password')) {
                  //update password
@@ -144,7 +162,7 @@ class UserController extends BaseController
             }
         }
         else {
-             return $this->sendError('This password reset token is invalid.', 401); 
+             return $this->sendError('This password reset token is invalid.',[], 401); 
         }
     }
 }

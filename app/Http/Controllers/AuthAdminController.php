@@ -2,29 +2,33 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use App\Models\Admin;
 use App\Http\Controllers\BaseController as BaseController;
 use App\Http\Resources\User as UserResource;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
+use Validator;
 
 class AuthAdminController extends BaseController
 {
     public function login(Request $request)
     {
         // validation
-        $fields = $request->validate([
+        $fields = $request->all();
+        $validator = Validator::make($fields, [
             'email' => 'required|email|max:100',
             'password' => 'required|string|min:6|max:100'
         ]);
 
-        // Check email
+        if($validator->fails()){
+            return $this->sendError('Validation Error.', $validator->errors(), 422);       
+        }
+        
         $admin = Admin::where('email', $fields['email'])->first();
-
-        // Check password
+        // Check email & password
         if(!$admin || !Hash::check($fields['password'], $admin->password)) {
 
-            return $this->sendError('Login unsuccessful. The email or password is incorrect.', 401); 
+            return $this->sendError('Login unsuccessful. The email or password is incorrect.',[], 401); 
         }
 
         $records['name'] = $admin->name;
