@@ -16,10 +16,10 @@ class GoodsReceivedNote extends JsonResource
     {
         return [
             'id' => $this->id,
-            'book_id' => $this->book_id,
+            'book_id' => $this->book->name,
             'quantity' => $this->quantity,
             'import_unit_price' => $this->import_unit_price,
-            'supplier_id' => $this->supplier_id,
+            'supplier_id' => $this->supplier->name,
             'created_by' => $this->created_by,
             'created_at' => $this->created_at->format('d/m/Y')
 

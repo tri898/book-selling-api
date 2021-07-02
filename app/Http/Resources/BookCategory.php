@@ -16,8 +16,8 @@ class BookCategory extends JsonResource
     {
         return [
             'id' => $this->id,
-            'category_id' => $this->category_id,
-            'book_id' => $this->book_id
+            'category_id' => $this->category->name,
+            'book_id' => $this->book->name
         ];
     }
 }

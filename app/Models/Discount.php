@@ -12,4 +12,8 @@ class Discount extends Model
         'book_id', 
         'percent'
     ];
+    public function book()
+    {
+        return $this->hasOne(Book::class,'id','book_id');
+    }
 }

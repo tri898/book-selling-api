@@ -26,12 +26,25 @@ class Book extends Model
         'supplier_id',
 
     ];
+    protected $hidden = ['pivot'];
     public function category()
     {
-        return $this->belongsToMany(Category::class ,'book_categories', 'book_id', 'category_id');
+        return $this->belongsToMany(Category::class ,'book_categories', 'book_id', 'category_id')->select('name','slug');
     }
     public function discount()
     {
-        return $this->hasOne(Discount::class,'book_id');
+        return $this->hasOne(Discount::class,'book_id','id')->select('percent');
+    }
+    public function author()
+    {
+        return $this->hasOne(Author::class,'id', 'author_id');
+    }
+    public function publisher()
+    {
+        return $this->hasOne(Publisher::class,'id', 'publisher_id');
+    }
+    public function supplier()
+    {
+        return $this->hasOne(Supplier::class,'id', 'supplier_id');
     }
 }

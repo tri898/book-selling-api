@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Http\Resources;
+namespace App\Http\Resources\Another;
 
 use Illuminate\Http\Resources\Json\JsonResource;
-use App\Http\Resources\Discount as DiscountResource;
+
 class Book extends JsonResource
 {
     /**
@@ -29,7 +29,9 @@ class Book extends JsonResource
             'translator' => $this->translator,
             'author' => $this->author->name,
             'publisher' => $this->publisher->name,
-            'supplier' => $this->supplier->name
+            'supplier' => $this->supplier->name,
+            'discount' => $this->discount,
+            'category' => $this->category
         ];
     }
 }

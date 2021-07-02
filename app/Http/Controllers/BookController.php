@@ -22,8 +22,6 @@ class BookController extends BaseController
         return $this->sendResponse('Books list retrieved successfully.', BookResource::collection($records),200);  
     }
 
-    
-
     /**
      * Store a newly created resource in storage.
      *
@@ -78,12 +76,12 @@ class BookController extends BaseController
      */
     public function show($id)
     {
-        $book = Book::find($id)->discount;
+        $book = Book::find($id);
   
         if (is_null($book)) {
             return $this->sendError('No book found',[], 404); 
         }
-        return $this->sendResponse('Book retrieved successfully.', $book,200);  
+        return $this->sendResponse('Book retrieved successfully.', new BookResource($book),200);  
     }
 
     /**

@@ -12,4 +12,12 @@ class BookCategory extends Model
         'category_id', 
         'book_id'
     ];
+    public function category()
+    {
+        return $this->hasOne(Category::class,'id','category_id');
+    }
+    public function book()
+    {
+        return $this->hasOne(Book::class,'id','book_id');
+    }
 }
