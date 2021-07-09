@@ -12,6 +12,8 @@ use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\GoodsReceivedNoteController;
 use App\Http\Controllers\DiscountController;
+use App\Http\Controllers\ImageController;
+use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\GetDataController;
 
 use Illuminate\Http\Request;
@@ -41,7 +43,8 @@ Route::post('user/forgot-password', [UserController::class, 'forgotPassword']);
 Route::put('user/recover-password/{token}', [UserController::class, 'recoverPassword']);
 
 //Book route get data
-Route::get('/book-data', [GetDataController::class, 'index']);
+Route::get('/books-list', [GetDataController::class, 'index']);
+
 /*
 |----------------------------------------------------------------
 |Admin Protected Route
@@ -69,12 +72,16 @@ Route::group(['middleware' => ['auth:admins']], function () {
      // Manage Book
     Route::resource('books', BookController::class);
     Route::get('/books/search/{name}', [BookController::class, 'search']);
-     // Manage GRN
-    Route::resource('received-notes', GoodsReceivedNoteController::class);
-    Route::get('/received-notes/search/{name}', [GoodsReceivedNoteController::class, 'search']);
+     // Manage GRN not update
+    Route::resource('goods-received-notes', GoodsReceivedNoteController::class);
       // Manage Discount
     Route::resource('discounts', DiscountController::class);
     Route::get('/discounts/search/{name}', [DiscountController::class, 'search']);
+      // Manage Image not update route
+    Route::resource('images', ImageController::class);
+       // Manage Inventory
+    Route::get('/inventories/search/{name}', [InventoryController::class, 'search']);
+
 });
 /*
 |----------------------------------------------------------------

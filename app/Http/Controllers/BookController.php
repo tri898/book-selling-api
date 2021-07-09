@@ -32,7 +32,8 @@ class BookController extends BaseController
     {
         $fields = $request->all();
         $validator = Validator::make($fields, [
-            'name' => 'required|string|max:100',
+            'name' => 'required|string|max:100|unique:books',
+            'code' => 'required|string|max:100',
             'description' => 'required|string|max:1000',
             'unit_price' => 'required|integer',
             'weight' => 'required|numeric|between:0.00,999.99',
@@ -51,6 +52,7 @@ class BookController extends BaseController
         }
         $book = Book::create([
             'name' => $fields['name'],
+            'code' => $fields['code'],
             'description' =>$fields['description'],
             'unit_price' =>$fields['unit_price'],
             'weight' =>$fields['weight'],
@@ -60,7 +62,7 @@ class BookController extends BaseController
             'size' =>$fields['size'],
             'num_pages' =>$fields['num_pages'],
             'translator' =>$fields['translator'],
-            'slug' => Str::slug($fields['name']) . '-' . Str::random(10),
+            'slug' => Str::slug($fields['name']),
             'author_id' =>$fields['author_id'],
             'publisher_id' =>$fields['publisher_id'],
             'supplier_id' =>$fields['supplier_id']
@@ -95,7 +97,8 @@ class BookController extends BaseController
     {
         $fields = $request->all();
         $validator = Validator::make($fields, [
-            'name' => 'required|string|max:100',
+            'name' => 'required|string|max:100|unique:books,name,' . $id,
+            'code' => 'required|string|max:100',
             'description' => 'required|string|max:1000',
             'unit_price' => 'required|integer',
             'weight' => 'required|numeric|between:0.00,999.99',
@@ -118,6 +121,7 @@ class BookController extends BaseController
         }
         $book->update([
             'name' => $fields['name'],
+            'code' => $fields['code'],
             'description' =>$fields['description'],
             'unit_price' =>$fields['unit_price'],
             'weight' =>$fields['weight'],
@@ -127,7 +131,7 @@ class BookController extends BaseController
             'size' =>$fields['size'],
             'num_pages' =>$fields['num_pages'],
             'translator' =>$fields['translator'],
-            'slug' => Str::slug($fields['name']) . '-' . Str::random(10),
+            'slug' => Str::slug($fields['name']),
             'author_id' =>$fields['author_id'],
             'publisher_id' =>$fields['publisher_id'],
             'supplier_id' =>$fields['supplier_id'],

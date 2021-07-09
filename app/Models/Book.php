@@ -9,7 +9,8 @@ class Book extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'name', 
+        'name',
+        'code',
         'description',
         'unit_price',
         'weight',
@@ -26,7 +27,7 @@ class Book extends Model
         'supplier_id',
 
     ];
-    protected $hidden = ['pivot'];
+    
     public function category()
     {
         return $this->belongsToMany(Category::class ,'book_categories', 'book_id', 'category_id')->select('name','slug');
@@ -34,6 +35,10 @@ class Book extends Model
     public function discount()
     {
         return $this->hasOne(Discount::class,'book_id','id')->select('percent');
+    }
+    public function image()
+    {
+        return $this->hasOne(Image::class,'book_id','id')->select('front_cover', 'back_cover');
     }
     public function author()
     {
@@ -47,4 +52,5 @@ class Book extends Model
     {
         return $this->hasOne(Supplier::class,'id', 'supplier_id');
     }
+    
 }

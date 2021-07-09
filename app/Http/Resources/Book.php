@@ -3,7 +3,7 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
-use App\Http\Resources\Discount as DiscountResource;
+
 class Book extends JsonResource
 {
     /**
@@ -17,6 +17,7 @@ class Book extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
+            'code' => $this->code,
             'description' => $this->description,
             'unit_price' => $this->unit_price,
             'weight' => $this->weight,

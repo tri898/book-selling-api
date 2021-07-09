@@ -33,7 +33,7 @@ class CategoryController extends BaseController
     {
         $fields = $request->all();
         $validator = Validator::make($fields, [
-            'name' => 'required|string|max:100',
+            'name' => 'required|string|max:100|unique:categories',
             'description' => 'required|string|max:1000'
         ]);
         if($validator->fails()){
@@ -42,7 +42,7 @@ class CategoryController extends BaseController
         $category = Category::create([
             'name' => $fields['name'],
             'description' =>$fields['description'],
-            'slug' => Str::slug($fields['name']) . '-' . Str::random(10)
+            'slug' => Str::slug($fields['name'])
         ]);
         return $this->sendResponse('Category create successfully.', new CategoryResource($category),201);
     }
@@ -75,7 +75,7 @@ class CategoryController extends BaseController
     {
         $fields = $request->all();
         $validator = Validator::make($fields, [
-            'name' => 'required|string|max:100',
+            'name' => 'required|string|max:100|unique:categories,name,' . $id,
             'description' => 'required|string|max:1000'
         ]);
         $category = Category::find($id);
@@ -88,7 +88,7 @@ class CategoryController extends BaseController
         $category->update([
             'name' => $fields['name'],
             'description' =>$fields['description'],
-            'slug' => Str::slug($fields['name']) . '-' . Str::random(10)
+            'slug' => Str::slug($fields['name'])
         ]);
         return $this->sendResponse('Category updated successfully.', new CategoryResource($category),200);
     }

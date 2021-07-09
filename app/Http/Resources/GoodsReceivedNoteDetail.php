@@ -4,7 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class Inventoty extends JsonResource
+class GoodsReceivedNoteDetail extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -14,6 +14,11 @@ class Inventoty extends JsonResource
      */
     public function toArray($request)
     {
-        return parent::toArray($request);
+        return [
+            'book_id' => $this->book->name,
+            'quantity' => $this->quantity,
+            'import_unit_price' => $this->import_unit_price,
+
+        ];
     }
 }

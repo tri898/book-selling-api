@@ -3,8 +3,12 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Inventory;
+use App\Http\Controllers\BaseController as BaseController;
+use App\Http\Resources\Inventory as InventoryResource;
+use Validator;
 
-class InventoryController extends Controller
+class InventoryController extends BaseController
 {
     /**
      * Display a listing of the resource.
@@ -13,18 +17,10 @@ class InventoryController extends Controller
      */
     public function index()
     {
-        //
+        $records = Inventory::all();         
+        return $this->sendResponse('Inventories list retrieved successfully.', InventoryResource::collection($records),200); 
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
 
     /**
      * Store a newly created resource in storage.
@@ -34,7 +30,19 @@ class InventoryController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $fields = $request->all();
+        $validator = Validator::make($fields, [
+            'book_id' => 'required|integer|unique:inventories',
+            'available_quantity' => 'required|integer'
+        ]);
+        if($validator->fails()){
+            return $this->sendError('Validation Error.', $validator->errors(), 422);       
+        }
+        $inventory = Inventory::create([
+            'book_id' => $fields['book_id'],
+            'available_quantity' =>$fields['available_quantity']
+        ]);
+        return $this->sendResponse('Available book create successfully.', new InventoryResource($inventory),201);
     }
 
     /**
@@ -45,19 +53,14 @@ class InventoryController extends Controller
      */
     public function show($id)
     {
-        //
+        $inventory = Inventory::find($id);
+  
+        if (is_null($inventory)) {
+            return $this->sendError('No discount book found',[], 404); 
+        }
+        return $this->sendResponse( 'Available book retrieved successfully.', new InventoryResource($inventory),200);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
 
     /**
      * Update the specified resource in storage.
@@ -68,7 +71,26 @@ class InventoryController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $fields = $request->all();
+        $validator = Validator::make($fields, [
+            'book_id' => 'required|integer|unique:inventories,book_id,' . $id,
+            'available_quantity' => 'required|integer'     
+        ]);
+        
+        $inventory = Inventory::find($id);
+        if (is_null($inventory)) {
+            return $this->sendError('No available book category found',[], 404); 
+        }
+
+        if($validator->fails()){
+            return $this->sendError('Validation Error.', $validator->errors(), 422);       
+        }
+        
+        $inventory->update([
+            'book_id' => $fields['book_id'],
+            'available_quantity' =>$fields['available_quantity']
+        ]);
+        return $this->sendResponse('Available book updated successfully.',  new InventoryResource($inventory),200);
     }
 
     /**
@@ -79,6 +101,17 @@ class InventoryController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $inventory = Inventory::find($id);
+        if (is_null($inventory)) {
+            return $this->sendError('No available book found',[], 404); 
+        }
+        $inventory->delete();
+        return $this->sendResponse('Available book deleted successfully.', [],204);
+    }
+    public function search($name)
+    {
+        // $book_category=  BookCategory::where('name', 'like', '%'.$name.'%')->get();
+
+        // return $this->sendResponse('Found the results.', BookCategoryResource::collection($book_category),200);
     }
 }

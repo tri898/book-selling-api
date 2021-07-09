@@ -15,15 +15,11 @@ class CreateGoodsReceivedNotesTable extends Migration
     {
         Schema::create('goods_received_notes', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('book_id')->unsigned();
-            $table->integer('quantity');
-            $table->integer('import_unit_price');
             $table->bigInteger('supplier_id')->unsigned();
-            $table->string('created_by');
+            $table->bigInteger('admin_id')->unsigned();
             $table->timestamps();
-            $table->foreign('book_id')->references('id')->on('books');
             $table->foreign('supplier_id')->references('id')->on('suppliers');
-
+            $table->foreign('admin_id')->references('id')->on('admins');
         });
     }
 

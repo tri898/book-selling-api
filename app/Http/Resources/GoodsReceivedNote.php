@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Http\Resources\GoodsReceivedNoteDetail as GRNDetailResource;
 
 class GoodsReceivedNote extends JsonResource
 {
@@ -16,13 +17,10 @@ class GoodsReceivedNote extends JsonResource
     {
         return [
             'id' => $this->id,
-            'book_id' => $this->book->name,
-            'quantity' => $this->quantity,
-            'import_unit_price' => $this->import_unit_price,
-            'supplier_id' => $this->supplier->name,
-            'created_by' => $this->created_by,
+            'supplier' => $this->supplier->name,
+            'by_admin' => $this->admin->name,
+            'details' => GRNDetailResource::collection($this->details),
             'created_at' => $this->created_at->format('d/m/Y')
-
         ];
     }
 }

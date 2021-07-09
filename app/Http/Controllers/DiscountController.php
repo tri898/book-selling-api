@@ -62,8 +62,6 @@ class DiscountController extends BaseController
         return $this->sendResponse('Discount book retrieved successfully.', new DiscountResource($discount),200);
     }
 
-   
-
     /**
      * Update the specified resource in storage.
      *

@@ -34,7 +34,7 @@ class SupplierController extends BaseController
     {
         $fields = $request->all();
         $validator = Validator::make($fields, [
-            'name' => 'required|string|max:50',
+            'name' => 'required|string|max:50|unique:suppliers',
             'address' => 'required|string|min:10|max:100',
             'phone' => 'required|string|max:20',
             'email' => 'required|email|max:100',
@@ -49,7 +49,7 @@ class SupplierController extends BaseController
             'phone' => $fields['phone'],
             'email' => $fields['email'],
             'description' =>$fields['description'],
-            'slug' => Str::slug($fields['name']) . '-' . Str::random(10)
+            'slug' => Str::slug($fields['name'])
         ]);
         return $this->sendResponse('Supplier create successfully.', new SupplierResource($supplier),201);
     }
@@ -83,7 +83,7 @@ class SupplierController extends BaseController
     {
         $fields = $request->all();
         $validator = Validator::make($fields, [
-            'name' => 'required|string|max:50',
+            'name' => 'required|string|max:50|unique:suppliers,name,' . $id,
             'address' => 'required|string|min:10|max:100',
             'phone' => 'required|string|max:20',
             'email' => 'required|email|max:100',
@@ -103,7 +103,7 @@ class SupplierController extends BaseController
             'phone' => $fields['phone'],
             'email' => $fields['email'],
             'description' =>$fields['description'],
-            'slug' => Str::slug($fields['name']) . '-' . Str::random(10)
+            'slug' => Str::slug($fields['name'])
         ]);
         return $this->sendResponse('Supplier updated successfully.',  new SupplierResource($supplier),200);
     }

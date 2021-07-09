@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateImagesTable extends Migration
+class CreateGoodsReceivedNoteDetailsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,14 @@ class CreateImagesTable extends Migration
      */
     public function up()
     {
-        Schema::create('images', function (Blueprint $table) {
+        Schema::create('goods_received_note_details', function (Blueprint $table) {
             $table->id();
+            $table->bigInteger('goods_received_note_id')->unsigned();
             $table->bigInteger('book_id')->unsigned();
-            $table->string('front_cover');
-            $table->string('back_cover');
+            $table->integer('quantity');
+            $table->integer('import_unit_price');
             $table->timestamps();
+            $table->foreign('goods_received_note_id')->references('id')->on('goods_received_notes');
             $table->foreign('book_id')->references('id')->on('books');
         });
     }
@@ -30,6 +32,6 @@ class CreateImagesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('images');
+        Schema::dropIfExists('goods_received_note_details');
     }
 }

@@ -16,7 +16,7 @@ class GetDataController extends BaseController
      */
     public function index()
     {
-        $records =  Book::with('category','discount','supplier')->get();         
+        $records =  Book::get();         
         return $this->sendResponse('Books list retrieved successfully.',  BookResource::collection($records),200);  
     }
 }

@@ -30,7 +30,7 @@ class AuthorController extends BaseController
         {
             $fields = $request->all();
             $validator = Validator::make($fields, [
-                'name' => 'required|string|max:100',
+                'name' => 'required|string|unique:authors|max:100',
                 'description' => 'required|string|max:1000'
             ]);
             if($validator->fails()){
@@ -39,7 +39,7 @@ class AuthorController extends BaseController
             $author = Author::create([
                 'name' => $fields['name'],
                 'description' =>$fields['description'],
-                'slug' => Str::slug($fields['name']) . '-' . Str::random(10)
+                'slug' => Str::slug($fields['name'])
             ]);
             return $this->sendResponse('Author create successfully.', new AuthorResource($author),201);
         }
@@ -70,7 +70,7 @@ class AuthorController extends BaseController
     {
         $fields = $request->all();
         $validator = Validator::make($fields, [
-            'name' => 'required|string|max:100',
+            'name' => 'required|string|max:100|unique:authors,name,' . $id,
             'description' => 'required|string|max:1000'
         ]);
         $author = Author::find($id);
@@ -83,7 +83,7 @@ class AuthorController extends BaseController
         $author->update([
             'name' => $fields['name'],
             'description' =>$fields['description'],
-            'slug' => Str::slug($fields['name']) . '-' . Str::random(10)
+            'slug' => Str::slug($fields['name'])
         ]);
         return $this->sendResponse('Author updated successfully.',  new AuthorResource($author),200);
     }
