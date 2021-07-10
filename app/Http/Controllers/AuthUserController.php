@@ -15,9 +15,6 @@ class AuthUserController extends BaseController
         // validation
         $fields = $request->all();
         $validator = Validator::make($fields, [
-            'name' => 'required|string|max:50',
-            'address' => 'required|string|min:10|max:100',
-            'phone' => 'required|string|max:20',
             'email' => 'required|email|max:100',
             'password' => 'required|string|min:6|max:100|confirmed'
         ]);
