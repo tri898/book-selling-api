@@ -30,14 +30,11 @@ class AuthUserController extends BaseController
         
         // insert user to database
         $user = User::create([
-            'name' => $fields['name'],
-            'address' => $fields['address'],
-            'phone' => $fields['phone'],
             'email' => $fields['email'],
             'password' => bcrypt($fields['password'])
         ]);
 
-        $records['name'] = $user->name;
+        $records['email'] = $user->email;
 
         return $this->sendResponse('User register successfully.', $records,201);
     }
