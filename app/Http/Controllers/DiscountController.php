@@ -18,7 +18,7 @@ class DiscountController extends BaseController
     public function index()
     {
         $records = Discount::all();         
-        return $this->sendResponse('Discount list retrieved successfully.', DiscountResource::collection($records),200); 
+        return $this->sendResponse('Danh sách giảm giá được truy xuất thành công.', DiscountResource::collection($records),200); 
     }
 
 
@@ -37,13 +37,13 @@ class DiscountController extends BaseController
             'percent' => 'required|integer'
         ]);
         if($validator->fails()){
-            return $this->sendError('Validation Error.', $validator->errors(), 422);       
+            return $this->sendError('Dữ liệu nhập lỗi.', $validator->errors(), 422);       
         }
         $discount = Discount::create([
             'book_id' => $fields['book_id'],
             'percent' =>$fields['percent']
         ]);
-        return $this->sendResponse('Discount book create successfully.', new DiscountResource($discount),201);
+        return $this->sendResponse('Tạo giảm giá thành công.', new DiscountResource($discount),201);
     }
 
     /**
@@ -57,9 +57,9 @@ class DiscountController extends BaseController
         $discount = Discount::find($id);
   
         if (is_null($discount)) {
-            return $this->sendError('No discount book found',[], 404); 
+            return $this->sendError(' Không tìm thấy giảm giá',[], 404); 
         }
-        return $this->sendResponse('Discount book retrieved successfully.', new DiscountResource($discount),200);
+        return $this->sendResponse('Đã truy xuất giảm giá thành công.', new DiscountResource($discount),200);
     }
 
     /**
@@ -79,18 +79,18 @@ class DiscountController extends BaseController
         
         $discount = Discount::find($id);
         if (is_null($discount)) {
-            return $this->sendError('No discount book category found',[], 404); 
+            return $this->sendError('Không tìm thấy giảm giá',[], 404); 
         }
 
         if($validator->fails()){
-            return $this->sendError('Validation Error.', $validator->errors(), 422);       
+            return $this->sendError('Dữ liệu nhập lỗi.', $validator->errors(), 422);       
         }
         
         $discount->update([
             'book_id' => $fields['book_id'],
             'percent' =>$fields['percent']
         ]);
-        return $this->sendResponse('Discount book updated successfully.',  new DiscountResource($discount),200);
+        return $this->sendResponse('Đã cập nhật giảm giá thành công.',  new DiscountResource($discount),200);
     }
 
     /**
@@ -103,10 +103,10 @@ class DiscountController extends BaseController
     {
         $discount = Discount::find($id);
         if (is_null($discount)) {
-            return $this->sendError('No discount book found',[], 404); 
+            return $this->sendError('Không tìm thấy giảm giá',[], 404); 
         }
         $discount->delete();
-        return $this->sendResponse('Discount book deleted successfully.', [],204);
+        return $this->sendResponse('Đã xóa giảm giá thành công.', [],204);
     }
     public function search($name)
     {

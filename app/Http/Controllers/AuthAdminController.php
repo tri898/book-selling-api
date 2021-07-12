@@ -21,20 +21,20 @@ class AuthAdminController extends BaseController
         ]);
 
         if($validator->fails()){
-            return $this->sendError('Validation Error.', $validator->errors(), 422);       
+            return $this->sendError('Dữ liệu nhập lỗi.', $validator->errors(), 422);       
         }
         
         $admin = Admin::where('email', $fields['email'])->first();
         // Check email & password
         if(!$admin || !Hash::check($fields['password'], $admin->password)) {
 
-            return $this->sendError('Login unsuccessful. The email or password is incorrect.',[], 401); 
+            return $this->sendError('Đăng nhập không thành công. Email hoặc mật khẩu không chính xác.',[], 401); 
         }
 
-        $records['name'] = $admin->name;
+        $records['email'] = $admin->email;
         $records['token']  = $admin->createToken('admin_token', ['admin'])->plainTextToken;
 
-        return $this->sendResponse('Admin login successfully.', $records,200);
+        return $this->sendResponse('Đăng nhập quản trị thành công.', $records,200);
     }
 
     public function logout(Request $request)
@@ -42,7 +42,7 @@ class AuthAdminController extends BaseController
         // delete token
         auth()->user()->tokens()->delete();
     
-        return $this->sendResponse('Logout',[],204);
+        return $this->sendResponse('Đăng xuất.',[],204);
     }
   
     

@@ -14,6 +14,7 @@ class CreateGoodsReceivedNotesTable extends Migration
     public function up()
     {
         Schema::create('goods_received_notes', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->id();
             $table->bigInteger('supplier_id')->unsigned();
             $table->bigInteger('admin_id')->unsigned();

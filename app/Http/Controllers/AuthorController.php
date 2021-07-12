@@ -18,7 +18,7 @@ class AuthorController extends BaseController
          */
         public function index() {
             $records =  Author::all();         
-                return $this->sendResponse('Authors list retrieved successfully.', AuthorResource::collection($records),200);  
+                return $this->sendResponse('Danh sách tác giả được truy xuất thành công.', AuthorResource::collection($records),200);  
         }
         /**
          * Store a newly created resource in storage.
@@ -34,14 +34,14 @@ class AuthorController extends BaseController
                 'description' => 'required|string|max:1000'
             ]);
             if($validator->fails()){
-                return $this->sendError('Validation Error.', $validator->errors(), 422);       
+                return $this->sendError('Dữ liệu nhập lỗi.', $validator->errors(), 422);       
             }
             $author = Author::create([
                 'name' => $fields['name'],
                 'description' =>$fields['description'],
                 'slug' => Str::slug($fields['name'])
             ]);
-            return $this->sendResponse('Author create successfully.', new AuthorResource($author),201);
+            return $this->sendResponse('Tác giả được tạo thành công.', new AuthorResource($author),201);
         }
          /**
      * Display the specified resource.
@@ -54,9 +54,9 @@ class AuthorController extends BaseController
         $author = Author::find($id);
   
         if (is_null($author)) {
-            return $this->sendError('No author found',[], 404); 
+            return $this->sendError('Không tìm thấy tác giả.',[], 404); 
         }
-        return $this->sendResponse('Author retrieved successfully.', new AuthorResource($author),200);  
+        return $this->sendResponse('Tác giả được truy xuất thành công.', new AuthorResource($author),200);  
     }
 
     /**
@@ -75,17 +75,17 @@ class AuthorController extends BaseController
         ]);
         $author = Author::find($id);
         if (is_null($author)) {
-            return $this->sendError('No author found',[], 404); 
+            return $this->sendError('Không tìm thấy tác giả',[], 404); 
         }
         if($validator->fails()){
-            return $this->sendError('Validation Error.', $validator->errors(), 422);       
+            return $this->sendError('Dữ liệu nhập lỗi.', $validator->errors(), 422);       
         }
         $author->update([
             'name' => $fields['name'],
             'description' =>$fields['description'],
             'slug' => Str::slug($fields['name'])
         ]);
-        return $this->sendResponse('Author updated successfully.',  new AuthorResource($author),200);
+        return $this->sendResponse('Đã cập nhật tác giả thành công.',  new AuthorResource($author),200);
     }
 
     /**
@@ -98,10 +98,10 @@ class AuthorController extends BaseController
     {
         $author = Author::find($id);
         if (is_null($author)) {
-            return $this->sendError('No author found',[], 404); 
+            return $this->sendError('Không tìm thấy tác giả',[], 404); 
         }
         $author->delete();
-        return $this->sendResponse('Author deleted successfully.', [],204);
+        return $this->sendResponse('Đã xóa tác giả thành công.', [],204);
     }
 
      /**
@@ -114,6 +114,6 @@ class AuthorController extends BaseController
     {
         $author=  Author::where('name', 'like', '%'.$name.'%')->get();
 
-        return $this->sendResponse('Found the results.', AuthorResource::collection($author),200);
+        return $this->sendResponse('Đã tìm thấy các kết quả.', AuthorResource::collection($author),200);
     }
 }

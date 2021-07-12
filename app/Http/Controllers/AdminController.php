@@ -18,7 +18,7 @@ class AdminController extends BaseController
     { 
         $records = User::all();
 
-        return $this->sendResponse('Users list retrieved successfully.', UserResource::collection($records),200);  
+        return $this->sendResponse('Danh sách người dùng được truy xuất thành công.', UserResource::collection($records),200);  
     }
         /**
          * Update the specified resource in storage.
@@ -37,14 +37,14 @@ class AdminController extends BaseController
         $user = User::find($id);
         // check id user
         if (is_null($user)) {
-            return $this->sendError('User not found.',[], 404); 
+            return $this->sendError('Không tìm thấy người dùng.',[], 404); 
         }
         if($validator->fails()){
-            return $this->sendError('Validation Error.', $validator->errors(), 422);       
+            return $this->sendError('Dữ liệu nhập lỗi.', $validator->errors(), 422);       
         }
         // update status
         $user->update(['status' => $fields['status']]);
 
-        return $this->sendResponse('User status updated successfully.', new UserResource($user),200); 
+        return $this->sendResponse('Đã cập nhật trạng thái người dùng thành công.', new UserResource($user),200); 
     } 
 }

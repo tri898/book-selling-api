@@ -14,13 +14,14 @@ class CreateGoodsReceivedNoteDetailsTable extends Migration
     public function up()
     {
         Schema::create('goods_received_note_details', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->id();
             $table->bigInteger('goods_received_note_id')->unsigned();
             $table->bigInteger('book_id')->unsigned();
             $table->integer('quantity');
             $table->integer('import_unit_price');
             $table->timestamps();
-            $table->foreign('goods_received_note_id')->references('id')->on('goods_received_notes');
+            $table->foreign('goods_received_note_id')->references('id')->on('goods_received_notes')->onUpdate('cascade')->onDelete('cascade');
             $table->foreign('book_id')->references('id')->on('books');
         });
     }

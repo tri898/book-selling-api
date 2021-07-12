@@ -18,7 +18,7 @@ class InventoryController extends BaseController
     public function index()
     {
         $records = Inventory::all();         
-        return $this->sendResponse('Inventories list retrieved successfully.', InventoryResource::collection($records),200); 
+        return $this->sendResponse('Danh sách tồn kho được truy xuất thành công.', InventoryResource::collection($records),200); 
     }
 
 
@@ -36,13 +36,13 @@ class InventoryController extends BaseController
             'available_quantity' => 'required|integer'
         ]);
         if($validator->fails()){
-            return $this->sendError('Validation Error.', $validator->errors(), 422);       
+            return $this->sendError('Dữ liệu nhập lỗi.', $validator->errors(), 422);       
         }
         $inventory = Inventory::create([
             'book_id' => $fields['book_id'],
             'available_quantity' =>$fields['available_quantity']
         ]);
-        return $this->sendResponse('Available book create successfully.', new InventoryResource($inventory),201);
+        return $this->sendResponse('Tạo số lượng tồn thành công', new InventoryResource($inventory),201);
     }
 
     /**
@@ -56,9 +56,9 @@ class InventoryController extends BaseController
         $inventory = Inventory::find($id);
   
         if (is_null($inventory)) {
-            return $this->sendError('No discount book found',[], 404); 
+            return $this->sendError('Không tìm thấy số lượng tồn',[], 404); 
         }
-        return $this->sendResponse( 'Available book retrieved successfully.', new InventoryResource($inventory),200);
+        return $this->sendResponse('Danh sách tồn kho được truy xuất thành công.', new InventoryResource($inventory),200);
     }
 
 
@@ -79,18 +79,18 @@ class InventoryController extends BaseController
         
         $inventory = Inventory::find($id);
         if (is_null($inventory)) {
-            return $this->sendError('No available book category found',[], 404); 
+            return $this->sendError('Không tìm thấy số lượng tồn',[], 404); 
         }
 
         if($validator->fails()){
-            return $this->sendError('Validation Error.', $validator->errors(), 422);       
+            return $this->sendError('Dữ liệu nhập lỗi.', $validator->errors(), 422);       
         }
         
         $inventory->update([
             'book_id' => $fields['book_id'],
             'available_quantity' =>$fields['available_quantity']
         ]);
-        return $this->sendResponse('Available book updated successfully.',  new InventoryResource($inventory),200);
+        return $this->sendResponse('Cập nhật số lượng tồn thành công',  new InventoryResource($inventory),200);
     }
 
     /**
@@ -103,10 +103,10 @@ class InventoryController extends BaseController
     {
         $inventory = Inventory::find($id);
         if (is_null($inventory)) {
-            return $this->sendError('No available book found',[], 404); 
+            return $this->sendError('Không tìm thấy số lượng tồn',[], 404); 
         }
         $inventory->delete();
-        return $this->sendResponse('Available book deleted successfully.', [],204);
+        return $this->sendResponse('Xóa thành công', [],204);
     }
     public function search($name)
     {

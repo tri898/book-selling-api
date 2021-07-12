@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Http\Resources\BookCategory as BookCategoryResource;
 
 class Book extends JsonResource
 {
@@ -30,7 +31,9 @@ class Book extends JsonResource
             'translator' => $this->translator,
             'author' => $this->author->name,
             'publisher' => $this->publisher->name,
-            'supplier' => $this->supplier->name
+            'supplier' => $this->supplier->name,
+            'category' => new BookCategoryResource($this->bookCategory),
+            'image' => $this->image
         ];
     }
 }

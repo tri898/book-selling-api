@@ -14,6 +14,7 @@ class CreateBooksTable extends Migration
     public function up()
     {
         Schema::create('books', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->id();
             $table->string('name');
             $table->string('code');
@@ -21,11 +22,11 @@ class CreateBooksTable extends Migration
             $table->integer('unit_price');
             $table->float('weight', 5, 2);
             $table->string('format');
-            $table->dateTime('release_date');
+            $table->year('release_date');
             $table->string('language');
             $table->string('size');
             $table->integer('num_pages');
-            $table->string('slug');
+            $table->string('slug',200)->unique();
             $table->string('translator')->nullable();
             $table->bigInteger('author_id')->unsigned();
             $table->bigInteger('publisher_id')->unsigned();

@@ -60,9 +60,6 @@ Route::group(['middleware' => ['auth:admins']], function () {
     // Manage Category
     Route::resource('categories', CategoryController::class);
     Route::get('/categories/search/{name}', [CategoryController::class, 'search']);
-    // Manage Book Category
-    Route::resource('book-categories', BookCategoryController::class);
-    Route::get('/book-categories/search/{name}', [BookCategoryController::class, 'search']);
     // Manage Publisher
     Route::resource('publishers', PublisherController::class);
     Route::get('/publishers/search/{name}', [PublisherController::class, 'search']);
@@ -70,15 +67,17 @@ Route::group(['middleware' => ['auth:admins']], function () {
     Route::resource('suppliers', SupplierController::class);
     Route::get('/suppliers/search/{name}', [SupplierController::class, 'search']);
      // Manage Book
-    Route::resource('books', BookController::class);
+     Route::get('/books', [BookController::class, 'index']);
+     Route::get('/books/{id}', [BookController::class, 'show']);
+     Route::post('/books', [BookController::class, 'store']);
+     Route::post('/books/{id}', [BookController::class, 'update']);
+     Route::delete('/books/{id}', [BookController::class, 'destroy']);
     Route::get('/books/search/{name}', [BookController::class, 'search']);
      // Manage GRN not update
     Route::resource('goods-received-notes', GoodsReceivedNoteController::class);
       // Manage Discount
     Route::resource('discounts', DiscountController::class);
     Route::get('/discounts/search/{name}', [DiscountController::class, 'search']);
-      // Manage Image not update route
-    Route::resource('images', ImageController::class);
        // Manage Inventory
     Route::get('/inventories/search/{name}', [InventoryController::class, 'search']);
 

@@ -14,11 +14,12 @@ class CreateDiscountsTable extends Migration
     public function up()
     {
         Schema::create('discounts', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->id();
-            $table->bigInteger('book_id')->unsigned();
+            $table->bigInteger('book_id')->unsigned()->unique();
             $table->integer('percent');
             $table->timestamps();
-            $table->foreign('book_id')->references('id')->on('books');
+            $table->foreign('book_id')->references('id')->on('books')->onUpdate('cascade')->onDelete('cascade');
         });
     }
 

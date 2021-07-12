@@ -29,7 +29,7 @@ class UserController extends BaseController
         $records['phone'] = $user->phone;
         $records['email'] = $user->email;
      
-        return $this->sendResponse('Profile retrieved successfully', $records,200);
+        return $this->sendResponse('Hồ sơ được truy xuất thành công', $records,200);
     }
      /**
      * Update the specified resource in storage.
@@ -49,7 +49,7 @@ class UserController extends BaseController
 
         ]);
         if($validator->fails()){
-            return $this->sendError('Validation Error.', $validator->errors(), 422);       
+            return $this->sendError('Dữ liệu nhập lỗi.', $validator->errors(), 422);       
         }
         $user = auth()->user();
         $user->update([
@@ -64,7 +64,7 @@ class UserController extends BaseController
         $records['phone'] = $user->phone;
         $records['email'] = $user->email;
 
-        return $this->sendResponse('Profile user updated successfully.', $records,200);
+        return $this->sendResponse('Hồ sơ người dùng đã được cập nhật thành công', $records,200);
         
     }
     public function changePassword(Request $request)
@@ -75,7 +75,7 @@ class UserController extends BaseController
             'new_password' => 'required|string|min:6|max:100|confirmed'
         ]);
         if($validator->fails()){
-            return $this->sendError('Validation Error.', $validator->errors(), 422);       
+            return $this->sendError('Dữ liệu nhập lỗi.', $validator->errors(), 422);       
         }
         $user = auth()->user();
         // check old password
@@ -86,9 +86,9 @@ class UserController extends BaseController
                 'password' => bcrypt($fields['new_password'])
                 ]);
 
-                return $this->sendResponse('Change password successfully.', [],200);
+                return $this->sendResponse('Thay đổi mật khẩu thành công.', [],200);
         }
-         return $this->sendError('The old password is incorrect.',[], 401); 
+         return $this->sendError('Mật khẩu cũ không chính xác.',[], 401); 
        
     }
     public function forgotPassword(Request $request)
@@ -99,12 +99,12 @@ class UserController extends BaseController
             'email' => 'required|email|max:100'
         ]);
         if($validator->fails()){
-            return $this->sendError('Validation Error.', $validator->errors(), 422);       
+            return $this->sendError('Dữ liệu nhập lỗi.', $validator->errors(), 422);       
         }
           // Check email exists
           $user = User::where('email', $fields['email'])->first();
           if(!$user) {
-              return $this->sendError('Email does not exists.',[], 404); 
+              return $this->sendError('Email không tồn tại.',[], 404); 
           }
           //Check status user
           $checkStatus= User::where('email', $fields['email'])->where('status',1)->first();     //isActive: 1
@@ -112,7 +112,7 @@ class UserController extends BaseController
                 $email = $checkStatus->email;  
             }
             else {
-                return $this->sendError('User has been disabled.',[], 401); 
+                return $this->sendError('Người dùng đã bị vô hiệu hóa.',[], 401); 
             }
             //create or update token to table forgot password
         $passwordReset = PasswordReset::updateOrCreate(
@@ -125,10 +125,10 @@ class UserController extends BaseController
             Mail::send('Mails.forgot', ['token' => $passwordReset->token], function ($m) use ($email) {
                 $m->from('thientri2312@gmail.com', 'Bookstore'); 
                 $m->to($email);
-                $m->subject('Reset your password!');
+                $m->subject('Lấy lại mật khẩu!');
             });
           
-            return $this->sendResponse('Sent confirmation link. Please check your email.', [],200);
+            return $this->sendResponse('Đã gửi liên kết xác nhận. Xin vui lòng kiểm tra email của bạn.', [],200);
         }
         
 
@@ -141,7 +141,7 @@ class UserController extends BaseController
             'password' => 'string|min:6|max:100|confirmed'
         ]);
         if($validator->fails()){
-            return $this->sendError('Validation Error.', $validator->errors(), 422);       
+            return $this->sendError('Dữ liệu nhập lỗi.', $validator->errors(), 422);       
         }
         $passwordReset = PasswordReset::where('token',$token)->first();
 
@@ -149,7 +149,7 @@ class UserController extends BaseController
             if (Carbon::parse($passwordReset->updated_at)->addMinutes(5)->isPast()) {
                 $passwordReset->delete();
 
-                return $this->sendError('This password reset token has expired.',[], 401); 
+                return $this->sendError('Mã thông báo đặt lại mật khẩu này đã hết hạn.',[], 401); 
             }
             if($request->has('password')) {
                  //update password
@@ -158,11 +158,11 @@ class UserController extends BaseController
                 $updatePasswordUser = $user->update(['password' => $newPassword]);
                 $passwordReset->delete();
 
-                return $this->sendResponse('Change your password successfully', [],200);
+                return $this->sendResponse('Thay đổi mật khẩu của bạn thành công', [],200);
             }
         }
         else {
-             return $this->sendError('This password reset token is invalid.',[], 401); 
+             return $this->sendError('Mã thông báo đặt lại mật khẩu này không hợp lệ.',[], 401); 
         }
     }
 }

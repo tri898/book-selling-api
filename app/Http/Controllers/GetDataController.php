@@ -17,6 +17,6 @@ class GetDataController extends BaseController
     public function index()
     {
         $records =  Book::get();         
-        return $this->sendResponse('Books list retrieved successfully.',  BookResource::collection($records),200);  
+        return $this->sendResponse('Danh sách sách được truy xuất thành công.',  BookResource::collection($records),200);  
     }
 }

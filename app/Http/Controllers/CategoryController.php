@@ -37,14 +37,14 @@ class CategoryController extends BaseController
             'description' => 'required|string|max:1000'
         ]);
         if($validator->fails()){
-            return $this->sendError('Validation Error.', $validator->errors(), 422);       
+            return $this->sendError('Dữ liệu nhập lỗi.', $validator->errors(), 422);       
         }
         $category = Category::create([
             'name' => $fields['name'],
             'description' =>$fields['description'],
             'slug' => Str::slug($fields['name'])
         ]);
-        return $this->sendResponse('Category create successfully.', new CategoryResource($category),201);
+        return $this->sendResponse('Tạo thể loại thành công.', new CategoryResource($category),201);
     }
 
     /**
@@ -58,9 +58,9 @@ class CategoryController extends BaseController
         $category = Category::find($id);
   
         if (is_null($category)) {
-            return $this->sendError('No category found',[], 404); 
+            return $this->sendError('Không tìm thấy thể loại',[], 404); 
         }
-        return $this->sendResponse('Category retrieved successfully.', new CategoryResource($category),200);  
+        return $this->sendResponse('Đã truy xuất thể loại thành công.', new CategoryResource($category),200);  
     }
 
 
@@ -80,17 +80,17 @@ class CategoryController extends BaseController
         ]);
         $category = Category::find($id);
         if (is_null($category)) {
-            return $this->sendError('No category found',[], 404); 
+            return $this->sendError('Không tìm thấy thể loại',[], 404); 
         }
         if($validator->fails()){
-            return $this->sendError('Validation Error.', $validator->errors(), 422);       
+            return $this->sendError('Dữ liệu nhập lỗi.', $validator->errors(), 422);       
         }
         $category->update([
             'name' => $fields['name'],
             'description' =>$fields['description'],
             'slug' => Str::slug($fields['name'])
         ]);
-        return $this->sendResponse('Category updated successfully.', new CategoryResource($category),200);
+        return $this->sendResponse('Đã cập nhật thể loại thành công', new CategoryResource($category),200);
     }
 
     /**
@@ -103,10 +103,10 @@ class CategoryController extends BaseController
     {
         $category = Category::find($id);
         if (is_null($category)) {
-            return $this->sendError('No category found',[], 404); 
+            return $this->sendError('Không tìm thấy thể loại',[], 404); 
         }
         $category->delete();
-        return $this->sendResponse('Category deleted successfully.', [],204);
+        return $this->sendResponse(' Đã xóa thể loại thành công', [],204);
     }
      /**
      * Search for a name
@@ -118,6 +118,6 @@ class CategoryController extends BaseController
     {
         $category=  Category::where('name', 'like', '%'.$name.'%')->get();
 
-        return $this->sendResponse('Found the results.', CategoryResource::collection($category),200);
+        return $this->sendResponse('Đã tìm thấy các kết quả.', CategoryResource::collection($category),200);
     }
 }

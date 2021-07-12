@@ -14,6 +14,7 @@ class CreateOrderDetailsTable extends Migration
     public function up()
     {
         Schema::create('order_details', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->id();
             $table->bigInteger('order_id')->unsigned();
             $table->bigInteger('book_id')->unsigned();
@@ -21,7 +22,7 @@ class CreateOrderDetailsTable extends Migration
             $table->integer('price');
             $table->integer('discount');
             $table->timestamps();
-            $table->foreign('order_id')->references('id')->on('orders');
+            $table->foreign('order_id')->references('id')->on('orders')->onUpdate('cascade')->onDelete('cascade');
             $table->foreign('book_id')->references('id')->on('books');
 
         });

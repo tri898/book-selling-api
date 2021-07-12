@@ -19,7 +19,7 @@ class SupplierController extends BaseController
     public function index()
     {
         $records =  Supplier::all();         
-                return $this->sendResponse('Suppliers list retrieved successfully.', SupplierResource::collection($records),200);
+                return $this->sendResponse('Danh sách nhà cung cấp được truy xuất thành công.', SupplierResource::collection($records),200);
     }
 
  
@@ -41,7 +41,7 @@ class SupplierController extends BaseController
             'description' => 'required|string|max:1000'
         ]);
         if($validator->fails()){
-            return $this->sendError('Validation Error.', $validator->errors(), 422);       
+            return $this->sendError('Dữ liệu nhập lỗi.', $validator->errors(), 422);       
         }
         $supplier = Supplier::create([
             'name' => $fields['name'],
@@ -51,7 +51,7 @@ class SupplierController extends BaseController
             'description' =>$fields['description'],
             'slug' => Str::slug($fields['name'])
         ]);
-        return $this->sendResponse('Supplier create successfully.', new SupplierResource($supplier),201);
+        return $this->sendResponse('Nhà cung cấp tạo thành công.', new SupplierResource($supplier),201);
     }
 
     /**
@@ -65,9 +65,9 @@ class SupplierController extends BaseController
         $supplier = Supplier::find($id);
   
         if (is_null($supplier)) {
-            return $this->sendError('No supplier found',[], 404); 
+            return $this->sendError('Không tìm thấy nhà cung cấp',[], 404); 
         }
-        return $this->sendResponse('Supplier retrieved successfully.', new SupplierResource($supplier),200);  
+        return $this->sendResponse('Đã truy xuất nhà cung cấp thành công.', new SupplierResource($supplier),200);  
     }
 
 
@@ -85,17 +85,17 @@ class SupplierController extends BaseController
         $validator = Validator::make($fields, [
             'name' => 'required|string|max:50|unique:suppliers,name,' . $id,
             'address' => 'required|string|min:10|max:100',
-            'phone' => 'required|string|max:20',
+            'phone' => 'required|string|max:10',
             'email' => 'required|email|max:100',
             'description' => 'required|string|max:1000'
         ]);
         $supplier = Supplier::find($id);
   
         if (is_null($supplier)) {
-            return $this->sendError('No supplier found',[], 404); 
+            return $this->sendError('Không tìm thấy nhà cung cấp',[], 404); 
         }
         if($validator->fails()){
-            return $this->sendError('Validation Error.', $validator->errors(), 422);       
+            return $this->sendError('Dữ liệu nhập lỗi.', $validator->errors(), 422);       
         }
         $supplier->update([
             'name' => $fields['name'],
@@ -105,7 +105,7 @@ class SupplierController extends BaseController
             'description' =>$fields['description'],
             'slug' => Str::slug($fields['name'])
         ]);
-        return $this->sendResponse('Supplier updated successfully.',  new SupplierResource($supplier),200);
+        return $this->sendResponse('Đã cập nhật nhà cung cấp thành công.',  new SupplierResource($supplier),200);
     }
 
     /**
@@ -118,10 +118,10 @@ class SupplierController extends BaseController
     {
         $supplier = Supplier::find($id);
         if (is_null($supplier)) {
-            return $this->sendError('No supplier found',[], 404); 
+            return $this->sendError('Không tìm thấy nhà cung cấp',[], 404); 
         }
         $supplier->delete();
-        return $this->sendResponse('Supplier deleted successfully.', [],204);
+        return $this->sendResponse('Xóa thành công.', [],204);
     }
      /**
      * Search for a name
@@ -133,6 +133,6 @@ class SupplierController extends BaseController
     {
         $supplier=  Supplier::where('name', 'like', '%'.$name.'%')->get();
 
-        return $this->sendResponse('Found the results.', SupplierResource::collection($supplier),200);
+        return $this->sendResponse('Đã tìm thấy các kết quả.', SupplierResource::collection($supplier),200);
     }
 }

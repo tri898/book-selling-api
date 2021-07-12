@@ -14,12 +14,13 @@ class CreateBookCategoriesTable extends Migration
     public function up()
     {
         Schema::create('book_categories', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->id();
             $table->bigInteger('category_id')->unsigned();
-            $table->bigInteger('book_id')->unsigned();
+            $table->bigInteger('book_id')->unsigned()->unique();
             $table->timestamps();
-            $table->foreign('category_id')->references('id')->on('categories');
-            $table->foreign('book_id')->references('id')->on('books');
+            $table->foreign('category_id')->references('id')->on('categories')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreign('book_id')->references('id')->on('books')->onUpdate('cascade')->onDelete('cascade');
         });
     }
 

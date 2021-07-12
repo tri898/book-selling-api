@@ -32,6 +32,10 @@ class Book extends Model
     {
         return $this->belongsToMany(Category::class ,'book_categories', 'book_id', 'category_id')->select('name','slug');
     }
+    public function bookCategory()
+    {
+        return $this->hasOne(BookCategory::class,'book_id','id');
+    }
     public function discount()
     {
         return $this->hasOne(Discount::class,'book_id','id')->select('percent');

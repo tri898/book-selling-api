@@ -19,7 +19,7 @@ class GoodsReceivedNoteController extends BaseController
     public function index()
     {
         $records =  GoodsReceivedNote::all();         
-        return $this->sendResponse('GRN list retrieved successfully.', GoodsReceivedNoteResource::collection($records),200); 
+        return $this->sendResponse('Danh sách phiếu nhập được truy xuất thành công.', GoodsReceivedNoteResource::collection($records),200); 
     }
 
     
@@ -39,14 +39,16 @@ class GoodsReceivedNoteController extends BaseController
             'grnItems.*.import_unit_price' => 'required|integer'
         ]);
         if($validator->fails()){
-            return $this->sendError('Validation Error.', $validator->errors(), 422);       
+            return $this->sendError('Dữ liệu nhập lỗi.', $validator->errors(), 422);       
         }
+        // get id admin current
         $getCurrentAdmin = auth()->user()->id;
 
         $goodsReceivedNote = GoodsReceivedNote::create([
             'supplier_id' =>$fields['supplier_id'],
             'admin_id' => $getCurrentAdmin
         ]);
+        // add list item to table detail
         foreach ($request->grnItems as $item) {
             $goodsReceivedNoteDetail = GoodsReceivedNoteDetail::create([
                 'goods_received_note_id' => $goodsReceivedNote->id,
@@ -55,7 +57,7 @@ class GoodsReceivedNoteController extends BaseController
                 'import_unit_price' => $item['import_unit_price']
             ]);
         }
-        return $this->sendResponse('GRN create successfully.', new GoodsReceivedNoteResource($goodsReceivedNote),201);
+        return $this->sendResponse('Phiếu nhập tạo thành công.', new GoodsReceivedNoteResource($goodsReceivedNote),201);
     }
 
     /**
@@ -69,9 +71,9 @@ class GoodsReceivedNoteController extends BaseController
         $goodsReceivedNote = GoodsReceivedNote::find($id);
   
         if (is_null($goodsReceivedNote)) {
-            return $this->sendError('No GRN found',[], 404); 
+            return $this->sendError('Không tìm thấy phiếu nhập',[], 404); 
         }
-        return $this->sendResponse('GRN retrieved successfully.', new GoodsReceivedNoteResource($goodsReceivedNote),200);  
+        return $this->sendResponse('Danh sách phiếu nhập được truy xuất thành công.', new GoodsReceivedNoteResource($goodsReceivedNote),200);  
     }
 
     /**
@@ -84,10 +86,10 @@ class GoodsReceivedNoteController extends BaseController
     {
         $goodsReceivedNote = GoodsReceivedNote::find($id);
         if (is_null($goodsReceivedNote)) {
-            return $this->sendError('No GRN found',[], 404); 
+            return $this->sendError('Không tìm thấy phiếu nhập',[], 404); 
         }
         $goodsReceivedNote->delete();
-        return $this->sendResponse('GRN deleted successfully.', [],204);
+        return $this->sendResponse('Xóa phiếu nhập thành công', [],204);
     }
      /**
      * Search for a name

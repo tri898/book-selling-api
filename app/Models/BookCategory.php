@@ -16,8 +16,5 @@ class BookCategory extends Model
     {
         return $this->hasOne(Category::class,'id','category_id');
     }
-    public function book()
-    {
-        return $this->hasOne(Book::class,'id','book_id');
-    }
+    
 }
