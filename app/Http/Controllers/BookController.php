@@ -5,8 +5,6 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Models\Book;
-use App\Models\BookCategory;
-use App\Models\Image;
 use App\Http\Controllers\BaseController as BaseController;
 use App\Http\Resources\Book as BookResource;
 use Validator;
@@ -20,7 +18,7 @@ class BookController extends BaseController
      */
     public function index()
     {
-        $records =  Book::all();         
+        $records =   Book::all();   
         return $this->sendResponse('Danh sách sách được truy xuất thành công.', BookResource::collection($records),200);  
     }
 
@@ -72,20 +70,17 @@ class BookController extends BaseController
             'publisher_id' =>$fields['publisher_id'],
             'supplier_id' =>$fields['supplier_id']
         ]);
-        
-        $bookCategory = BookCategory::create([
-            'category_id' => $fields['category_id'],
-            'book_id' =>$book->id
-        ]);
+        // insert book category
+        $book->category()->attach($fields['category_id']);
         // get info image
-        $input['book_id'] = $book->id;
+        
         $input['front_cover'] =$book->id . '-front'.'.'.$fields['front_cover']->getClientOriginalExtension();
         $input['back_cover'] = $book->id . '-back'.'.'.$fields['back_cover']->getClientOriginalExtension();
         // move image file to public
         $fields['front_cover']->move(public_path('images'), $input['front_cover']);
         $fields['back_cover']->move(public_path('images'), $input['back_cover']);
 
-        $image = Image::create($input);
+        $image = $book->image()->create($input);
 
         return $this->sendResponse('Book create successfully.', new BookResource($book),201);
     }
@@ -99,7 +94,7 @@ class BookController extends BaseController
     public function show($id)
     {
         $book = Book::find($id);
-  
+    
         if (is_null($book)) {
             return $this->sendError('Không tìm thấy cuốn sách nào',[], 404); 
         }
@@ -159,10 +154,8 @@ class BookController extends BaseController
             'publisher_id' =>$fields['publisher_id'],
             'supplier_id' =>$fields['supplier_id'],
         ]);
-        $bookCategory = BookCategory::where('book_id',$book->id)->first();
-        if($bookCategory) {
-            $bookCategory->update(['category_id' => $fields['category_id']]);
-        }
+         // insert book category
+         $book->category()->sync($fields['category_id']);
         //If there is a file, it will be updated 
         if($request->hasFile('front_cover') & $request->hasFile('back_cover')) {
             // get info image
@@ -187,7 +180,7 @@ class BookController extends BaseController
         if (is_null($book)) {
             return $this->sendError('Không tìm thấy cuốn sách nào',[], 404); 
         }
-        $image =Image::where('book_id',$book->id)->first();
+        $image = $book->image()->first();
         if($image) {
             $front_cover = public_path('images/' . $image->front_cover);
             $back_cover = public_path('images/' . $image->back_cover);

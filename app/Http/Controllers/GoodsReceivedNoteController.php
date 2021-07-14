@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\GoodsReceivedNote;
-use App\Models\GoodsReceivedNoteDetail;
 use App\Http\Controllers\BaseController as BaseController;
 use App\Http\Resources\GoodsReceivedNote as GoodsReceivedNoteResource;
 use Validator;
@@ -34,6 +33,7 @@ class GoodsReceivedNoteController extends BaseController
         $fields = $request->all();
         $validator = Validator::make($fields, [
             'supplier_id' => 'required|integer',
+            'grnItems' => 'required|array',
             'grnItems.*.book_id' => 'required|integer',
             'grnItems.*.quantity' => 'required|integer',
             'grnItems.*.import_unit_price' => 'required|integer'
@@ -50,8 +50,7 @@ class GoodsReceivedNoteController extends BaseController
         ]);
         // add list item to table detail
         foreach ($request->grnItems as $item) {
-            $goodsReceivedNoteDetail = GoodsReceivedNoteDetail::create([
-                'goods_received_note_id' => $goodsReceivedNote->id,
+            $goodsReceivedNote->details()->create([
                 'book_id' => $item['book_id'],
                 'quantity' => $item['quantity'],
                 'import_unit_price' => $item['import_unit_price']
