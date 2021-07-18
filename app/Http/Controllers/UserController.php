@@ -62,9 +62,9 @@ class UserController extends BaseController
         $records['name'] = $user->name;
         $records['address'] = $user->address;
         $records['phone'] = $user->phone;
-        $records['email'] = $user->email;
+       
 
-        return $this->sendResponse('Hồ sơ người dùng đã được cập nhật thành công', $records,200);
+        return $this->sendResponse('Hồ sơ đã được cập nhật thành công', $records,200);
         
     }
     public function changePassword(Request $request)

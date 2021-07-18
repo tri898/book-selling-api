@@ -18,6 +18,7 @@ class CreateGoodsReceivedNotesTable extends Migration
             $table->id();
             $table->bigInteger('supplier_id')->unsigned();
             $table->bigInteger('admin_id')->unsigned();
+            $table->integer('total');
             $table->timestamps();
             $table->foreign('supplier_id')->references('id')->on('suppliers');
             $table->foreign('admin_id')->references('id')->on('admins');

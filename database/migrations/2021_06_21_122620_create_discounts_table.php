@@ -19,7 +19,7 @@ class CreateDiscountsTable extends Migration
             $table->bigInteger('book_id')->unsigned()->unique();
             $table->integer('percent');
             $table->timestamps();
-            $table->foreign('book_id')->references('id')->on('books')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreign('book_id')->references('id')->on('books');
         });
     }
 

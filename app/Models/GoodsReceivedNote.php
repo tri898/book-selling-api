@@ -10,16 +10,17 @@ class GoodsReceivedNote extends Model
     use HasFactory;
     protected $fillable = [
         'supplier_id',
-        'admin_id'
+        'admin_id',
+        'total'
     ];
     
     public function supplier()
     {
-        return $this->hasOne(Supplier::class,'id','supplier_id');
+        return $this->belongsTo(Supplier::class,'supplier_id','id');
     }
     public function admin()
     {
-        return $this->hasOne(Admin::class,'id','admin_id');
+        return $this->belongsTo(Admin::class,'admin_id','id');
     }
     public function details()
     {

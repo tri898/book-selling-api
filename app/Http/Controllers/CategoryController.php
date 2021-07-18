@@ -18,8 +18,8 @@ class CategoryController extends BaseController
      */
     public function index()
     {
-        $records =  Category::all();         
-        return $this->sendResponse('Categories list retrieved successfully.', CategoryResource::collection($records),200); 
+        $records =  Category::paginate(10);         
+        return CategoryResource::collection($records); 
     }
 
 
@@ -44,7 +44,7 @@ class CategoryController extends BaseController
             'description' =>$fields['description'],
             'slug' => Str::slug($fields['name'])
         ]);
-        return $this->sendResponse('Tạo thể loại thành công.', new CategoryResource($category),201);
+        return $this->sendResponse('Tạo thể loại thành công.',  new CategoryResource($category),201);
     }
 
     /**
@@ -60,7 +60,7 @@ class CategoryController extends BaseController
         if (is_null($category)) {
             return $this->sendError('Không tìm thấy thể loại',[], 404); 
         }
-        return $this->sendResponse('Đã truy xuất thể loại thành công.', new CategoryResource($category),200);  
+        return new CategoryResource($category);  
     }
 
 
@@ -90,7 +90,7 @@ class CategoryController extends BaseController
             'description' =>$fields['description'],
             'slug' => Str::slug($fields['name'])
         ]);
-        return $this->sendResponse('Đã cập nhật thể loại thành công', new CategoryResource($category),200);
+        return $this->sendResponse('Đã cập nhật thể loại thành công',  new CategoryResource($category),200);
     }
 
     /**
@@ -105,6 +105,9 @@ class CategoryController extends BaseController
         if (is_null($category)) {
             return $this->sendError('Không tìm thấy thể loại',[], 404); 
         }
+        if($category->books()->count()) {
+            return $this->sendError('Không thể xóa do có liên kết đến sách.',[], 409); 
+        }
         $category->delete();
         return $this->sendResponse(' Đã xóa thể loại thành công', [],204);
     }
@@ -116,8 +119,8 @@ class CategoryController extends BaseController
      */
     public function search($name)
     {
-        $category=  Category::where('name', 'like', '%'.$name.'%')->get();
+        $category=  Category::where('name', 'like', '%'.$name.'%')->paginate(10);
 
-        return $this->sendResponse('Đã tìm thấy các kết quả.', CategoryResource::collection($category),200);
+        return CategoryResource::collection($category);
     }
 }

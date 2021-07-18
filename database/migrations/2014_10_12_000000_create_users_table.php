@@ -19,7 +19,7 @@ class CreateUsersTable extends Migration
             $table->string('name')->nullable();
             $table->string('address')->nullable();
             $table->string('phone')->nullable();
-            $table->tinyInteger('status')->default('1');
+            $table->enum('status', ['Hoạt động', 'Khóa'])->default('Hoạt động');
             $table->string('email', 100)->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');

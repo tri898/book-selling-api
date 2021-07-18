@@ -17,8 +17,12 @@ class CreateOrdersTable extends Migration
             $table->engine = 'InnoDB';
             $table->id();
             $table->bigInteger('user_id')->unsigned();
+            $table->string('name');
+            $table->string('address');
+            $table->string('phone');
             $table->integer('total');
-            $table->tinyInteger('status')->default('0');
+            $table->string('note')->nullable();
+            $table->enum('status', ['Chờ xác nhận', 'Đã xác nhận', 'Đang giao','Giao thành công','Giao thất bại'])->default('Chờ xác nhận');
             $table->timestamps();
             $table->foreign('user_id')->references('id')->on('users');
         });

@@ -19,6 +19,7 @@ class CreatePublishersTable extends Migration
             $table->string('name');
             $table->string('description',1000);
             $table->timestamps();
+            
         });
     }
 

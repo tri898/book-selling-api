@@ -17,8 +17,8 @@ class DiscountController extends BaseController
      */
     public function index()
     {
-        $records = Discount::all();         
-        return $this->sendResponse('Danh sách giảm giá được truy xuất thành công.', DiscountResource::collection($records),200); 
+        $records = Discount::paginate(10);         
+        return DiscountResource::collection($records);
     }
 
 
@@ -59,7 +59,7 @@ class DiscountController extends BaseController
         if (is_null($discount)) {
             return $this->sendError(' Không tìm thấy giảm giá',[], 404); 
         }
-        return $this->sendResponse('Đã truy xuất giảm giá thành công.', new DiscountResource($discount),200);
+        return new DiscountResource($discount);
     }
 
     /**

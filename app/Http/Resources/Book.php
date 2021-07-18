@@ -3,10 +3,13 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Http\Resources\Inventory as InventoryResource;
 use App\Http\Resources\BookCategory as BookCategoryResource;
+use App\Http\Resources\Image as ImageResource;
 
 class Book extends JsonResource
 {
+     
     /**
      * Transform the resource into an array.
      *
@@ -32,8 +35,9 @@ class Book extends JsonResource
             'author' => $this->author->name,
             'publisher' => $this->publisher->name,
             'supplier' => $this->supplier->name,
-            'category' => new BookCategoryResource($this->bookCategory),
-            'image' => $this->image
+            'inventory' => new InventoryResource($this->whenLoaded('inventory')),
+            'category' => new BookCategoryResource($this->whenLoaded('bookCategory')),
+            'image' =>  new ImageResource($this->whenLoaded('image')),
         ];
     }
 }

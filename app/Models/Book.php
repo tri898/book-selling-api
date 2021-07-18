@@ -30,7 +30,7 @@ class Book extends Model
     
     public function category()
     {
-        return $this->belongsToMany(Category::class ,'book_categories', 'book_id', 'category_id')->select('name','slug');
+        return $this->belongsToMany(Category::class ,'book_categories', 'book_id', 'category_id')->select('name','slug')->withTimestamps();
     }
     public function bookCategory()
     {
@@ -42,19 +42,31 @@ class Book extends Model
     }
     public function image()
     {
-        return $this->hasOne(Image::class,'book_id','id')->select('front_cover', 'back_cover');
+        return $this->hasOne(Image::class,'book_id','id');
+    }
+    public function inventory()
+    {
+        return $this->hasOne(Inventory::class,'book_id','id');
     }
     public function author()
     {
-        return $this->hasOne(Author::class,'id', 'author_id');
+        return $this->belongsTo(Author::class,'author_id', 'id');
     }
     public function publisher()
     {
-        return $this->hasOne(Publisher::class,'id', 'publisher_id');
+        return $this->belongsTo(Publisher::class,'publisher_id', 'id');
     }
     public function supplier()
     {
-        return $this->hasOne(Supplier::class,'id', 'supplier_id');
+        return $this->belongsTo(Supplier::class,'supplier_id', 'id');
+    }
+    public function goodsReceivedNotes()
+    {
+        return $this->belongsToMany(GoodsReceivedNote::class ,'goods_received_note_details', 'book_id', 'goods_received_note_id');
+    }
+    public function orders()
+    {
+        return $this->belongsToMany(Order::class ,'order_details', 'book_id', 'order_id');
     }
     
 }

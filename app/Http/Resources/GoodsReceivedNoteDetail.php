@@ -15,7 +15,7 @@ class GoodsReceivedNoteDetail extends JsonResource
     public function toArray($request)
     {
         return [
-            'book_id' => $this->book->name,
+            'book' => $this->book->name,
             'quantity' => $this->quantity,
             'import_unit_price' => $this->import_unit_price,
 

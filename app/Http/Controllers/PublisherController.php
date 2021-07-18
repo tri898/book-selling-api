@@ -17,8 +17,8 @@ class PublisherController extends BaseController
      */
     public function index()
     {
-        $records =  Publisher::all();         
-                return $this->sendResponse('Danh sách nhà xuất bản được truy xuất thành công.', PublisherResource::collection($records),200);  
+        $records =  Publisher::paginate(10);         
+                return PublisherResource::collection($records);
     }
 
     /**
@@ -41,7 +41,7 @@ class PublisherController extends BaseController
             'name' => $fields['name'],
             'description' =>$fields['description']
         ]);
-        return $this->sendResponse('Nhà xuất bản được tạo thành công.', new PublisherResource($publisher),201);
+        return $this->sendResponse('Nhà xuất bản được tạo thành công.',  new PublisherResource($publisher),201);
     }
 
     /**
@@ -57,7 +57,7 @@ class PublisherController extends BaseController
         if (is_null($publisher)) {
             return $this->sendError('Không tìm thấy nhà xuất bản',[], 404); 
         }
-        return $this->sendResponse('Nhà xuất bản đã truy xuất thành công.', new PublisherResource($publisher),200);  
+        return new PublisherResource($publisher);  
     }
 
     
@@ -87,7 +87,7 @@ class PublisherController extends BaseController
             'name' => $fields['name'],
             'description' =>$fields['description']
         ]);
-        return $this->sendResponse('Đã cập nhật nhà xuất bản thành công.',  new PublisherResource($publisher),200);
+        return $this->sendResponse('Đã cập nhật nhà xuất bản thành công.',   new PublisherResource($publisher),200);
     }
 
     /**
@@ -102,6 +102,9 @@ class PublisherController extends BaseController
         if (is_null($publisher)) {
             return $this->sendError('Không tìm thấy nhà xuất bản',[], 404); 
         }
+       if( $publisher->books()->count()) {
+        return $this->sendError('Không thể xóa do có liên kết đến sách.',[], 409); 
+       }
         $publisher->delete();
         return $this->sendResponse('Xóa thành công', [],204);
     }
@@ -113,8 +116,8 @@ class PublisherController extends BaseController
      */
     public function search($name)
     {
-        $publisher=  Publisher::where('name', 'like', '%'.$name.'%')->get();
+        $publisher=  Publisher::where('name', 'like', '%'.$name.'%')->paginate(10);
 
-        return $this->sendResponse('Đã tìm thấy các kết quả.', PublisherResource::collection($publisher),200);
+        return PublisherResource::collection($publisher);
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Models\GoodsReceivedNote;
 use App\Http\Controllers\BaseController as BaseController;
 use App\Http\Resources\GoodsReceivedNote as GoodsReceivedNoteResource;
@@ -17,8 +18,8 @@ class GoodsReceivedNoteController extends BaseController
      */
     public function index()
     {
-        $records =  GoodsReceivedNote::all();         
-        return $this->sendResponse('Danh sách phiếu nhập được truy xuất thành công.', GoodsReceivedNoteResource::collection($records),200); 
+        $records =  GoodsReceivedNote::with('details')->paginate(10);         
+        return GoodsReceivedNoteResource::collection($records);
     }
 
     
@@ -33,6 +34,7 @@ class GoodsReceivedNoteController extends BaseController
         $fields = $request->all();
         $validator = Validator::make($fields, [
             'supplier_id' => 'required|integer',
+            'total' => 'required|integer',
             'grnItems' => 'required|array',
             'grnItems.*.book_id' => 'required|integer',
             'grnItems.*.quantity' => 'required|integer',
@@ -46,7 +48,8 @@ class GoodsReceivedNoteController extends BaseController
 
         $goodsReceivedNote = GoodsReceivedNote::create([
             'supplier_id' =>$fields['supplier_id'],
-            'admin_id' => $getCurrentAdmin
+            'admin_id' => $getCurrentAdmin,
+            'total' =>$fields['total']
         ]);
         // add list item to table detail
         foreach ($request->grnItems as $item) {
@@ -55,8 +58,11 @@ class GoodsReceivedNoteController extends BaseController
                 'quantity' => $item['quantity'],
                 'import_unit_price' => $item['import_unit_price']
             ]);
+            // // update quantity in stock
+            // DB::table('inventories')->increment('available_quantity',  $item['quantity']);
+            
         }
-        return $this->sendResponse('Phiếu nhập tạo thành công.', new GoodsReceivedNoteResource($goodsReceivedNote),201);
+        return $this->sendResponse('Phiếu nhập tạo thành công.', new GoodsReceivedNoteResource($goodsReceivedNote->load('details')),201);
     }
 
     /**
@@ -67,12 +73,12 @@ class GoodsReceivedNoteController extends BaseController
      */
     public function show($id)
     {
-        $goodsReceivedNote = GoodsReceivedNote::find($id);
+        $goodsReceivedNote = GoodsReceivedNote::with('details')->find($id);
   
         if (is_null($goodsReceivedNote)) {
             return $this->sendError('Không tìm thấy phiếu nhập',[], 404); 
         }
-        return $this->sendResponse('Danh sách phiếu nhập được truy xuất thành công.', new GoodsReceivedNoteResource($goodsReceivedNote),200);  
+        return new GoodsReceivedNoteResource($goodsReceivedNote);  
     }
 
     /**

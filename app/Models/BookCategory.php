@@ -14,7 +14,7 @@ class BookCategory extends Model
     ];
     public function category()
     {
-        return $this->hasOne(Category::class,'id','category_id');
+        return $this->belongsTo(Category::class,'category_id','id');
     }
     
 }

@@ -18,8 +18,8 @@ class SupplierController extends BaseController
      */
     public function index()
     {
-        $records =  Supplier::all();         
-                return $this->sendResponse('Danh sách nhà cung cấp được truy xuất thành công.', SupplierResource::collection($records),200);
+        $records =  Supplier::paginate(10);         
+                return SupplierResource::collection($records);
     }
 
  
@@ -67,7 +67,7 @@ class SupplierController extends BaseController
         if (is_null($supplier)) {
             return $this->sendError('Không tìm thấy nhà cung cấp',[], 404); 
         }
-        return $this->sendResponse('Đã truy xuất nhà cung cấp thành công.', new SupplierResource($supplier),200);  
+        return new SupplierResource($supplier);
     }
 
 
@@ -120,6 +120,12 @@ class SupplierController extends BaseController
         if (is_null($supplier)) {
             return $this->sendError('Không tìm thấy nhà cung cấp',[], 404); 
         }
+        if($supplier->books()->count()) {
+            return $this->sendError('Không thể xóa do có liên kết đến sách.',[], 409); 
+        }
+        if($author->goodsReceivedNotes()->count()) {
+            return $this->sendError('Không thể xóa do có liên kết đến kho.',[], 409); 
+        }
         $supplier->delete();
         return $this->sendResponse('Xóa thành công.', [],204);
     }
@@ -131,8 +137,8 @@ class SupplierController extends BaseController
      */
     public function search($name)
     {
-        $supplier=  Supplier::where('name', 'like', '%'.$name.'%')->get();
+        $supplier=  Supplier::where('name', 'like', '%'.$name.'%')->paginate(10);
 
-        return $this->sendResponse('Đã tìm thấy các kết quả.', SupplierResource::collection($supplier),200);
+        return SupplierResource::collection($supplier);
     }
 }

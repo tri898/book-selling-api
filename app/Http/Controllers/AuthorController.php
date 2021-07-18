@@ -17,8 +17,8 @@ class AuthorController extends BaseController
          * @return \Illuminate\Http\Response
          */
         public function index() {
-            $records =  Author::all();         
-                return $this->sendResponse('Danh sách tác giả được truy xuất thành công.', AuthorResource::collection($records),200);  
+            $records =  Author::paginate(10);         
+            return AuthorResource::collection($records);
         }
         /**
          * Store a newly created resource in storage.
@@ -56,7 +56,8 @@ class AuthorController extends BaseController
         if (is_null($author)) {
             return $this->sendError('Không tìm thấy tác giả.',[], 404); 
         }
-        return $this->sendResponse('Tác giả được truy xuất thành công.', new AuthorResource($author),200);  
+    
+       return new AuthorResource($author);  
     }
 
     /**
@@ -85,7 +86,7 @@ class AuthorController extends BaseController
             'description' =>$fields['description'],
             'slug' => Str::slug($fields['name'])
         ]);
-        return $this->sendResponse('Đã cập nhật tác giả thành công.',  new AuthorResource($author),200);
+        return $this->sendResponse('Đã cập nhật tác giả thành công.', new AuthorResource($author),200);
     }
 
     /**
@@ -100,6 +101,10 @@ class AuthorController extends BaseController
         if (is_null($author)) {
             return $this->sendError('Không tìm thấy tác giả',[], 404); 
         }
+        // check foreign key
+        if($author->books()->count()) {
+            return $this->sendError('Không thể xóa do có liên kết đến sách.',[], 409); 
+        }
         $author->delete();
         return $this->sendResponse('Đã xóa tác giả thành công.', [],204);
     }
@@ -112,8 +117,8 @@ class AuthorController extends BaseController
      */
     public function search($name)
     {
-        $author=  Author::where('name', 'like', '%'.$name.'%')->get();
+        $author=  Author::where('name', 'like', '%'.$name.'%')->paginate(10);
 
-        return $this->sendResponse('Đã tìm thấy các kết quả.', AuthorResource::collection($author),200);
+        return AuthorResource::collection($author);
     }
 }

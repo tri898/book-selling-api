@@ -14,6 +14,7 @@ use App\Http\Controllers\GoodsReceivedNoteController;
 use App\Http\Controllers\DiscountController;
 use App\Http\Controllers\ImageController;
 use App\Http\Controllers\InventoryController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\GetDataController;
 
 use Illuminate\Http\Request;
@@ -67,6 +68,7 @@ Route::group(['middleware' => ['auth:admins']], function () {
     Route::resource('suppliers', SupplierController::class);
     Route::get('/suppliers/search/{name}', [SupplierController::class, 'search']);
      // Manage Book
+    //  Route::resource('books', BookController::class);
      Route::get('/books', [BookController::class, 'index']);
      Route::get('/books/{id}', [BookController::class, 'show']);
      Route::post('/books', [BookController::class, 'store']);
@@ -75,12 +77,15 @@ Route::group(['middleware' => ['auth:admins']], function () {
     Route::get('/books/search/{name}', [BookController::class, 'search']);
      // Manage GRN not update
     Route::resource('goods-received-notes', GoodsReceivedNoteController::class);
-      // Manage Discount
+    // Manage Discount
     Route::resource('discounts', DiscountController::class);
     Route::get('/discounts/search/{name}', [DiscountController::class, 'search']);
-       // Manage Inventory
+    // Manage Inventory
     Route::get('/inventories/search/{name}', [InventoryController::class, 'search']);
-
+    //  Manage Order
+    Route::get('/orders', [OrderController::class, 'index']);
+    Route::get('/orders/{id}', [OrderController::class, 'show']);
+    Route::delete('/orders/{id}', [OrderController::class, 'destroy']);
 });
 /*
 |----------------------------------------------------------------
@@ -92,6 +97,8 @@ Route::group(['middleware' => ['auth:users']], function () {
     Route::get('user/profile', [UserController::class, 'profile']);
     Route::put('user/update-profile', [UserController::class, 'updateProfile']);
     Route::put('user/change-password', [UserController::class, 'changePassword']);
+    //order book
+    Route::post('user/orders', [OrderController::class, 'store']);
 });
 
 

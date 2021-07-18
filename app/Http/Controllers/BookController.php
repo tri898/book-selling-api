@@ -18,8 +18,8 @@ class BookController extends BaseController
      */
     public function index()
     {
-        $records =   Book::all();   
-        return $this->sendResponse('Danh sách sách được truy xuất thành công.', BookResource::collection($records),200);  
+        $records =   Book::with(['inventory', 'image','bookCategory'])->paginate(10);
+        return BookResource::collection($records); 
     }
 
     /**
@@ -72,6 +72,8 @@ class BookController extends BaseController
         ]);
         // insert book category
         $book->category()->attach($fields['category_id']);
+        // insert quantity in inventory
+        $book->inventory()->create(['available_quantity' => 0]);
         // get info image
         
         $input['front_cover'] =$book->id . '-front'.'.'.$fields['front_cover']->getClientOriginalExtension();
@@ -82,7 +84,7 @@ class BookController extends BaseController
 
         $image = $book->image()->create($input);
 
-        return $this->sendResponse('Book create successfully.', new BookResource($book),201);
+        return $this->sendResponse('Tạo sách thành công.', new BookResource($book->load(['inventory', 'image','bookCategory'])),201);
     }
 
     /**
@@ -93,12 +95,12 @@ class BookController extends BaseController
      */
     public function show($id)
     {
-        $book = Book::find($id);
+        $book = Book::with(['inventory', 'image','bookCategory'])->find($id);
     
         if (is_null($book)) {
             return $this->sendError('Không tìm thấy cuốn sách nào',[], 404); 
         }
-        return $this->sendResponse('Book retrieved successfully.', new BookResource($book),200);  
+        return new BookResource($book);  
     }
 
     /**
@@ -130,6 +132,7 @@ class BookController extends BaseController
             'front_cover' => 'image|mimes:jpeg,png,jpg|max:2048',
             'back_cover' => 'image|mimes:jpeg,png,jpg|max:2048',
         ]);
+
         $book = Book::find($id);
         if (is_null($book)) {
             return $this->sendError('Không tìm thấy cuốn sách nào',[], 404); 
@@ -154,18 +157,21 @@ class BookController extends BaseController
             'publisher_id' =>$fields['publisher_id'],
             'supplier_id' =>$fields['supplier_id'],
         ]);
-         // insert book category
+         // update book category
          $book->category()->sync($fields['category_id']);
+
         //If there is a file, it will be updated 
-        if($request->hasFile('front_cover') & $request->hasFile('back_cover')) {
-            // get info image
+        if($request->hasFile('front_cover')) {
          $input['front_cover'] =$book->id . '-front'.'.'.$fields['front_cover']->getClientOriginalExtension();
-         $input['back_cover'] = $book->id . '-back'.'.'.$fields['back_cover']->getClientOriginalExtension();
-         // move image file to public
          $fields['front_cover']->move(public_path('images'), $input['front_cover']);
+        }
+
+        if($request->hasFile('back_cover')) {
+         $input['back_cover'] = $book->id . '-back'.'.'.$fields['back_cover']->getClientOriginalExtension();
          $fields['back_cover']->move(public_path('images'), $input['back_cover']);
         }
-        return $this->sendResponse('Đã cập nhật sách thành công.',  new BookResource($book),200);
+
+        return $this->sendResponse('Đã cập nhật sách thành công.',  new BookResource($book->load(['inventory', 'image','bookCategory'])),200);
     }
 
     /**
@@ -180,6 +186,18 @@ class BookController extends BaseController
         if (is_null($book)) {
             return $this->sendError('Không tìm thấy cuốn sách nào',[], 404); 
         }
+
+        // check foreign keys
+        if($book->goodsReceivedNotes()->count()) {
+            return $this->sendError('Không thể xóa do có liên kết đến phiếu nhập.',[], 409); 
+        }
+        if($book->discount()->count()) {
+            return $this->sendError('Không thể xóa do có liên kết đến giảm giá.',[], 409); 
+        }
+        if($book->orders()->count()) {
+            return $this->sendError('Không thể xóa do có liên kết đến đặt hàng.',[], 409); 
+        }
+        // remove image book
         $image = $book->image()->first();
         if($image) {
             $front_cover = public_path('images/' . $image->front_cover);
@@ -200,8 +218,8 @@ class BookController extends BaseController
      */
     public function search($name)
     {
-        $book=  Book::where('name', 'like', '%'.$name.'%')->get();
+        $book=  Book::with(['inventory', 'image','bookCategory'])->where('name', 'like', '%'.$name.'%')->paginate(10);
 
-        return $this->sendResponse('Đã tìm thấy các kết quả.', BookResource::collection($book),200);
+        return BookResource::collection($book);
     }
 }

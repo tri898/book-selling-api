@@ -3,9 +3,9 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
-use App\Http\Resources\GoodsReceivedNoteDetail as GRNDetailResource;
+use App\Http\Resources\OrderDetail as OrderDetailResource;
 
-class GoodsReceivedNote extends JsonResource
+class Order extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -17,10 +17,14 @@ class GoodsReceivedNote extends JsonResource
     {
         return [
             'id' => $this->id,
-            'supplier' => $this->supplier->name,
-            'by_admin' => $this->admin->name,
+            'user' => $this->user->email,
+            'name' => $this->name,
+            'address' => $this->address,
+            'phone' => $this->phone,
+            'total' => $this->total,
+            'status' => $this->status,
             'created_at' => $this->created_at->format('d/m/Y H:i:s'),
-            'details' => GRNDetailResource::collection($this->whenLoaded('details'))
+            'details' => OrderDetailResource::collection($this->whenLoaded('details')),
             
         ];
     }

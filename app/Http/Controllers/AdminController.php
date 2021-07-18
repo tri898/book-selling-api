@@ -7,6 +7,8 @@ use App\Models\User;
 use App\Http\Controllers\BaseController as BaseController;
 use App\Http\Resources\User as UserResource;
 use Validator;
+use Illuminate\Validation\Rule;
+
 class AdminController extends BaseController
 {
      /**
@@ -16,9 +18,9 @@ class AdminController extends BaseController
          */
     public function usersList()
     { 
-        $records = User::all();
+        $records = User::paginate(10);
 
-        return $this->sendResponse('Danh sách người dùng được truy xuất thành công.', UserResource::collection($records),200);  
+        return UserResource::collection($records);
     }
         /**
          * Update the specified resource in storage.
@@ -31,7 +33,10 @@ class AdminController extends BaseController
     {
         $fields = $request->all();
         $validator = Validator::make($fields, [
-            'status' => 'required|numeric|boolean'
+            'status' => [
+                'required',
+                Rule::in(['Hoạt động', 'Khóa']),
+            ]
         ]);
 
         $user = User::find($id);

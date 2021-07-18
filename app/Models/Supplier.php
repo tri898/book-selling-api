@@ -17,4 +17,12 @@ class Supplier extends Model
         'slug', 
 
     ];
+    public function books()
+    {
+        return $this->hasMany(Book::class,'supplier_id','id');
+    }
+    public function goodsReceivedNotes()
+    {
+        return $this->hasMany(GoodsReceivedNote::class,'supplier_id','id');
+    }
 }
