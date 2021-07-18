@@ -108,16 +108,5 @@ class PublisherController extends BaseController
         $publisher->delete();
         return $this->sendResponse('Xóa thành công', [],204);
     }
-     /**
-     * Search for a name
-     *
-     * @param  str  $name
-     * @return \Illuminate\Http\Response
-     */
-    public function search($name)
-    {
-        $publisher=  Publisher::where('name', 'like', '%'.$name.'%')->paginate(10);
-
-        return PublisherResource::collection($publisher);
-    }
+    
 }

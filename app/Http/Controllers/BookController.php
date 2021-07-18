@@ -210,16 +210,5 @@ class BookController extends BaseController
         $book->delete();
         return $this->sendResponse('Sách đã được xóa thành công.', [],204);
     }
-      /**
-     * Search for a name
-     *
-     * @param  str  $name
-     * @return \Illuminate\Http\Response
-     */
-    public function search($name)
-    {
-        $book=  Book::with(['inventory', 'image','bookCategory'])->where('name', 'like', '%'.$name.'%')->paginate(10);
-
-        return BookResource::collection($book);
-    }
+     
 }

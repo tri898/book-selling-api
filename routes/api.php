@@ -57,10 +57,8 @@ Route::group(['middleware' => ['auth:admins']], function () {
     Route::put('admin/update-status-user/{id}', [AdminController::class, 'updateStatus']);
     // Manage Author
     Route::resource('authors', AuthorController::class);
-    Route::get('/authors/search/{name}', [AuthorController::class, 'search']);
     // Manage Category
     Route::resource('categories', CategoryController::class);
-    Route::get('/categories/search/{name}', [CategoryController::class, 'search']);
     // Manage Publisher
     Route::resource('publishers', PublisherController::class);
     Route::get('/publishers/search/{name}', [PublisherController::class, 'search']);
@@ -68,20 +66,11 @@ Route::group(['middleware' => ['auth:admins']], function () {
     Route::resource('suppliers', SupplierController::class);
     Route::get('/suppliers/search/{name}', [SupplierController::class, 'search']);
      // Manage Book
-    //  Route::resource('books', BookController::class);
-     Route::get('/books', [BookController::class, 'index']);
-     Route::get('/books/{id}', [BookController::class, 'show']);
-     Route::post('/books', [BookController::class, 'store']);
-     Route::post('/books/{id}', [BookController::class, 'update']);
-     Route::delete('/books/{id}', [BookController::class, 'destroy']);
-    Route::get('/books/search/{name}', [BookController::class, 'search']);
+     Route::resource('books', BookController::class);
      // Manage GRN not update
     Route::resource('goods-received-notes', GoodsReceivedNoteController::class);
     // Manage Discount
     Route::resource('discounts', DiscountController::class);
-    Route::get('/discounts/search/{name}', [DiscountController::class, 'search']);
-    // Manage Inventory
-    Route::get('/inventories/search/{name}', [InventoryController::class, 'search']);
     //  Manage Order
     Route::get('/orders', [OrderController::class, 'index']);
     Route::get('/orders/{id}', [OrderController::class, 'show']);

@@ -108,10 +108,5 @@ class DiscountController extends BaseController
         $discount->delete();
         return $this->sendResponse('Đã xóa giảm giá thành công.', [],204);
     }
-    public function search($name)
-    {
-        // $book_category=  BookCategory::where('name', 'like', '%'.$name.'%')->get();
-
-        // return $this->sendResponse('Found the results.', BookCategoryResource::collection($book_category),200);
-    }
+    
 }

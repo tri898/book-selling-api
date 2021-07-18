@@ -109,16 +109,4 @@ class AuthorController extends BaseController
         return $this->sendResponse('Đã xóa tác giả thành công.', [],204);
     }
 
-     /**
-     * Search for a name
-     *
-     * @param  str  $name
-     * @return \Illuminate\Http\Response
-     */
-    public function search($name)
-    {
-        $author=  Author::where('name', 'like', '%'.$name.'%')->paginate(10);
-
-        return AuthorResource::collection($author);
-    }
 }

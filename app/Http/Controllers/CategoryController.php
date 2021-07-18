@@ -111,16 +111,5 @@ class CategoryController extends BaseController
         $category->delete();
         return $this->sendResponse(' Đã xóa thể loại thành công', [],204);
     }
-     /**
-     * Search for a name
-     *
-     * @param  str  $name
-     * @return \Illuminate\Http\Response
-     */
-    public function search($name)
-    {
-        $category=  Category::where('name', 'like', '%'.$name.'%')->paginate(10);
-
-        return CategoryResource::collection($category);
-    }
+    
 }

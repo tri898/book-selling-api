@@ -96,16 +96,5 @@ class GoodsReceivedNoteController extends BaseController
         $goodsReceivedNote->delete();
         return $this->sendResponse('Xóa phiếu nhập thành công', [],204);
     }
-     /**
-     * Search for a name
-     *
-     * @param  str  $name
-     * @return \Illuminate\Http\Response
-     */
-    public function search($name)
-    {
-        // $goodsReceivedNote=  GoodsReceivedNote::where('name', 'like', '%'.$name.'%')->get();
-
-        // return $this->sendResponse('Found the results.', GoodsReceivedNoteResource::collection($goodsReceivedNote),200);
-    }
+    
 }
