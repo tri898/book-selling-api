@@ -59,7 +59,7 @@ class GoodsReceivedNoteController extends BaseController
                 'import_unit_price' => $item['import_unit_price']
             ]);
             // // update quantity in stock
-            // DB::table('inventories')->increment('available_quantity',  $item['quantity']);
+            DB::table('inventories')->where('book_id', $item['book_id'])->increment('available_quantity',  $item['quantity']);
             
         }
         return $this->sendResponse('Phiếu nhập tạo thành công.', new GoodsReceivedNoteResource($goodsReceivedNote->load('details')),201);
