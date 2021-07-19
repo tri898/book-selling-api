@@ -58,7 +58,7 @@ class GoodsReceivedNoteController extends BaseController
                 'quantity' => $item['quantity'],
                 'import_unit_price' => $item['import_unit_price']
             ]);
-            // // update quantity in stock
+            // update quantity in stock
             DB::table('inventories')->where('book_id', $item['book_id'])->increment('available_quantity',  $item['quantity']);
             
         }
@@ -78,7 +78,8 @@ class GoodsReceivedNoteController extends BaseController
         if (is_null($goodsReceivedNote)) {
             return $this->sendError('Không tìm thấy phiếu nhập',[], 404); 
         }
-        return new GoodsReceivedNoteResource($goodsReceivedNote);  
+
+        return new  GoodsReceivedNoteResource($goodsReceivedNote);
     }
 
     /**
@@ -93,6 +94,11 @@ class GoodsReceivedNoteController extends BaseController
         if (is_null($goodsReceivedNote)) {
             return $this->sendError('Không tìm thấy phiếu nhập',[], 404); 
         }
+        // update quantity in stock
+        $result = $goodsReceivedNote->details()->pluck('book_id','quantity');
+        $result->each(function($key, $item) {
+             DB::table('inventories')->where('book_id', $key)->decrement('available_quantity', $item);
+        });
         $goodsReceivedNote->delete();
         return $this->sendResponse('Xóa phiếu nhập thành công', [],204);
     }

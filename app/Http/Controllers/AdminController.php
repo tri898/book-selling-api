@@ -3,11 +3,11 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use App\Models\User;
 use App\Http\Controllers\BaseController as BaseController;
 use App\Http\Resources\User as UserResource;
 use Validator;
-use Illuminate\Validation\Rule;
 
 class AdminController extends BaseController
 {

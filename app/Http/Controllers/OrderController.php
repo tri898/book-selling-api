@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 use App\Models\Order;
 use App\Http\Controllers\BaseController as BaseController;
 use App\Http\Resources\Order as OrderResource;
@@ -20,7 +22,17 @@ class OrderController extends BaseController
         $records =  Order::with('details')->paginate(10);         
         return OrderResource::collection($records);
     }
-
+/**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function getOrders()
+    {
+        $getUserCurrent = auth()->user()->id;
+        $records =  Order::where('user_id',$getUserCurrent)->with('details')->paginate(10);         
+        return OrderResource::collection($records);
+    }
     
 
     /**
@@ -47,7 +59,7 @@ class OrderController extends BaseController
         if($validator->fails()){
             return $this->sendError('Dữ liệu nhập lỗi.', $validator->errors(), 422);       
         }
-        // get id admin current
+        // get user current
         $getUserCurrent = auth()->user()->id;
 
         $order = Order::create([
@@ -66,6 +78,8 @@ class OrderController extends BaseController
                 'price' => $item['price'],
                 'discount' => $item['discount']
             ]);
+          // update quantity in stock
+          DB::table('inventories')->where('book_id', $item['book_id'])->decrement('available_quantity',  $item['quantity']);
         }
         return $this->sendResponse('Tạo đơn hàng thành công.',  new OrderResource($order->load('details')),201);
     }
@@ -85,7 +99,49 @@ class OrderController extends BaseController
         }
         return new OrderResource($order);  
     }
-
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function showOrder($id)
+    {
+        $getUserCurrent = auth()->user()->id;
+        $order = Order::where('user_id', $getUserCurrent)->with('details')->find($id);
+  
+        if (is_null($order)) {
+            return $this->sendError('Không tìm thấy đơn hàng',[], 404); 
+        }
+        return new OrderResource($order);  
+    }
+ /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function updateStatus(Request $request, $id)
+    {
+        $fields = $request->all();
+        $validator = Validator::make($fields, [
+            'status' => [
+                'required',
+                Rule::in(['Chờ xác nhận','Đã xác nhận','Đang giao','Giao thành công', 'Giao thất bại']),
+            ]
+        ]);
+        $order = Order::find($id);
+        if(is_null($order)) {
+            return $this->sendError('Không tìm thấy đơn hàng',[], 404);
+        }
+        if($validator->fails()){
+            return $this->sendError('Dữ liệu nhập lỗi.', $validator->errors(), 422);       
+        }
+        // update status
+        $order->update(['status' => $fields['status']]);
+        return $this->sendResponse('Đã cập nhật trạng thái đơn hàng thành công.', new OrderResource($order->load('details')),200); 
+    }
     /**
      * Remove the specified resource from storage.
      *
@@ -94,10 +150,16 @@ class OrderController extends BaseController
      */
     public function destroy($id)
     {
-        $order = Order::find($id);
+        $getUserCurrent = auth()->user()->id;
+        $order = Order::where('user_id', $getUserCurrent)->find($id);
         if (is_null($order)) {
             return $this->sendError('Không tìm thấy đơn hàng',[], 404); 
         }
+         // update quantity in stock
+         $result = $order->details()->pluck('book_id','quantity');
+         $result->each(function($key, $item) {
+              DB::table('inventories')->where('book_id', $key)->increment('available_quantity', $item);
+         });
         $order->delete();
         return $this->sendResponse('Xóa đơn hàng thành công', [],204);
     }
