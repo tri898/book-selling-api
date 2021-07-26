@@ -16,12 +16,12 @@ class CreateSuppliersTable extends Migration
         Schema::create('suppliers', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->id();
-            $table->string('name');
+            $table->string('name')->unique();
             $table->string('address');
             $table->string('phone');
-            $table->string('email',100)->unique();
-            $table->string('description',1000);
-            $table->string('slug',200)->unique();
+            $table->string('email',100);
+            $table->string('description');
+            $table->string('slug');
             $table->timestamps();
             
         });

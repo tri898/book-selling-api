@@ -16,9 +16,9 @@ class CreateAuthorsTable extends Migration
         Schema::create('authors', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->id();
-            $table->string('name');
-            $table->string('description',1000);
-            $table->string('slug',200)->unique();
+            $table->string('name')->unique();
+            $table->longText('description');
+            $table->string('slug');
             $table->timestamps();
             
         });

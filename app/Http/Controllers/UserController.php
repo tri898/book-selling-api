@@ -42,8 +42,8 @@ class UserController extends BaseController
     {
         $fields = $request->all();
         $validator = Validator::make($fields, [
-            'name' => 'required|string|max:50',
-            'address' => 'required|string|min:10|max:100',
+            'name' => 'required|string|max:255',
+            'address' => 'required|string|max:255',
             'phone' => 'required|numeric|digits:10',
             // 'email' => 'required|email|unique:users,email, ' .auth()->user()->id
 

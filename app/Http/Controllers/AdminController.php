@@ -18,7 +18,7 @@ class AdminController extends BaseController
          */
     public function usersList()
     { 
-        $records = User::paginate(10);
+        $records = User::all();
 
         return UserResource::collection($records);
     }

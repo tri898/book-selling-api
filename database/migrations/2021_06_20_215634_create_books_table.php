@@ -16,9 +16,9 @@ class CreateBooksTable extends Migration
         Schema::create('books', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->id();
-            $table->string('name');
+            $table->string('name')->unique();
             $table->string('code');
-            $table->string('description',1000);
+            $table->longText('description');
             $table->integer('unit_price');
             $table->float('weight', 5, 2);
             $table->string('format');
@@ -26,7 +26,7 @@ class CreateBooksTable extends Migration
             $table->string('language');
             $table->string('size');
             $table->integer('num_pages');
-            $table->string('slug',200)->unique();
+            $table->string('slug');
             $table->string('translator')->nullable();
             $table->bigInteger('author_id')->unsigned();
             $table->bigInteger('publisher_id')->unsigned();

@@ -38,6 +38,8 @@ class Book extends JsonResource
             'inventory' => new InventoryResource($this->whenLoaded('inventory')),
             'category' => new BookCategoryResource($this->whenLoaded('bookCategory')),
             'image' =>  new ImageResource($this->whenLoaded('image')),
+            'created_at' => $this->created_at->format('d/m/Y H:i:s'),
+            'updated_at' => $this->updated_at->format('d/m/Y H:i:s')
         ];
     }
 }

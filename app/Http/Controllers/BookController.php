@@ -18,7 +18,7 @@ class BookController extends BaseController
      */
     public function index()
     {
-        $records =   Book::with(['inventory', 'image','bookCategory'])->paginate(10);
+        $records =   Book::with(['inventory', 'image','bookCategory'])->get();
         return BookResource::collection($records); 
     }
 
@@ -32,9 +32,9 @@ class BookController extends BaseController
     {
         $fields = $request->all();
         $validator = Validator::make($fields, [
-            'name' => 'required|string|max:100|unique:books',
-            'code' => 'required|string|max:100',
-            'description' => 'required|string|max:1000',
+            'name' => 'required|string|max:255|unique:books',
+            'code' => 'required|string|max:255',
+            'description' => 'required|string',
             'unit_price' => 'required|integer',
             'weight' => 'required|numeric|between:0.00,999.99',
             'format' => 'required|string',
@@ -114,9 +114,9 @@ class BookController extends BaseController
     {
         $fields = $request->all();
         $validator = Validator::make($fields, [
-            'name' => 'required|string|max:100|unique:books,name,' . $id,
-            'code' => 'required|string|max:100',
-            'description' => 'required|string|max:1000',
+            'name' => 'required|string|max:255|unique:books,name,' . $id,
+            'code' => 'required|string|max:255',
+            'description' => 'required|string',
             'unit_price' => 'required|integer',
             'weight' => 'required|numeric|between:0.00,999.99',
             'format' => 'required|string',

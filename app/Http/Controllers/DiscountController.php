@@ -17,7 +17,7 @@ class DiscountController extends BaseController
      */
     public function index()
     {
-        $records = Discount::paginate(10);         
+        $records = Discount::all();         
         return DiscountResource::collection($records);
     }
 

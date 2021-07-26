@@ -18,7 +18,7 @@ class CategoryController extends BaseController
      */
     public function index()
     {
-        $records =  Category::paginate(10);         
+        $records =  Category::all();         
         return CategoryResource::collection($records); 
     }
 
@@ -33,8 +33,8 @@ class CategoryController extends BaseController
     {
         $fields = $request->all();
         $validator = Validator::make($fields, [
-            'name' => 'required|string|max:100|unique:categories',
-            'description' => 'required|string|max:1000'
+            'name' => 'required|string|max:255|unique:categories',
+            'description' => 'required|string|max:255'
         ]);
         if($validator->fails()){
             return $this->sendError('Dữ liệu nhập lỗi.', $validator->errors(), 422);       
@@ -75,8 +75,8 @@ class CategoryController extends BaseController
     {
         $fields = $request->all();
         $validator = Validator::make($fields, [
-            'name' => 'required|string|max:100|unique:categories,name,' . $id,
-            'description' => 'required|string|max:1000'
+            'name' => 'required|string|max:255|unique:categories,name,' . $id,
+            'description' => 'required|string|max:255'
         ]);
         $category = Category::find($id);
         if (is_null($category)) {

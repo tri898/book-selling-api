@@ -18,7 +18,7 @@ class GoodsReceivedNoteController extends BaseController
      */
     public function index()
     {
-        $records =  GoodsReceivedNote::with('details')->paginate(10);         
+        $records =  GoodsReceivedNote::with('details')->get();         
         return GoodsReceivedNoteResource::collection($records);
     }
 

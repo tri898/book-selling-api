@@ -21,7 +21,9 @@ class Supplier extends JsonResource
             'phone' => $this->phone,
             'email' => $this->email,
             'description' => $this->description,
-            'slug' => $this->slug
+            'slug' => $this->slug,
+            'created_at' => $this->created_at->format('d/m/Y H:i:s'),
+            'updated_at' => $this->updated_at->format('d/m/Y H:i:s')
         ];
     }
 }

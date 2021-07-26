@@ -17,7 +17,7 @@ class AuthorController extends BaseController
          * @return \Illuminate\Http\Response
          */
         public function index() {
-            $records =  Author::paginate(10);         
+            $records =  Author::all();         
             return AuthorResource::collection($records);
         }
         /**
@@ -30,8 +30,8 @@ class AuthorController extends BaseController
         {
             $fields = $request->all();
             $validator = Validator::make($fields, [
-                'name' => 'required|string|unique:authors|max:100',
-                'description' => 'required|string|max:1000'
+                'name' => 'required|string|unique:authors|max:255',
+                'description' => 'required|string'
             ]);
             if($validator->fails()){
                 return $this->sendError('Dữ liệu nhập lỗi.', $validator->errors(), 422);       
@@ -71,8 +71,8 @@ class AuthorController extends BaseController
     {
         $fields = $request->all();
         $validator = Validator::make($fields, [
-            'name' => 'required|string|max:100|unique:authors,name,' . $id,
-            'description' => 'required|string|max:1000'
+            'name' => 'required|string|max:255|unique:authors,name,' . $id,
+            'description' => 'required|string'
         ]);
         $author = Author::find($id);
         if (is_null($author)) {

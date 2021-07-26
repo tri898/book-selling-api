@@ -19,7 +19,7 @@ class OrderController extends BaseController
      */
     public function index()
     {
-        $records =  Order::with('details')->paginate(10);         
+        $records =  Order::with('details')->get();         
         return OrderResource::collection($records);
     }
 /**
@@ -30,7 +30,7 @@ class OrderController extends BaseController
     public function getOrders()
     {
         $getUserCurrent = auth()->user()->id;
-        $records =  Order::where('user_id',$getUserCurrent)->with('details')->paginate(10);         
+        $records =  Order::where('user_id',$getUserCurrent)->with('details')->get();         
         return OrderResource::collection($records);
     }
     
@@ -45,11 +45,11 @@ class OrderController extends BaseController
     {
         $fields = $request->all();
         $validator = Validator::make($fields, [
-            'name' => 'required|string',
-            'address' => 'required|string',
+            'name' => 'required|string|max:255',
+            'address' => 'required|string|max:255',
             'phone' => 'required|numeric|digits:10',
             'total' => 'required|integer',
-            'note' => 'string|nullable',
+            'note' => 'string|nullable|max:255',
             'orderItems' => 'required|array',
             'orderItems.*.book_id' => 'required|integer',
             'orderItems.*.quantity' => 'required|integer',
@@ -151,7 +151,7 @@ class OrderController extends BaseController
     public function destroy($id)
     {
         $getUserCurrent = auth()->user()->id;
-        $order = Order::where('user_id', $getUserCurrent)->find($id);
+        $order = Order::where('user_id', $getUserCurrent)->where('status','Chờ xác nhận')->find($id);
         if (is_null($order)) {
             return $this->sendError('Không tìm thấy đơn hàng',[], 404); 
         }
@@ -161,6 +161,6 @@ class OrderController extends BaseController
               DB::table('inventories')->where('book_id', $key)->increment('available_quantity', $item);
          });
         $order->delete();
-        return $this->sendResponse('Xóa đơn hàng thành công', [],204);
+        return $this->sendResponse('Hủy đơn hàng thành công', [],204);
     }
 }

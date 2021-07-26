@@ -17,7 +17,7 @@ class PublisherController extends BaseController
      */
     public function index()
     {
-        $records =  Publisher::paginate(10);         
+        $records =  Publisher::all();         
                 return PublisherResource::collection($records);
     }
 
@@ -31,8 +31,8 @@ class PublisherController extends BaseController
     {
         $fields = $request->all();
         $validator = Validator::make($fields, [
-            'name' => 'required|string|max:100',
-            'description' => 'required|string|max:1000'
+            'name' => 'required|string|max:255|unique:publishers',
+            'description' => 'required|string|max:255'
         ]);
         if($validator->fails()){
             return $this->sendError('Dữ liệu nhập lỗi.', $validator->errors(), 422);       
@@ -73,8 +73,8 @@ class PublisherController extends BaseController
     {
         $fields = $request->all();
         $validator = Validator::make($fields, [
-            'name' => 'required|string|max:100',
-            'description' => 'required|string|max:1000'
+            'name' => 'required|string|max:255|unique:publishers,name,' . $id,
+            'description' => 'required|string|max:255'
         ]);
         $publisher = Publisher::find($id);
         if (is_null($publisher)) {

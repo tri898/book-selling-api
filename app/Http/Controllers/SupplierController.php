@@ -18,7 +18,7 @@ class SupplierController extends BaseController
      */
     public function index()
     {
-        $records =  Supplier::paginate(10);         
+        $records =  Supplier::all();         
                 return SupplierResource::collection($records);
     }
 
@@ -34,11 +34,11 @@ class SupplierController extends BaseController
     {
         $fields = $request->all();
         $validator = Validator::make($fields, [
-            'name' => 'required|string|max:50|unique:suppliers',
-            'address' => 'required|string|min:10|max:100',
-            'phone' => 'required|string|max:20',
+            'name' => 'required|string|max:255|unique:suppliers',
+            'address' => 'required|string|max:255',
+            'phone' => 'required|numeric|digits:10',
             'email' => 'required|email|max:100',
-            'description' => 'required|string|max:1000'
+            'description' => 'required|string|max:255'
         ]);
         if($validator->fails()){
             return $this->sendError('Dữ liệu nhập lỗi.', $validator->errors(), 422);       
@@ -83,11 +83,11 @@ class SupplierController extends BaseController
     {
         $fields = $request->all();
         $validator = Validator::make($fields, [
-            'name' => 'required|string|max:50|unique:suppliers,name,' . $id,
-            'address' => 'required|string|min:10|max:100',
-            'phone' => 'required|string|max:10',
+            'name' => 'required|string|max:255|unique:suppliers,name,' . $id,
+            'address' => 'required|string|max:255',
+            'phone' => 'required|numeric|digits:10',
             'email' => 'required|email|max:100',
-            'description' => 'required|string|max:1000'
+            'description' => 'required|string|max:255'
         ]);
         $supplier = Supplier::find($id);
   
@@ -123,7 +123,7 @@ class SupplierController extends BaseController
         if($supplier->books()->count()) {
             return $this->sendError('Không thể xóa do có liên kết đến sách.',[], 409); 
         }
-        if($author->goodsReceivedNotes()->count()) {
+        if($supplier->goodsReceivedNotes()->count()) {
             return $this->sendError('Không thể xóa do có liên kết đến kho.',[], 409); 
         }
         $supplier->delete();
