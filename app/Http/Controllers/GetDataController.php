@@ -3,9 +3,12 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Book;
+use App\Models\Category;
+use App\Models\Author;
+use App\Models\Publisher;
+use App\Models\Supplier;
+
 use App\Http\Controllers\BaseController as BaseController;
-use App\Http\Resources\Another\Book as BookResource;
 
 class GetDataController extends BaseController
 {
@@ -16,7 +19,17 @@ class GetDataController extends BaseController
      */
     public function index()
     {
-        $records =  Book::get();         
-        return $this->sendResponse('Danh sách sách được truy xuất thành công.',  BookResource::collection($records),200);  
+        $category = Category::get(['id','name']);
+        $author = Author::get(['id','name']);
+        $publisher = Publisher::get(['id','name']);
+        $supplier = Supplier::get(['id','name']);
+
+        $records = [
+                'category' => $category,
+                'author' => $author,
+                'publisher' => $publisher,
+                'supplier' => $supplier
+        ];
+        return $this->sendResponse('Lấy dữ liệu thành công',  $records,200);  
     }
 }

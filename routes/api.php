@@ -44,8 +44,7 @@ Route::post('user/login', [AuthUserController::class, 'login']);
 Route::post('user/forgot-password', [UserController::class, 'forgotPassword']);
 Route::put('user/recover-password/{token}', [UserController::class, 'recoverPassword']);
 
-//Book route get data
-Route::get('/books-list', [GetDataController::class, 'index']);
+
 
 /*
 |----------------------------------------------------------------
@@ -54,6 +53,8 @@ Route::get('/books-list', [GetDataController::class, 'index']);
 */
 Route::group(['middleware' => ['auth:admins']], function () {
     Route::post('admin/logout', [AuthAdminController::class, 'logout']);
+    //Get data (cate, author,pub,supp)
+    Route::get('/data-list', [GetDataController::class, 'index']);
     // Manage User
     Route::get('admin/users-list', [AdminController::class, 'usersList']);
     Route::put('admin/update-status-user/{id}', [AdminController::class, 'updateStatus']);
