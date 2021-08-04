@@ -3,6 +3,7 @@
 namespace App\Http\Resources\Another;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Http\Resources\Image as ImageResource;
 
 class Book extends JsonResource
 {
@@ -17,23 +18,12 @@ class Book extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'code' => $this->code,
+            'author' => $this->author->name,
             'description' => $this->description,
             'unit_price' => $this->unit_price,
-            'weight' => $this->weight,
-            'format' => $this->format,
-            'release_date' => $this->release_date,
-            'language' => $this->language,
-            'size' => $this->size,
-            'num_pages' => $this->num_pages,
-            'slug' => $this->slug,
-            'translator' => $this->translator,
-            'author' => $this->author->name,
-            'publisher' => $this->publisher->name,
-            'supplier' => $this->supplier->name,
             'discount' => $this->discount,
-            'category' => $this->category,
-            'image' => $this->image
+            'slug' => $this->slug,
+            'image' =>  new ImageResource($this->whenLoaded('image')),
         ];
     }
 }

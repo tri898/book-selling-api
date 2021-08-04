@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use App\Models\Order;
+use App\Models\Inventory;
 use App\Http\Controllers\BaseController as BaseController;
 use App\Http\Resources\Order as OrderResource;
 use Validator;
@@ -79,7 +79,7 @@ class OrderController extends BaseController
                 'discount' => $item['discount']
             ]);
           // update quantity in stock
-          DB::table('inventories')->where('book_id', $item['book_id'])->decrement('available_quantity',  $item['quantity']);
+          $increase= Inventory::where('book_id', $item['book_id'])->decrement('available_quantity',  $item['quantity']);
         }
         return $this->sendResponse('Tạo đơn hàng thành công.',  new OrderResource($order->load('details')),201);
     }
@@ -95,7 +95,7 @@ class OrderController extends BaseController
         $order = Order::with('details')->find($id);
   
         if (is_null($order)) {
-            return $this->sendError('Không tìm thấy đơn hàng',[], 404); 
+            return $this->sendError('Không thể thực hiện thao tác',[], 404); 
         }
         return new OrderResource($order);  
     }
@@ -111,7 +111,7 @@ class OrderController extends BaseController
         $order = Order::where('user_id', $getUserCurrent)->with('details')->find($id);
   
         if (is_null($order)) {
-            return $this->sendError('Không tìm thấy đơn hàng',[], 404); 
+            return $this->sendError('Không thể thực hiện thao tác',[], 404); 
         }
         return new OrderResource($order);  
     }
@@ -153,12 +153,12 @@ class OrderController extends BaseController
         $getUserCurrent = auth()->user()->id;
         $order = Order::where('user_id', $getUserCurrent)->where('status','Chờ xác nhận')->find($id);
         if (is_null($order)) {
-            return $this->sendError('Không tìm thấy đơn hàng',[], 404); 
+            return $this->sendError('Không thể thực hiện thao tác',[], 404); 
         }
          // update quantity in stock
          $result = $order->details()->pluck('book_id','quantity');
          $result->each(function($key, $item) {
-              DB::table('inventories')->where('book_id', $key)->increment('available_quantity', $item);
+            $decrease= Inventory::where('book_id', $key)->increment('available_quantity', $item);
          });
         $order->delete();
         return $this->sendResponse('Hủy đơn hàng thành công', [],204);

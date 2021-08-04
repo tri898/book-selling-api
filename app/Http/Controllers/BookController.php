@@ -79,9 +79,9 @@ class BookController extends BaseController
         $input['front_cover'] =$book->id . '-front'.'.'.$fields['front_cover']->getClientOriginalExtension();
         $input['back_cover'] = $book->id . '-back'.'.'.$fields['back_cover']->getClientOriginalExtension();
         // move image file to public
-        $fields['front_cover']->move(public_path('images'), $input['front_cover']);
-        $fields['back_cover']->move(public_path('images'), $input['back_cover']);
-
+        $fields['front_cover']->move(public_path('images/books'), $input['front_cover']);
+        $fields['back_cover']->move(public_path('images/books'), $input['back_cover']);
+        //add image link to db
         $image = $book->image()->create($input);
 
         return $this->sendResponse('Tạo sách thành công.', new BookResource($book->load(['inventory', 'image','bookCategory'])),201);
@@ -163,12 +163,12 @@ class BookController extends BaseController
         //If there is a file, it will be updated 
         if($request->hasFile('front_cover')) {
          $input['front_cover'] =$book->id . '-front'.'.'.$fields['front_cover']->getClientOriginalExtension();
-         $fields['front_cover']->move(public_path('images'), $input['front_cover']);
+         $fields['front_cover']->move(public_path('images/books'), $input['front_cover']);
         }
 
         if($request->hasFile('back_cover')) {
          $input['back_cover'] = $book->id . '-back'.'.'.$fields['back_cover']->getClientOriginalExtension();
-         $fields['back_cover']->move(public_path('images'), $input['back_cover']);
+         $fields['back_cover']->move(public_path('images/books'), $input['back_cover']);
         }
 
         return $this->sendResponse('Đã cập nhật sách thành công.',  new BookResource($book->load(['inventory', 'image','bookCategory'])),200);

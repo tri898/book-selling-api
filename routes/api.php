@@ -16,6 +16,7 @@ use App\Http\Controllers\ImageController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\GetDataController;
+use App\Http\Controllers\GetBookController;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -35,6 +36,13 @@ use Illuminate\Support\Facades\Route;
 |Public Route API
 |----------------------------------------------------------------
 */
+/*
+Get data for main page
+*/ 
+//Get 9 new books
+Route::get('/new-books', [GetBookController::class, 'getNewBook']);
+//Get 9  selling books
+Route::get('/selling-books', [GetBookController::class, 'getBestSellingBook']);
 //Admin route
 Route::post('/admin/login', [AuthAdminController::class, 'login']); 
 
@@ -64,11 +72,11 @@ Route::group(['middleware' => ['auth:admins']], function () {
     Route::resource('categories', CategoryController::class);
     // Manage Publisher
     Route::resource('publishers', PublisherController::class);
-     // Manage Supplier
+    // Manage Supplier
     Route::resource('suppliers', SupplierController::class);
-     // Manage Book (include book cate, image, inventory)
-     Route::resource('books', BookController::class);
-     // Manage GRN not update
+    // Manage Book (include book cate, image, inventory)
+    Route::resource('books', BookController::class);
+    // Manage GRN not update
     Route::resource('goods-received-notes', GoodsReceivedNoteController::class);
     // Manage Discount
     Route::resource('discounts', DiscountController::class);
