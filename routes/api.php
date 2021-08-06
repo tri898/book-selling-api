@@ -43,6 +43,8 @@ Get data for main page
 Route::get('/new-books', [GetBookController::class, 'getNewBook']);
 //Get 9  selling books
 Route::get('/selling-books', [GetBookController::class, 'getBestSellingBook']);
+//Get book detail
+Route::get('/book-detail/{id}', [GetBookController::class, 'getBookDetail']);
 //Admin route
 Route::post('/admin/login', [AuthAdminController::class, 'login']); 
 

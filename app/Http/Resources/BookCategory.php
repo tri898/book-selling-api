@@ -15,7 +15,7 @@ class BookCategory extends JsonResource
     public function toArray($request)
     {
         return [
-            'name' => $this->category->name
+            'id' => $this->category->id
         ];
     }
 }

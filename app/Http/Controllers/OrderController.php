@@ -59,6 +59,15 @@ class OrderController extends BaseController
         if($validator->fails()){
             return $this->sendError('Dữ liệu nhập lỗi.', $validator->errors(), 422);       
         }
+
+        //check quantity book in stock
+        foreach ($request->orderItems as $item) {
+            $checkQuantity = Inventory::where('book_id', $item['book_id'])->get('available_quantity');
+            $quantity = $checkQuantity[0]['available_quantity'];
+           if($quantity < $item['quantity']) {
+            return $this->sendError('Không thể thực hiện thao tác.', [], 400);       
+           }
+        }
         // get user current
         $getUserCurrent = auth()->user()->id;
 
@@ -95,7 +104,7 @@ class OrderController extends BaseController
         $order = Order::with('details')->find($id);
   
         if (is_null($order)) {
-            return $this->sendError('Không thể thực hiện thao tác',[], 404); 
+            return $this->sendError('Không tìm thấy đơn hàng',[], 404); 
         }
         return new OrderResource($order);  
     }
@@ -111,7 +120,7 @@ class OrderController extends BaseController
         $order = Order::where('user_id', $getUserCurrent)->with('details')->find($id);
   
         if (is_null($order)) {
-            return $this->sendError('Không thể thực hiện thao tác',[], 404); 
+            return $this->sendError('Không tìm thấy đơn hàng',[], 404); 
         }
         return new OrderResource($order);  
     }
@@ -153,7 +162,7 @@ class OrderController extends BaseController
         $getUserCurrent = auth()->user()->id;
         $order = Order::where('user_id', $getUserCurrent)->where('status','Chờ xác nhận')->find($id);
         if (is_null($order)) {
-            return $this->sendError('Không thể thực hiện thao tác',[], 404); 
+            return $this->sendError('Không thể thực hiện',[], 400); 
         }
          // update quantity in stock
          $result = $order->details()->pluck('book_id','quantity');

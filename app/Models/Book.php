@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Book extends Model
 {
     use HasFactory;
+    protected $hidden = ['pivot'];
     protected $fillable = [
         'name',
         'code',
@@ -27,7 +28,7 @@ class Book extends Model
         'supplier_id',
 
     ];
-    
+
     public function category()
     {
         return $this->belongsToMany(Category::class ,'book_categories', 'book_id', 'category_id')->select('name','slug')->withTimestamps();
