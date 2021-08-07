@@ -44,7 +44,7 @@ Route::get('/new-books', [GetBookController::class, 'getNewBook']);
 //Get 9  selling books
 Route::get('/selling-books', [GetBookController::class, 'getBestSellingBook']);
 //Get book detail
-Route::get('/book-detail/{id}', [GetBookController::class, 'getBookDetail']);
+Route::get('/book-details/{id}', [GetBookController::class, 'getBookDetails']);
 //Admin route
 Route::post('/admin/login', [AuthAdminController::class, 'login']); 
 

@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Book;
 use App\Http\Controllers\BaseController as BaseController;
 use App\Http\Resources\Another\Book as BookResource;
-use App\Http\Resources\Book as BookResourceDetail;
+use App\Http\Resources\Another\BookDetails as BookDetailsResource;
 
 class GetBookController extends BaseController
 {
@@ -37,14 +37,16 @@ class GetBookController extends BaseController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function getBookDetail($id)
+    public function getBookDetails($id)
     {
-        // $book = Book::with(['inventory', 'image','category'])->find($id)->makeHidden('pivot');
-    
-        // if (is_null($book)) {
-        //     return $this->sendError('Không tìm thấy cuốn sách nào',[], 404); 
-        // }
-        // return new BookResourceDetail($book);  
+        $book = Book::with(['image','category'])->find($id);
+        foreach($book->category as $role){
+            echo $role->pivot->book_id;
+        }
+        if (is_null($book)) {
+            return $this->sendError('Không tìm thấy cuốn sách nào',[], 404); 
+        }
+        return new BookDetailsResource($book);  
     }
 
 }

@@ -18,7 +18,7 @@ class BookController extends BaseController
      */
     public function index()
     {
-        $records =   Book::with(['inventory', 'image','bookCategory'])->get();
+        $records =   Book::with(['image'])->get();
         return BookResource::collection($records); 
     }
 
@@ -84,7 +84,7 @@ class BookController extends BaseController
         //add image link to db
         $image = $book->image()->create($input);
 
-        return $this->sendResponse('Tạo sách thành công.', new BookResource($book->load(['inventory', 'image','bookCategory'])),201);
+        return $this->sendResponse('Tạo sách thành công.', new BookResource($book->load(['image'])),201);
     }
 
     /**
@@ -95,7 +95,7 @@ class BookController extends BaseController
      */
     public function show($id)
     {
-        $book = Book::with(['inventory', 'image','bookCategory'])->find($id);
+        $book = Book::with(['image'])->find($id);
     
         if (is_null($book)) {
             return $this->sendError('Không tìm thấy cuốn sách nào',[], 404); 
@@ -171,7 +171,7 @@ class BookController extends BaseController
          $fields['back_cover']->move(public_path('images/books'), $input['back_cover']);
         }
 
-        return $this->sendResponse('Đã cập nhật sách thành công.',  new BookResource($book->load(['inventory', 'image','bookCategory'])),200);
+        return $this->sendResponse('Đã cập nhật sách thành công.',  new BookResource($book->load(['image'])),200);
     }
 
     /**
