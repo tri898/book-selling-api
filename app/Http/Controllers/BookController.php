@@ -74,10 +74,9 @@ class BookController extends BaseController
         $book->category()->attach($fields['category_id']);
         // insert quantity in inventory
         $book->inventory()->create(['available_quantity' => 0]);
-        // get info image
-        
-        $input['front_cover'] =$book->id . '-front'.'.'.$fields['front_cover']->getClientOriginalExtension();
-        $input['back_cover'] = $book->id . '-back'.'.'.$fields['back_cover']->getClientOriginalExtension();
+        // get info image 
+        $input['front_cover'] = date('YmdHis') . 'f'. '.' . $fields['front_cover']->getClientOriginalExtension();
+        $input['back_cover'] = date('YmdHis') . 'b'. '.' . $fields['back_cover']->getClientOriginalExtension();
         // move image file to public
         $fields['front_cover']->move(public_path('images/books'), $input['front_cover']);
         $fields['back_cover']->move(public_path('images/books'), $input['back_cover']);
@@ -162,13 +161,15 @@ class BookController extends BaseController
 
         //If there is a file, it will be updated 
         if($request->hasFile('front_cover')) {
-         $input['front_cover'] =$book->id . '-front'.'.'.$fields['front_cover']->getClientOriginalExtension();
-         $fields['front_cover']->move(public_path('images/books'), $input['front_cover']);
+            $frontCover = date('YmdHis') . 'f' . '.' . $fields['front_cover']->getClientOriginalExtension();
+            $fields['front_cover']->move(public_path('images/books'), $frontCover);
+            $image = $book->image()->update(['front_cover' => $frontCover]);
         }
 
         if($request->hasFile('back_cover')) {
-         $input['back_cover'] = $book->id . '-back'.'.'.$fields['back_cover']->getClientOriginalExtension();
-         $fields['back_cover']->move(public_path('images/books'), $input['back_cover']);
+            $backCover = date('YmdHis') . 'b'. '.' . $fields['back_cover']->getClientOriginalExtension();
+            $fields['back_cover']->move(public_path('images/books'), $backCover);
+            $image = $book->image()->update(['back_cover' => $backCover]);
         }
 
         return $this->sendResponse('Đã cập nhật sách thành công.',  new BookResource($book->load(['image'])),200);
