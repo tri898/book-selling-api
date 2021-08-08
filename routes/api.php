@@ -77,7 +77,11 @@ Route::group(['middleware' => ['auth:admins']], function () {
     // Manage Supplier
     Route::resource('suppliers', SupplierController::class);
     // Manage Book (include book cate, image, inventory)
-    Route::resource('books', BookController::class);
+    Route::get('books', [BookController::class, 'index']);
+    Route::get('/books/{id}', [BookController::class, 'show']);
+    Route::post('/books', [BookController::class, 'store']);
+    Route::post('/books/{id}', [BookController::class, 'update']);
+    Route::delete('/books/{id}', [BookController::class, 'destroy']);
     // Manage GRN not update
     Route::resource('goods-received-notes', GoodsReceivedNoteController::class);
     // Manage Discount
