@@ -18,7 +18,7 @@ class BookController extends BaseController
      */
     public function index()
     {
-        $records =   Book::with(['image'])->get();
+        $records =   Book::with(['bookCategory','image'])->get();
         return BookResource::collection($records); 
     }
 
@@ -83,7 +83,7 @@ class BookController extends BaseController
         //add image link to db
         $image = $book->image()->create($input);
 
-        return $this->sendResponse('Tạo sách thành công.', new BookResource($book->load(['image'])),201);
+        return $this->sendResponse('Tạo sách thành công.', new BookResource($book->load(['bookCategory','image'])),201);
     }
 
     /**
@@ -94,7 +94,7 @@ class BookController extends BaseController
      */
     public function show($id)
     {
-        $book = Book::with(['image'])->find($id);
+        $book = Book::with(['bookCategory','image'])->find($id);
     
         if (is_null($book)) {
             return $this->sendError('Không tìm thấy cuốn sách nào',[], 404); 
@@ -172,7 +172,7 @@ class BookController extends BaseController
             $image = $book->image()->update(['back_cover' => $backCover]);
         }
 
-        return $this->sendResponse('Đã cập nhật sách thành công.',  new BookResource($book->load(['image'])),200);
+        return $this->sendResponse('Đã cập nhật sách thành công.',  new BookResource($book->load(['bookCategory','image'])),200);
     }
 
     /**
@@ -201,9 +201,9 @@ class BookController extends BaseController
         // remove image book
         $image = $book->image()->first();
         if($image) {
-            $front_cover = public_path('images/' . $image->front_cover);
-            $back_cover = public_path('images/' . $image->back_cover);
-            if(file_exists($front_cover) & file_exists($back_cover)) {
+            $front_cover = public_path('images/books' . $image->front_cover);
+            $back_cover = public_path('images/books' . $image->back_cover);
+            if(file_exists($front_cover) && file_exists($back_cover)) {
                 unlink($front_cover);
                 unlink($back_cover);
             }
