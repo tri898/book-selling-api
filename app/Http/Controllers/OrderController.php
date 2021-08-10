@@ -51,7 +51,7 @@ class OrderController extends BaseController
             'total' => 'required|integer',
             'note' => 'string|nullable|max:255',
             'orderItems' => 'required|array',
-            'orderItems.*.book_id' => 'required|integer',
+            'orderItems.*.book_id' => 'required|integer|distinct|exists:books,id',
             'orderItems.*.quantity' => 'required|integer',
             'orderItems.*.price' => 'required|integer',
             'orderItems.*.discount' => 'required|integer',
@@ -162,7 +162,7 @@ class OrderController extends BaseController
         $getUserCurrent = auth()->user()->id;
         $order = Order::where('user_id', $getUserCurrent)->where('status','Chờ xác nhận')->find($id);
         if (is_null($order)) {
-            return $this->sendError('Không thể thực hiện',[], 400); 
+            return $this->sendError('Không thể thực hiện thao tác',[], 400); 
         }
          // update quantity in stock
          $result = $order->details()->pluck('book_id','quantity');

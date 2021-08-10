@@ -36,19 +36,22 @@ use Illuminate\Support\Facades\Route;
 |Public Route API
 |----------------------------------------------------------------
 */
-/*
-Get data for main page
-*/ 
+/* Get data for main page */ 
 //Get 9 new books
-Route::get('/new-books', [GetBookController::class, 'getNewBook']);
+Route::get('books/new', [GetBookController::class, 'getNewBook']);
 //Get 9  selling books
-Route::get('/selling-books', [GetBookController::class, 'getBestSellingBook']);
-//Get book detail
-Route::get('/book-details/{id}', [GetBookController::class, 'getBookDetails']);
-//Admin route
+Route::get('books/selling', [GetBookController::class, 'getSellingBook']);
+//Get book of category
+Route::get('books/category/{id}', [GetBookController::class, 'getBookOfCategory']);
+//Get book of author
+Route::get('books/author/{id}', [GetBookController::class, 'getBookOfAuthor']);
+//Get book details
+Route::get('books/details/{id}', [GetBookController::class, 'getBookDetails']);
+
+/* Admin route */ 
 Route::post('/admin/login', [AuthAdminController::class, 'login']); 
 
-//User route
+/* User route */ 
 Route::post('user/register', [AuthUserController::class, 'register']);
 Route::post('user/login', [AuthUserController::class, 'login']);
 Route::post('user/forgot-password', [UserController::class, 'forgotPassword']);

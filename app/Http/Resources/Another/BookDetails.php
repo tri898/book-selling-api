@@ -3,9 +3,7 @@
 namespace App\Http\Resources\Another;
 
 use Illuminate\Http\Resources\Json\JsonResource;
-use App\Http\Resources\Inventory as InventoryResource;
-use App\Http\Resources\BookCategory as BookCategoryResource;
-use App\Http\Resources\Image as ImageResource;
+use App\Http\Resources\Another\BookCategory as BookCategoryResource;
 
 class BookDetails extends JsonResource
 {
@@ -32,12 +30,19 @@ class BookDetails extends JsonResource
             'num_pages' => $this->num_pages,
             'slug' => $this->slug,
             'translator' => $this->translator,
-            'author' => $this->author->name,
+            'quantity' => $this->inventory->available_quantity,
+            'discount' => $this->discount->percent,
+            'author' => [
+                'name' => $this->author->name,
+                'slug' => $this->author->slug,
+            ],
             'publisher' => $this->publisher->name,
             'supplier' => $this->supplier->name,
-            'quantity' => $this->inventory->available_quantity,
-            'category' => $this->bookCategory->category_id,
-            'image' =>  new ImageResource($this->whenLoaded('image')),
+            'category' => new  BookCategoryResource($this->whenLoaded('bookCategory')),
+            'image' =>  [
+                'front_cover' => $this->image->front_cover,
+                'back_cover' => $this->image->back_cover
+            ],
             'created_at' => $this->created_at->format('d/m/Y H:i:s'),
             'updated_at' => $this->updated_at->format('d/m/Y H:i:s')
         ];

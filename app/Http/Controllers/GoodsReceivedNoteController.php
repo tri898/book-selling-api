@@ -33,10 +33,10 @@ class GoodsReceivedNoteController extends BaseController
     {
         $fields = $request->all();
         $validator = Validator::make($fields, [
-            'supplier_id' => 'required|integer',
+            'supplier_id' => 'required|integer|exists:suppliers,id',
             'total' => 'required|integer',
             'grnItems' => 'required|array',
-            'grnItems.*.book_id' => 'required|integer',
+            'grnItems.*.book_id' => 'required|integer|distinct|exists:books,id',
             'grnItems.*.quantity' => 'required|integer',
             'grnItems.*.import_unit_price' => 'required|integer'
         ]);

@@ -18,7 +18,7 @@ class BookController extends BaseController
      */
     public function index()
     {
-        $records =   Book::with(['bookCategory','image'])->get();
+        $records =   Book::with(['bookCategory'])->get();
         return BookResource::collection($records); 
     }
 
@@ -43,10 +43,10 @@ class BookController extends BaseController
             'size' => 'required|string',
             'num_pages' => 'required|integer',
             'translator' => 'string|nullable',
-            'author_id' => 'required|integer',
-            'publisher_id' => 'required|integer',
-            'supplier_id' => 'required|integer',
-            'category_id' => 'required|integer',
+            'author_id' => 'required|integer|exists:authors,id',
+            'publisher_id' => 'required|integer|exists:publishers,id',
+            'supplier_id' => 'required|integer|exists:suppliers,id',
+            'category_id' => 'required|integer|exists:categories,id',
             'front_cover' => 'required|image|mimes:jpeg,png,jpg|max:2048',
             'back_cover' => 'required|image|mimes:jpeg,png,jpg|max:2048',
         ]);
@@ -83,7 +83,7 @@ class BookController extends BaseController
         //add image link to db
         $image = $book->image()->create($input);
 
-        return $this->sendResponse('Tạo sách thành công.', new BookResource($book->load(['bookCategory','image'])),201);
+        return $this->sendResponse('Tạo sách thành công.', new BookResource($book->load(['bookCategory'])),201);
     }
 
     /**
@@ -124,10 +124,10 @@ class BookController extends BaseController
             'size' => 'required|string',
             'num_pages' => 'required|integer',
             'translator' => 'string|nullable',
-            'author_id' => 'required|integer',
-            'publisher_id' => 'required|integer',
-            'supplier_id' => 'required|integer',
-            'category_id' => 'required|integer',
+            'author_id' => 'required|integer|exists:authors,id',
+            'publisher_id' => 'required|integer|exists:publishers,id',
+            'supplier_id' => 'required|integer|exists:suppliers,id',
+            'category_id' => 'required|integer|exists:categories,id',
             'front_cover' => 'image|mimes:jpeg,png,jpg|max:2048',
             'back_cover' => 'image|mimes:jpeg,png,jpg|max:2048',
         ]);
@@ -172,7 +172,7 @@ class BookController extends BaseController
             $image = $book->image()->update(['back_cover' => $backCover]);
         }
 
-        return $this->sendResponse('Đã cập nhật sách thành công.',  new BookResource($book->load(['bookCategory','image'])),200);
+        return $this->sendResponse('Đã cập nhật sách thành công.',  new BookResource($book->load(['bookCategory'])),200);
     }
 
     /**

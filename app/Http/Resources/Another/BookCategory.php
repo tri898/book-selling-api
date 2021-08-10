@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Resources;
+namespace App\Http\Resources\Another;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class Image extends JsonResource
+class BookCategory extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -15,8 +15,8 @@ class Image extends JsonResource
     public function toArray($request)
     {
         return [
-            'front_cover' => $this->front_cover,
-            'back_cover' => $this->back_cover,
+            'name' => $this->category->name,
+            'slug' => $this->category->slug
         ];
     }
 }

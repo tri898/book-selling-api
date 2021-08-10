@@ -45,7 +45,10 @@ class Book extends JsonResource
                 'name' => $this->supplier->name
             ],
             'category' => new  BookCategoryResource($this->whenLoaded('bookCategory')),
-            'image' =>  new ImageResource($this->whenLoaded('image')),
+            'image' =>  [
+                'front_cover' => $this->image->front_cover,
+                'back_cover' => $this->image->back_cover
+            ],
             'created_at' => $this->created_at->format('d/m/Y H:i:s'),
             'updated_at' => $this->updated_at->format('d/m/Y H:i:s')
         ];

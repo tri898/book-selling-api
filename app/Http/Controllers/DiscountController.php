@@ -20,9 +20,6 @@ class DiscountController extends BaseController
         $records = Discount::all();         
         return DiscountResource::collection($records);
     }
-
-
-
     /**
      * Store a newly created resource in storage.
      *
@@ -33,7 +30,7 @@ class DiscountController extends BaseController
     {
         $fields = $request->all();
         $validator = Validator::make($fields, [
-            'book_id' => 'required|integer|unique:discounts',
+            'book_id' => 'required|integer|unique:discounts|exists:books,id',
             'percent' => 'required|integer'
         ]);
         if($validator->fails()){
@@ -73,7 +70,7 @@ class DiscountController extends BaseController
     {
         $fields = $request->all();
         $validator = Validator::make($fields, [
-            'book_id' => 'required|integer|unique:discounts,book_id,' . $id,
+            'book_id' => 'required|integer|exists:books,id|unique:discounts,book_id,' . $id,
             'percent' => 'required|integer'     
         ]);
         
