@@ -31,7 +31,7 @@ class BookDetails extends JsonResource
             'slug' => $this->slug,
             'translator' => $this->translator,
             'quantity' => $this->inventory->available_quantity,
-            'discount' => $this->discount->percent,
+            'discount' => $this->discount->percent ?? '',
             'author' => [
                 'name' => $this->author->name,
                 'slug' => $this->author->slug,
@@ -42,9 +42,7 @@ class BookDetails extends JsonResource
             'image' =>  [
                 'front_cover' => $this->image->front_cover,
                 'back_cover' => $this->image->back_cover
-            ],
-            'created_at' => $this->created_at->format('d/m/Y H:i:s'),
-            'updated_at' => $this->updated_at->format('d/m/Y H:i:s')
+            ]
         ];
     }
 }

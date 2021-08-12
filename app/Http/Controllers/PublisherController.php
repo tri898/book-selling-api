@@ -18,7 +18,7 @@ class PublisherController extends BaseController
     public function index()
     {
         $records =  Publisher::all();         
-                return PublisherResource::collection($records);
+        return PublisherResource::collection($records);
     }
 
     /**
