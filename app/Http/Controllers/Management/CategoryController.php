@@ -1,13 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Management;
 
 use Illuminate\Support\Str;
-use Illuminate\Http\Request;
 use App\Models\Category;
+use App\Http\Requests\CategoryRequest;
 use App\Http\Controllers\BaseController as BaseController;
 use App\Http\Resources\Category as CategoryResource;
-use Validator;
 
 class CategoryController extends BaseController
 {
@@ -21,32 +20,20 @@ class CategoryController extends BaseController
         $records =  Category::all();         
         return CategoryResource::collection($records); 
     }
-
-
     /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(CategoryRequest $request)
     {
-        $fields = $request->all();
-        $validator = Validator::make($fields, [
-            'name' => 'required|string|max:255|unique:categories',
-            'description' => 'required|string|max:255'
-        ]);
-        if($validator->fails()){
-            return $this->sendError('Dữ liệu nhập lỗi.', $validator->errors(), 422);       
-        }
-        $category = Category::create([
-            'name' => $fields['name'],
-            'description' =>$fields['description'],
-            'slug' => Str::slug($fields['name'])
-        ]);
+        $fields = $request->validated(); 
+        $customValues = $fields + ['slug' => Str::slug($fields['name'])];
+
+        $category = Category::create($customValues);
         return $this->sendResponse('Tạo thể loại thành công.',  new CategoryResource($category),201);
     }
-
     /**
      * Display the specified resource.
      *
@@ -62,8 +49,6 @@ class CategoryController extends BaseController
         }
         return new CategoryResource($category);  
     }
-
-
     /**
      * Update the specified resource in storage.
      *
@@ -71,25 +56,17 @@ class CategoryController extends BaseController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(CategoryRequest $request, $id)
     {
-        $fields = $request->all();
-        $validator = Validator::make($fields, [
-            'name' => 'required|string|max:255|unique:categories,name,' . $id,
-            'description' => 'required|string|max:255'
-        ]);
+        $fields = $request->validated(); 
+        $customValues = $fields + ['slug' => Str::slug($fields['name'])];
+
         $category = Category::find($id);
         if (is_null($category)) {
             return $this->sendError('Không tìm thấy thể loại',[], 404); 
         }
-        if($validator->fails()){
-            return $this->sendError('Dữ liệu nhập lỗi.', $validator->errors(), 422);       
-        }
-        $category->update([
-            'name' => $fields['name'],
-            'description' =>$fields['description'],
-            'slug' => Str::slug($fields['name'])
-        ]);
+
+        $category->update($customValues);
         return $this->sendResponse('Đã cập nhật thể loại thành công',  new CategoryResource($category),200);
     }
 
@@ -105,9 +82,11 @@ class CategoryController extends BaseController
         if (is_null($category)) {
             return $this->sendError('Không tìm thấy thể loại',[], 404); 
         }
+
         if($category->books()->count()) {
             return $this->sendError('Không thể xóa do có liên kết đến sách.',[], 409); 
         }
+
         $category->delete();
         return $this->sendResponse(' Đã xóa thể loại thành công', [],204);
     }

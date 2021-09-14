@@ -1,16 +1,11 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Management;
 
-use Illuminate\Http\Request;
-use App\Models\Category;
-use App\Models\Author;
-use App\Models\Publisher;
-use App\Models\Supplier;
-
+use App\Models\{Category, Author, Publisher, Supplier};
 use App\Http\Controllers\BaseController as BaseController;
 
-class GetDataController extends BaseController
+class SelectiveDataController extends BaseController
 {
      /**
      * Display a listing of the resource.

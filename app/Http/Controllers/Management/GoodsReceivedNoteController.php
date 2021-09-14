@@ -1,13 +1,11 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Management;
 
-use Illuminate\Http\Request;
-use App\Models\GoodsReceivedNote;
-use App\Models\Inventory;
+use App\Models\{GoodsReceivedNote, Inventory};
+use App\Http\Requests\GRNRequest;
 use App\Http\Controllers\BaseController as BaseController;
 use App\Http\Resources\GoodsReceivedNote as GoodsReceivedNoteResource;
-use Validator;
 
 class GoodsReceivedNoteController extends BaseController
 {
@@ -21,37 +19,21 @@ class GoodsReceivedNoteController extends BaseController
         $records =  GoodsReceivedNote::with('details')->get();         
         return GoodsReceivedNoteResource::collection($records);
     }
-
-    
     /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(GRNRequest $request)
     {
-        $fields = $request->all();
-        $validator = Validator::make($fields, [
-            'supplier_id' => 'required|integer|exists:suppliers,id',
-            'total' => 'required|integer',
-            'grnItems' => 'required|array',
-            'grnItems.*.book_id' => 'required|integer|distinct|exists:books,id',
-            'grnItems.*.quantity' => 'required|integer',
-            'grnItems.*.import_unit_price' => 'required|integer'
-        ]);
-        if($validator->fails()){
-            return $this->sendError('Dữ liệu nhập lỗi.', $validator->errors(), 422);       
-        }
-        // get id admin current
-        $getCurrentAdmin = auth()->user()->id;
+        $fields = $request->only(['supplier_id', 'total']);
+        //information received note
+        $currentIdAdmin = auth()->user()->id;
+        $customValues = $fields + ['admin_id' => $currentIdAdmin];
 
-        $goodsReceivedNote = GoodsReceivedNote::create([
-            'supplier_id' =>$fields['supplier_id'],
-            'admin_id' => $getCurrentAdmin,
-            'total' =>$fields['total']
-        ]);
-        // add list item to table detail
+        $goodsReceivedNote = GoodsReceivedNote::create($customValues);
+        // add list item to table details
         foreach ($request->grnItems as $item) {
             $goodsReceivedNote->details()->create([
                 'book_id' => $item['book_id'],

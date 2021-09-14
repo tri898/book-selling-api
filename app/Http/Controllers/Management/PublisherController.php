@@ -1,12 +1,11 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Management;
 
-use Illuminate\Http\Request;
 use App\Models\Publisher;
+use App\Http\Requests\PublisherRequest;
 use App\Http\Controllers\BaseController as BaseController;
 use App\Http\Resources\Publisher as PublisherResource;
-use Validator;
 
 class PublisherController extends BaseController
 {
@@ -27,20 +26,10 @@ class PublisherController extends BaseController
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(PublisherRequest $request)
     {
-        $fields = $request->all();
-        $validator = Validator::make($fields, [
-            'name' => 'required|string|max:255|unique:publishers',
-            'description' => 'required|string|max:255'
-        ]);
-        if($validator->fails()){
-            return $this->sendError('Dữ liệu nhập lỗi.', $validator->errors(), 422);       
-        }
-        $publisher = Publisher::create([
-            'name' => $fields['name'],
-            'description' =>$fields['description']
-        ]);
+        $fields = $request->validated(); 
+        $publisher = Publisher::create($fields);
         return $this->sendResponse('Nhà xuất bản được tạo thành công.',  new PublisherResource($publisher),201);
     }
 
@@ -59,9 +48,6 @@ class PublisherController extends BaseController
         }
         return new PublisherResource($publisher);  
     }
-
-    
-
     /**
      * Update the specified resource in storage.
      *
@@ -69,24 +55,14 @@ class PublisherController extends BaseController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(PublisherRequest $request, $id)
     {
-        $fields = $request->all();
-        $validator = Validator::make($fields, [
-            'name' => 'required|string|max:255|unique:publishers,name,' . $id,
-            'description' => 'required|string|max:255'
-        ]);
+        $fields = $request->validated(); 
         $publisher = Publisher::find($id);
         if (is_null($publisher)) {
             return $this->sendError('Không tìm thấy nhà xuất bản',[], 404); 
         }
-        if($validator->fails()){
-            return $this->sendError('Dữ liệu nhập lỗi.', $validator->errors(), 422);       
-        }
-        $publisher->update([
-            'name' => $fields['name'],
-            'description' =>$fields['description']
-        ]);
+        $publisher->update($fields);
         return $this->sendResponse('Đã cập nhật nhà xuất bản thành công.',   new PublisherResource($publisher),200);
     }
 
@@ -102,9 +78,9 @@ class PublisherController extends BaseController
         if (is_null($publisher)) {
             return $this->sendError('Không tìm thấy nhà xuất bản',[], 404); 
         }
-       if( $publisher->books()->count()) {
-        return $this->sendError('Không thể xóa do có liên kết đến sách.',[], 409); 
-       }
+        if ($publisher->books()->count()) {
+            return $this->sendError('Không thể xóa do có liên kết đến sách.',[], 409); 
+        }
         $publisher->delete();
         return $this->sendResponse('Xóa thành công', [],204);
     }

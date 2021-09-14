@@ -1,13 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Management;
 
 use Illuminate\Support\Str;
-use Illuminate\Http\Request;
 use App\Models\Author;
+use App\Http\Requests\AuthorRequest;
 use App\Http\Controllers\BaseController as BaseController;
 use App\Http\Resources\Author as AuthorResource;
-use Validator;
 
 class AuthorController extends BaseController
 {
@@ -26,21 +25,12 @@ class AuthorController extends BaseController
          * @param  \Illuminate\Http\Request  $request
          * @return \Illuminate\Http\Response
          */
-        public function store(Request $request)
+        public function store(AuthorRequest $request)
         {
-            $fields = $request->all();
-            $validator = Validator::make($fields, [
-                'name' => 'required|string|unique:authors|max:255',
-                'description' => 'required|string'
-            ]);
-            if($validator->fails()){
-                return $this->sendError('Dữ liệu nhập lỗi.', $validator->errors(), 422);       
-            }
-            $author = Author::create([
-                'name' => $fields['name'],
-                'description' =>$fields['description'],
-                'slug' => Str::slug($fields['name'])
-            ]);
+            $fields = $request->validated(); 
+            $customValues = $fields + ['slug' => Str::slug($fields['name'])];
+
+            $author = Author::create($customValues);
             return $this->sendResponse('Tác giả được tạo thành công.', new AuthorResource($author),201);
         }
          /**
@@ -67,25 +57,17 @@ class AuthorController extends BaseController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(AuthorRequest $request, $id)
     {
-        $fields = $request->all();
-        $validator = Validator::make($fields, [
-            'name' => 'required|string|max:255|unique:authors,name,' . $id,
-            'description' => 'required|string'
-        ]);
+        $fields = $request->validated(); 
+        $customValues = $fields + ['slug' => Str::slug($fields['name'])];
+
         $author = Author::find($id);
         if (is_null($author)) {
             return $this->sendError('Không tìm thấy tác giả',[], 404); 
         }
-        if($validator->fails()){
-            return $this->sendError('Dữ liệu nhập lỗi.', $validator->errors(), 422);       
-        }
-        $author->update([
-            'name' => $fields['name'],
-            'description' =>$fields['description'],
-            'slug' => Str::slug($fields['name'])
-        ]);
+    
+        $author->update($customValues);
         return $this->sendResponse('Đã cập nhật tác giả thành công.', new AuthorResource($author),200);
     }
 
@@ -105,6 +87,7 @@ class AuthorController extends BaseController
         if($author->books()->count()) {
             return $this->sendError('Không thể xóa do có liên kết đến sách.',[], 409); 
         }
+        
         $author->delete();
         return $this->sendResponse('Đã xóa tác giả thành công.', [],204);
     }

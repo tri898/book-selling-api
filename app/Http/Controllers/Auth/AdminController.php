@@ -1,29 +1,19 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Auth;
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use App\Http\Requests\LoginRequest;
 use App\Models\Admin;
 use App\Http\Controllers\BaseController as BaseController;
 use App\Http\Resources\User as UserResource;
-use Validator;
 
-class AuthAdminController extends BaseController
+class AdminController extends BaseController
 {
-    public function login(Request $request)
+    public function login(LoginRequest $request)
     {
-        // validation
-        $fields = $request->all();
-        $validator = Validator::make($fields, [
-            'email' => 'required|email|max:100',
-            'password' => 'required|string|min:6|max:100'
-        ]);
-
-        if($validator->fails()){
-            return $this->sendError('Dữ liệu nhập lỗi.', $validator->errors(), 422);       
-        }
-        
+        // if validate fail return 422 with message and errors
+        $fields = $request->validated();       
         $admin = Admin::where('email', $fields['email'])->first();
         // Check email & password
         if(!$admin || !Hash::check($fields['password'], $admin->password)) {
@@ -37,7 +27,7 @@ class AuthAdminController extends BaseController
         return $this->sendResponse('Đăng nhập quản trị thành công.', $records,200);
     }
 
-    public function logout(Request $request)
+    public function logout()
     {
         // delete token
         auth()->user()->tokens()->delete();

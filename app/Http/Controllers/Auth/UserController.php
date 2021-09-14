@@ -1,31 +1,21 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Auth;
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use App\Http\Requests\{LoginRequest,RegisterRequest};
 use App\Models\User;
 use App\Http\Controllers\BaseController as BaseController;
-use Validator;
 
-class AuthUserController extends BaseController
+class UserController extends BaseController
 {
-    public function register(Request $request)
+    public function register(RegisterRequest $request)
     {
-        // validation
-        $fields = $request->all();
-        $validator = Validator::make($fields, [
-            'email' => 'required|email|max:100',
-            'password' => 'required|string|min:6|max:100|confirmed'
-        ]);
-        if($validator->fails()){
-            return $this->sendError('Dữ liệu nhập lỗi.', $validator->errors(), 422);       
-        }
+        $fields = $request->validated();
          //Check email exists
          $checkEmail= User::where('email', $fields['email'])->first();      //email exist
          if($checkEmail) {
-
-             return $this->sendError('Email đã tồn tại.',[], 422); 
+            return $this->sendError('Email đã tồn tại.',[], 409); 
          }
         
         // insert user to database
@@ -39,21 +29,14 @@ class AuthUserController extends BaseController
         return $this->sendResponse('Đăng ký người dùng thành công.', $records,201);
     }
 
-    public function login(Request $request)
+    public function login(LoginRequest $request)
     {
-
-        $fields = $request->all();
-        $validator = Validator::make($fields, [
-            'email' => 'required|email|max:100',
-            'password' => 'required|string|min:6|max:100'
-        ]);
-        if($validator->fails()){
-            return $this->sendError('Dữ liệu nhập lỗi.', $validator->errors(), 422);       
-        }
+        $fields = $request->validated();
         //Check status User
-        $checkStatus= User::where('email', $fields['email'])->where('status',0)->first();      //User was locked
+        $checkStatus= User::where('email', $fields['email'])->where('status','Khóa')->first();      //User was locked
         if($checkStatus) {
-            return $this->sendError('Người dùng đã bị vô hiệu hóa.', 401); 
+            $checkStatus->tokens()->delete();
+            return $this->sendError('Người dùng đã bị vô hiệu hóa.',[], 401); 
         }
 
         // Check email password
@@ -68,7 +51,7 @@ class AuthUserController extends BaseController
         return $this->sendResponse('Người dùng đăng nhập thành công.', $records,200);
     }
 
-    public function logout(Request $request)
+    public function logout()
     {
         auth()->user()->tokens()->delete();
        

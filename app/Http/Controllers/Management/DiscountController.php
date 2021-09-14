@@ -1,12 +1,11 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Management;
 
-use Illuminate\Http\Request;
 use App\Models\Discount;
+use App\Http\Requests\DiscountRequest;
 use App\Http\Controllers\BaseController as BaseController;
 use App\Http\Resources\Discount as DiscountResource;
-use Validator;
 
 class DiscountController extends BaseController
 {
@@ -26,20 +25,10 @@ class DiscountController extends BaseController
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(DiscountRequest $request)
     {
-        $fields = $request->all();
-        $validator = Validator::make($fields, [
-            'book_id' => 'required|integer|unique:discounts|exists:books,id',
-            'percent' => 'required|integer'
-        ]);
-        if($validator->fails()){
-            return $this->sendError('Dữ liệu nhập lỗi.', $validator->errors(), 422);       
-        }
-        $discount = Discount::create([
-            'book_id' => $fields['book_id'],
-            'percent' =>$fields['percent']
-        ]);
+        $fields = $request->validated();
+        $discount = Discount::create($fields);
         return $this->sendResponse('Tạo giảm giá thành công.', new DiscountResource($discount),201);
     }
 
@@ -66,27 +55,16 @@ class DiscountController extends BaseController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(DiscountRequest $request, $id)
     {
-        $fields = $request->all();
-        $validator = Validator::make($fields, [
-            'book_id' => 'required|integer|exists:books,id|unique:discounts,book_id,' . $id,
-            'percent' => 'required|integer'     
-        ]);
+        $fields = $request->validated();
         
         $discount = Discount::find($id);
         if (is_null($discount)) {
             return $this->sendError('Không tìm thấy giảm giá',[], 404); 
         }
 
-        if($validator->fails()){
-            return $this->sendError('Dữ liệu nhập lỗi.', $validator->errors(), 422);       
-        }
-        
-        $discount->update([
-            'book_id' => $fields['book_id'],
-            'percent' =>$fields['percent']
-        ]);
+        $discount->update($fields);
         return $this->sendResponse('Đã cập nhật giảm giá thành công.',  new DiscountResource($discount),200);
     }
 

@@ -1,13 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Management;
 
 use Illuminate\Support\Str;
-use Illuminate\Http\Request;
 use App\Models\Supplier;
+use App\Http\Requests\SupplierRequest;
 use App\Http\Controllers\BaseController as BaseController;
 use App\Http\Resources\Supplier as SupplierResource;
-use Validator;
 
 class SupplierController extends BaseController
 {
@@ -19,38 +18,20 @@ class SupplierController extends BaseController
     public function index()
     {
         $records =  Supplier::all();         
-                return SupplierResource::collection($records);
+        return SupplierResource::collection($records);
     }
-
- 
-
     /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(SupplierRequest $request)
     {
-        $fields = $request->all();
-        $validator = Validator::make($fields, [
-            'name' => 'required|string|max:255|unique:suppliers',
-            'address' => 'required|string|max:255',
-            'phone' => 'required|numeric|digits:10',
-            'email' => 'required|email|max:100',
-            'description' => 'required|string|max:255'
-        ]);
-        if($validator->fails()){
-            return $this->sendError('Dữ liệu nhập lỗi.', $validator->errors(), 422);       
-        }
-        $supplier = Supplier::create([
-            'name' => $fields['name'],
-            'address' => $fields['address'],
-            'phone' => $fields['phone'],
-            'email' => $fields['email'],
-            'description' =>$fields['description'],
-            'slug' => Str::slug($fields['name'])
-        ]);
+        $fields = $request->validated(); 
+        $customValues = $fields + ['slug' => Str::slug($fields['name'])];
+
+        $supplier = Supplier::create($customValues);
         return $this->sendResponse('Nhà cung cấp tạo thành công.', new SupplierResource($supplier),201);
     }
 
@@ -79,32 +60,17 @@ class SupplierController extends BaseController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(SupplierRequest $request, $id)
     {
-        $fields = $request->all();
-        $validator = Validator::make($fields, [
-            'name' => 'required|string|max:255|unique:suppliers,name,' . $id,
-            'address' => 'required|string|max:255',
-            'phone' => 'required|numeric|digits:10',
-            'email' => 'required|email|max:100',
-            'description' => 'required|string|max:255'
-        ]);
+        $fields = $request->validated(); 
+        $customValues = $fields + ['slug' => Str::slug($fields['name'])];
+
         $supplier = Supplier::find($id);
-  
         if (is_null($supplier)) {
             return $this->sendError('Không tìm thấy nhà cung cấp',[], 404); 
         }
-        if($validator->fails()){
-            return $this->sendError('Dữ liệu nhập lỗi.', $validator->errors(), 422);       
-        }
-        $supplier->update([
-            'name' => $fields['name'],
-            'address' => $fields['address'],
-            'phone' => $fields['phone'],
-            'email' => $fields['email'],
-            'description' =>$fields['description'],
-            'slug' => Str::slug($fields['name'])
-        ]);
+
+        $supplier->update($customValues);
         return $this->sendResponse('Đã cập nhật nhà cung cấp thành công.',  new SupplierResource($supplier),200);
     }
 
@@ -117,6 +83,7 @@ class SupplierController extends BaseController
     public function destroy($id)
     {
         $supplier = Supplier::find($id);
+        
         if (is_null($supplier)) {
             return $this->sendError('Không tìm thấy nhà cung cấp',[], 404); 
         }

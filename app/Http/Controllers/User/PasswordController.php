@@ -1,72 +1,20 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\User;
 
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-use Mail;
 use Carbon\Carbon;
 use App\Models\User;
 use App\Models\PasswordReset;
 use App\Http\Controllers\BaseController as BaseController;
 use Validator;
+use Mail;
 
-class UserController extends BaseController
+class PasswordController extends BaseController
 {
-    /**
-     * Display the specified resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function profile()
-    {
-
-        $user = auth()->user();
-
-        $records['name'] = $user->name;
-        $records['address'] = $user->address;
-        $records['phone'] = $user->phone;
-        $records['email'] = $user->email;
-     
-        return $this->sendResponse('Hồ sơ được truy xuất thành công', $records,200);
-    }
-     /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function updateProfile(Request $request)
-    {
-        $fields = $request->all();
-        $validator = Validator::make($fields, [
-            'name' => 'required|string|max:255',
-            'address' => 'required|string|max:255',
-            'phone' => 'required|numeric|digits:10',
-            // 'email' => 'required|email|unique:users,email, ' .auth()->user()->id
-
-        ]);
-        if($validator->fails()){
-            return $this->sendError('Dữ liệu nhập lỗi.', $validator->errors(), 422);       
-        }
-        $user = auth()->user();
-        $user->update([
-            'name' => $fields['name'],
-            'address' => $fields['address'],
-            'phone' => $fields['phone'],
-            // 'email' => $fields['email']
-            ]);
-            //record data
-        $records['name'] = $user->name;
-        $records['address'] = $user->address;
-        $records['phone'] = $user->phone;
-       
-
-        return $this->sendResponse('Hồ sơ đã được cập nhật thành công', $records,200);
-        
-    }
+    
     public function changePassword(Request $request)
     {
         $fields = $request->all();
@@ -101,20 +49,20 @@ class UserController extends BaseController
         if($validator->fails()){
             return $this->sendError('Dữ liệu nhập lỗi.', $validator->errors(), 422);       
         }
-          // Check email exists
-          $user = User::where('email', $fields['email'])->first();
-          if(!$user) {
-              return $this->sendError('Email không tồn tại.',[], 404); 
+        // Check email exists
+        $user = User::where('email', $fields['email'])->first();
+        if(!$user) {
+            return $this->sendError('Email không tồn tại.',[], 404); 
+        }
+        //Check status user
+        $checkStatus= User::where('email', $fields['email'])->where('status',1)->first();     //isActive: 1
+          if($checkStatus) {
+              $email = $checkStatus->email;  
           }
-          //Check status user
-          $checkStatus= User::where('email', $fields['email'])->where('status',1)->first();     //isActive: 1
-            if($checkStatus) {
-                $email = $checkStatus->email;  
-            }
-            else {
-                return $this->sendError('Người dùng đã bị vô hiệu hóa.',[], 401); 
-            }
-            //create or update token to table forgot password
+          else {
+              return $this->sendError('Người dùng đã bị vô hiệu hóa.',[], 401); 
+          }
+          //create or update token to table forgot password
         $passwordReset = PasswordReset::updateOrCreate(
             ['email' => $email],
             ['token' => Str::random(30)]
