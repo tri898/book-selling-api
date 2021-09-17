@@ -16,7 +16,7 @@ class DiscountController extends BaseController
      */
     public function index()
     {
-        $records = Discount::all();         
+        $records = Discount::orderByDesc('id')->get();         
         return DiscountResource::collection($records);
     }
     /**

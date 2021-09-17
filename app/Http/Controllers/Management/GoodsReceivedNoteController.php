@@ -16,7 +16,8 @@ class GoodsReceivedNoteController extends BaseController
      */
     public function index()
     {
-        $records =  GoodsReceivedNote::with('details')->get();         
+        $records = GoodsReceivedNote::with('details')->orderByDesc('id')->get();    
+             
         return GoodsReceivedNoteResource::collection($records);
     }
     /**
@@ -33,17 +34,17 @@ class GoodsReceivedNoteController extends BaseController
         $customValues = $fields + ['admin_id' => $currentIdAdmin];
 
         $goodsReceivedNote = GoodsReceivedNote::create($customValues);
-        // add list item to table details
-        foreach ($request->grnItems as $item) {
-            $goodsReceivedNote->details()->create([
-                'book_id' => $item['book_id'],
-                'quantity' => $item['quantity'],
-                'import_unit_price' => $item['import_unit_price']
-            ]);
+        // get order details
+        $grnDetails = [];
+        foreach ($request->grnItems as $item) {   
+            $grnDetails[$item['book_id']] = ['quantity' => $item['quantity'],
+                                            'import_unit_price' => $item['import_unit_price']];       
             // update quantity in stock
-            $increase= Inventory::where('book_id', $item['book_id'])->increment('available_quantity',  $item['quantity']);
-            
+            $increase= Inventory::where('book_id', $item['book_id'])
+                                ->increment('available_quantity',  $item['quantity']);         
         }
+        $goodsReceivedNote->books()->attach($grnDetails);
+
         return $this->sendResponse('Phiếu nhập tạo thành công.', new GoodsReceivedNoteResource($goodsReceivedNote->load('details')),201);
     }
 

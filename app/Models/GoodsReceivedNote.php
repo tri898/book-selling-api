@@ -22,6 +22,10 @@ class GoodsReceivedNote extends Model
     {
         return $this->belongsTo(Admin::class,'admin_id','id');
     }
+    public function books()
+    {
+        return $this->belongsToMany(Book::class ,'goods_received_note_details', 'goods_received_note_id', 'book_id')->withTimestamps();
+    }
     public function details()
     {
         return $this->hasMany(GoodsReceivedNoteDetail::class,'goods_received_note_id','id');

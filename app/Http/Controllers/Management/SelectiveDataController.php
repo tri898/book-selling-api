@@ -14,10 +14,10 @@ class SelectiveDataController extends BaseController
      */
     public function index()
     {
-        $category = Category::get(['id','name']);
-        $author = Author::get(['id','name']);
-        $publisher = Publisher::get(['id','name']);
-        $supplier = Supplier::get(['id','name']);
+        $category = Category::orderByDesc('id')->get(['id','name']);
+        $author = Author::orderByDesc('id')->get(['id','name']);
+        $publisher = Publisher::orderByDesc('id')->get(['id','name']);
+        $supplier = Supplier::orderByDesc('id')->get(['id','name']);
 
         $records = [
                 'category' => $category,

@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class GRNRequest extends FormRequest
+class ProfileRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,12 +24,10 @@ class GRNRequest extends FormRequest
     public function rules()
     {
         return [
-            'supplier_id' => 'required|integer|exists:suppliers,id',
-            'total' => 'required|integer|min: 1',
-            'grnItems' => 'required|array|min: 1',
-            'grnItems.*.book_id' => 'required|integer|distinct|exists:books,id',
-            'grnItems.*.quantity' => 'required|integer|min: 1',
-            'grnItems.*.import_unit_price' => 'required|integer|min: 1'
+            'name' => 'required|string|max:255',
+            'address' => 'required|string|max:255',
+            'phone' => 'required|numeric|digits:10',
+            // 'email' => 'required|email|unique:users,email, ' .auth()->user()->id
         ];
     }
 }

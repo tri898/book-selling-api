@@ -31,11 +31,11 @@ class OrderRequest extends FormRequest
                 'phone' => 'required|numeric|digits:10',
                 'total' => 'required|integer|min: 1',
                 'note' => 'string|nullable|max:255',
-                'orderItems' => 'required|array',
+                'orderItems' => 'required|array|min: 1',
                 'orderItems.*.book_id' => 'required|integer|distinct|exists:books,id',
                 'orderItems.*.quantity' => 'required|integer|min: 1',
                 'orderItems.*.price' => 'required|integer|min: 1',
-                'orderItems.*.discount' => 'required|integer',
+                'orderItems.*.discount' => 'required|integer|min: 0|max: 100',
             ];
         } elseif (request()->routeIs('orders.update')) {
             return [

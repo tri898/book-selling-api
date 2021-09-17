@@ -16,7 +16,7 @@ class OrderController extends BaseController
      */
     public function index()
     {
-        $records = Order::with('details')->get();         
+        $records = Order::with('details')->orderByDesc('id')->get();         
         return OrderResource::collection($records);
     }
      /**

@@ -17,7 +17,7 @@ class CategoryController extends BaseController
      */
     public function index()
     {
-        $records =  Category::all();         
+        $records = Category::orderByDesc('id')->get();         
         return CategoryResource::collection($records); 
     }
     /**

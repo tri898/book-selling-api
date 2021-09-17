@@ -17,7 +17,7 @@ class SupplierController extends BaseController
      */
     public function index()
     {
-        $records =  Supplier::all();         
+        $records =  Supplier::orderByDesc('id')->get();         
         return SupplierResource::collection($records);
     }
     /**

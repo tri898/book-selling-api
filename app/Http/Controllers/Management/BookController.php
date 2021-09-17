@@ -17,7 +17,7 @@ class BookController extends BaseController
      */
     public function index()
     {
-        $records = Book::with(['bookCategory'])->get();
+        $records = Book::with(['bookCategory'])->orderByDesc('id')->get();
         return BookResource::collection($records); 
     }
 

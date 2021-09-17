@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Data;
 
+use Illuminate\Http\Request;
 use App\Http\Controllers\BaseController as BaseController;
 use App\Models\{Book, Category, Author};
 use App\Http\Resources\Another\{
@@ -18,12 +19,13 @@ class BookController extends BaseController
      *
      * @return \Illuminate\Http\Response
      */
-    public function getNewBook()
+    public function getNewBook(Request $request)
     {
+        $limit =  $request->input('limit', 10);
         $records = Book::query()
             ->select('id','name','author_id','description','unit_price','slug')
             ->orderByDesc('created_at')
-            ->take(9)
+            ->take($limit)
             ->get();
     
         return BookResource::collection($records); 
@@ -33,13 +35,14 @@ class BookController extends BaseController
      *
      * @return \Illuminate\Http\Response
      */
-    public function getSellingBook()
+    public function getSellingBook(Request $request)
     {
+        $limit =  $request->input('limit', 10);
         $records = Book::query()
             ->select('id','name','author_id','description','unit_price','slug')
             ->withSum('orders','order_details.quantity')
             ->orderByDesc('orders_sum_order_detailsquantity')
-            ->take(9)
+            ->take($limit)
             ->get();
        
         return BookResource::collection($records); 

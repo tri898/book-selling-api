@@ -16,7 +16,7 @@ class UserController extends BaseController
     */
     public function getUserList()
     { 
-        $records = User::all();
+        $records = User::orderByDesc('id')->get();
         return UserResource::collection($records);
     }
     /**

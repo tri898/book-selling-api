@@ -18,7 +18,9 @@ class OrderController extends BaseController
     public function index()
     {
         $getUserCurrent = auth()->user()->id;
-        $records =  Order::where('user_id',$getUserCurrent)->with('details')->get();         
+        $records = Order::where('user_id',$getUserCurrent)
+                   ->with('details')->orderByDesc('id')->get();     
+            
         return OrderResource::collection($records);
     }
     /**
@@ -46,33 +48,33 @@ class OrderController extends BaseController
      */
     public function store(OrderRequest $request)
     {
-        //After validate then check quantity book in stock
+        //After validate then check books quantity in stock
         foreach ($request->orderItems as $item) {
             $checkQuantity = Inventory::where('book_id', $item['book_id'])->get('available_quantity');
             $quantity = $checkQuantity[0]['available_quantity'];
-           if($quantity < $item['quantity']) {
+            if($quantity < $item['quantity']) {
             return $this->sendError('Có lỗi.Không thể thực hiện thao tác.', [], 409);       
            }
-        }
-        
+        } 
+        // only get basic order information
         $fields = $request->only(['name', 'address', 'phone', 'total', 'note']);
-        // userId current
         $UserIdCurrent = auth()->user()->id;
-        $customValues = ['user_id' => $UserIdCurrent] + $fields;
-
+        $customValues = ['user_id' => $UserIdCurrent, 'status' => 'Chờ xác nhận'] + $fields;
+        // store basic order information
         $order = Order::create($customValues);
-
-        // add list item to table detail
+        // get order details
+        $orderDetails = [];
         foreach ($request->orderItems as $item) {
-            $order->details()->create([
-                'book_id' => $item['book_id'],
-                'quantity' => $item['quantity'],
-                'price' => $item['price'],
-                'discount' => $item['discount']
-            ]);
-        // update quantity in stock
-        $decrease= Inventory::where('book_id', $item['book_id'])->decrement('available_quantity',  $item['quantity']);
+            $orderDetails[$item['book_id']] = ['quantity' => $item['quantity'],
+                                              'price' => $item['price'],
+                                              'discount' => $item['discount']];
+            // update books quantity in stock
+            $decrease= Inventory::where('book_id', $item['book_id'])
+                                ->decrement('available_quantity',  $item['quantity']);
         }
+
+        $order->books()->attach($orderDetails);  
+        
         return $this->sendResponse('Tạo đơn hàng thành công.',  new OrderResource($order->load('details')),201);
     }
     /**
@@ -84,6 +86,7 @@ class OrderController extends BaseController
     public function destroy($id)
     {
         $getUserCurrent = auth()->user()->id;
+        
         $order = Order::where('user_id', $getUserCurrent)->where('status','Chờ xác nhận')->find($id);
         if (is_null($order)) {
             return $this->sendError('Có lỗi.Không thể thực hiện thao tác',[], 409); 

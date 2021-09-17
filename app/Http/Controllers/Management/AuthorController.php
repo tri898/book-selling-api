@@ -16,7 +16,7 @@ class AuthorController extends BaseController
          * @return \Illuminate\Http\Response
          */
         public function index() {
-            $records =  Author::all();         
+            $records =  Author::orderByDesc('id')->get();         
             return AuthorResource::collection($records);
         }
         /**
