@@ -24,11 +24,12 @@ class BookController extends BaseController
         $limit =  $request->input('limit', 10);
         $records = Book::query()
             ->select('id','name','author_id','description','unit_price','slug')
-            ->orderByDesc('created_at')
             ->take($limit)
+            ->latest()
             ->get();
     
-        return BookResource::collection($records); 
+        return $this->sendResponse('Truy xuất top sách mới cập nhật thành công.',
+                                    BookResource::collection($records),200); 
     }
       /**
      * Display a listing of the resource.
@@ -45,7 +46,8 @@ class BookController extends BaseController
             ->take($limit)
             ->get();
        
-        return BookResource::collection($records); 
+        return $this->sendResponse('Truy xuất top sách bán chạy thành công.',
+                                    BookResource::collection($records),200);
     }
       /**
      * Display the specified resource.
@@ -59,7 +61,8 @@ class BookController extends BaseController
         if (is_null($book)) {
             return $this->sendError('Không tìm thấy cuốn sách nào',[], 404); 
         }
-        return new BookDetailsResource($book);  
+        return $this->sendResponse('Truy xuất chi tiết sách thành công.',
+                                    new BookDetailsResource($book),200);  
     }
  /**
      * Display the specified resource.
@@ -69,15 +72,16 @@ class BookController extends BaseController
      */
     public function getBookOfCategory($id)
     {
-        $category = Category::query()
+        $booksOfCategory = Category::query()
             ->select('id','name','slug')
             ->with('books')
             ->find($id);
   
-        if (is_null($category)) {
+        if (is_null($booksOfCategory)) {
             return $this->sendError('Không tìm thấy thể loại nào',[], 404); 
         }
-        return new BooksOfCategoryResource($category);
+        return $this->sendResponse('Truy xuất sách của thể loại thành công.',
+                                    new BooksOfCategoryResource($booksOfCategory),200);
     }
      /**
      * Display the specified resource.
@@ -87,13 +91,15 @@ class BookController extends BaseController
      */
     public function getBookOfAuthor($id)
     {
-        $author = Author::query()
+        $booksOfAuthor = Author::query()
             ->select('id','name','description','slug')
             ->with(['books'])
             ->find($id);
-        if (is_null($author)) {
+
+        if (is_null($booksOfAuthor)) {
             return $this->sendError('Không tìm thấy tác giả nào',[], 404); 
         }
-        return new BooksOfAuthorResource($author);
+        return $this->sendResponse('Truy xuất sách của tác giả thành công.',
+                                    new BooksOfAuthorResource($booksOfAuthor),200);
     }
 }

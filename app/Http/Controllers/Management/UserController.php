@@ -17,7 +17,8 @@ class UserController extends BaseController
     public function getUserList()
     { 
         $records = User::orderByDesc('id')->get();
-        return UserResource::collection($records);
+        return $this->sendResponse('Truy xuất danh sách người dùng thành công.',
+                                    UserResource::collection($records),200);
     }
     /**
     * Update the specified resource in storage.
@@ -38,6 +39,7 @@ class UserController extends BaseController
         // update status
         $user->update(['status' => $fields['status']]);
 
-        return $this->sendResponse('Đã cập nhật trạng thái người dùng thành công.', new UserResource($user),200); 
+        return $this->sendResponse('Đã cập nhật trạng thái người dùng thành công.',
+                                    new UserResource($user),200); 
     } 
 }

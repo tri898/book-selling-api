@@ -17,7 +17,8 @@ class DiscountController extends BaseController
     public function index()
     {
         $records = Discount::orderByDesc('id')->get();         
-        return DiscountResource::collection($records);
+        return $this->sendResponse('Truy xuất danh sách giảm giá thành công.',
+                                    DiscountResource::collection($records),200);
     }
     /**
      * Store a newly created resource in storage.
@@ -29,7 +30,8 @@ class DiscountController extends BaseController
     {
         $fields = $request->validated();
         $discount = Discount::create($fields);
-        return $this->sendResponse('Tạo giảm giá thành công.', new DiscountResource($discount),201);
+        return $this->sendResponse('Tạo giảm giá thành công.',
+                                    new DiscountResource($discount),201);
     }
 
     /**
@@ -65,7 +67,8 @@ class DiscountController extends BaseController
         }
 
         $discount->update($fields);
-        return $this->sendResponse('Đã cập nhật giảm giá thành công.',  new DiscountResource($discount),200);
+        return $this->sendResponse('Đã cập nhật giảm giá thành công.',
+                                    new DiscountResource($discount),200);
     }
 
     /**

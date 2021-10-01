@@ -17,7 +17,8 @@ class AuthorController extends BaseController
          */
         public function index() {
             $records =  Author::orderByDesc('id')->get();         
-            return AuthorResource::collection($records);
+            return $this->sendResponse('Truy xuất danh sách tác giả thành công.',
+                                        AuthorResource::collection($records),200); 
         }
         /**
          * Store a newly created resource in storage.
@@ -31,7 +32,8 @@ class AuthorController extends BaseController
             $customValues = $fields + ['slug' => Str::slug($fields['name'])];
 
             $author = Author::create($customValues);
-            return $this->sendResponse('Tác giả được tạo thành công.', new AuthorResource($author),201);
+            return $this->sendResponse('Tác giả được tạo thành công.',
+                                        new AuthorResource($author),201);
         }
          /**
      * Display the specified resource.
@@ -68,7 +70,8 @@ class AuthorController extends BaseController
         }
     
         $author->update($customValues);
-        return $this->sendResponse('Đã cập nhật tác giả thành công.', new AuthorResource($author),200);
+        return $this->sendResponse('Đã cập nhật tác giả thành công.',
+                                    new AuthorResource($author),200);
     }
 
     /**

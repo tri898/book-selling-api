@@ -18,7 +18,8 @@ class CategoryController extends BaseController
     public function index()
     {
         $records = Category::orderByDesc('id')->get();         
-        return CategoryResource::collection($records); 
+        return $this->sendResponse('Truy xuất danh sách thể loại thành công.',
+                                    CategoryResource::collection($records),200); 
     }
     /**
      * Store a newly created resource in storage.
@@ -88,7 +89,7 @@ class CategoryController extends BaseController
         }
 
         $category->delete();
-        return $this->sendResponse(' Đã xóa thể loại thành công', [],204);
+        return $this->sendResponse('Đã xóa thể loại thành công', [],204);
     }
     
 }

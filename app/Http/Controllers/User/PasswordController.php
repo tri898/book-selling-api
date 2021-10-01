@@ -77,7 +77,7 @@ class PasswordController extends BaseController
             if (Carbon::parse($passwordReset->updated_at)->addMinutes(5)->isPast()) {
                 $passwordReset->delete();
 
-                return $this->sendError('Mã thông báo đặt lại mật khẩu này đã hết hạn.',[], 401); 
+                return $this->sendError('Mã xác thực đặt lại mật khẩu này đã hết hạn.',[], 401); 
             }
             if($request->has('password')) {
                  //update password
@@ -89,10 +89,10 @@ class PasswordController extends BaseController
                 return $this->sendResponse('Thay đổi mật khẩu của bạn thành công', [],200);
             }
             else
-                return;
+                return $this->sendResponse('Mã xác thực đặt lại mật khẩu này hợp lệ.', [],200);;
         }
         else {
-             return $this->sendError('Mã thông báo đặt lại mật khẩu này không hợp lệ.',[], 401); 
+             return $this->sendError('Mã xác thực đặt lại mật khẩu này không hợp lệ.',[], 401); 
         }
     }
 }

@@ -75,7 +75,8 @@ class OrderController extends BaseController
 
         $order->books()->attach($orderDetails);  
         
-        return $this->sendResponse('Tạo đơn hàng thành công.',  new OrderResource($order->load('details')),201);
+        return $this->sendResponse('Tạo đơn hàng thành công.',
+                                    new OrderResource($order->load('details')),201);
     }
     /**
      * Remove the specified resource from storage.

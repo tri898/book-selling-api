@@ -17,7 +17,8 @@ class PublisherController extends BaseController
     public function index()
     {
         $records = Publisher::orderByDesc('id')->get();         
-        return PublisherResource::collection($records);
+        return $this->sendResponse('Truy xuất danh sách nhà xuất bản thành công.',
+                                    PublisherResource::collection($records),200);
     }
 
     /**
@@ -30,7 +31,8 @@ class PublisherController extends BaseController
     {
         $fields = $request->validated(); 
         $publisher = Publisher::create($fields);
-        return $this->sendResponse('Nhà xuất bản được tạo thành công.',  new PublisherResource($publisher),201);
+        return $this->sendResponse('Nhà xuất bản được tạo thành công.',
+                                    new PublisherResource($publisher),201);
     }
 
     /**
@@ -63,7 +65,8 @@ class PublisherController extends BaseController
             return $this->sendError('Không tìm thấy nhà xuất bản',[], 404); 
         }
         $publisher->update($fields);
-        return $this->sendResponse('Đã cập nhật nhà xuất bản thành công.',   new PublisherResource($publisher),200);
+        return $this->sendResponse('Đã cập nhật nhà xuất bản thành công.',
+                                    new PublisherResource($publisher),200);
     }
 
     /**

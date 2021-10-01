@@ -25,6 +25,6 @@ class SelectiveDataController extends BaseController
                 'publisher' => $publisher,
                 'supplier' => $supplier
         ];
-        return $this->sendResponse('Lấy dữ liệu thành công',  $records,200);  
+        return $this->sendResponse('Lấy dữ liệu lựa chọn thành công',  $records,200);  
     }
 }

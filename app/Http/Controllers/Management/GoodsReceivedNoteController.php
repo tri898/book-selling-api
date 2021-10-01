@@ -18,7 +18,8 @@ class GoodsReceivedNoteController extends BaseController
     {
         $records = GoodsReceivedNote::with('details')->orderByDesc('id')->get();    
              
-        return GoodsReceivedNoteResource::collection($records);
+        return $this->sendResponse('Truy xuất danh sách phiếu nhập thành công.',
+                                    GoodsReceivedNoteResource::collection($records),200);
     }
     /**
      * Store a newly created resource in storage.
@@ -45,7 +46,8 @@ class GoodsReceivedNoteController extends BaseController
         }
         $goodsReceivedNote->books()->attach($grnDetails);
 
-        return $this->sendResponse('Phiếu nhập tạo thành công.', new GoodsReceivedNoteResource($goodsReceivedNote->load('details')),201);
+        return $this->sendResponse('Phiếu nhập tạo thành công.',
+                                    new GoodsReceivedNoteResource($goodsReceivedNote->load('details')),201);
     }
 
     /**

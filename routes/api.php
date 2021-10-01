@@ -17,6 +17,7 @@ use App\Http\Controllers\Management\{
     ImageController,
     InventoryController,
     OrderController as AdminOrderController,
+    DashboardController,
     SelectiveDataController
 };
 use App\Http\Controllers\User\{
@@ -48,9 +49,9 @@ use Illuminate\Support\Facades\Route;
   Get data book for main page
   no authentication required
 */ 
-// Get 9 new books
+// Get new books
 Route::get('books/new', [BookDataController::class, 'getNewBook']);
-// Get 9  selling books
+// Get selling books
 Route::get('books/selling', [BookDataController::class, 'getSellingBook']);
 // Get books of category
 Route::get('books/category/{id}', [BookDataController::class, 'getBookOfCategory']);
@@ -97,13 +98,18 @@ Route::group(['middleware' => ['auth:admins']], function () {
     Route::post('/books/{id}', [BookController::class, 'update'])->name('books.update');
     Route::delete('/books/{id}', [BookController::class, 'destroy'])->name('books.destroy');
     // Manage GRN no update
-    Route::resource('goods-received-notes', GoodsReceivedNoteController::class);
+    Route::resource('goods-received-notes', GoodsReceivedNoteController::class)->except('update');
     // Manage Discount
     Route::resource('discounts', DiscountController::class);
-    // Manage Order (order list, order details, update status order)
+    // Manage Order (all order list, order details, update status order)
     Route::get('orders', [AdminOrderController::class, 'index'])->name('orders.index');
     Route::get('orders/{id}', [AdminOrderController::class, 'show'])->name('orders.show');
     Route::put('orders/{id}', [AdminOrderController::class, 'updateOrderStatus'])->name('orders.update');
+    // Dashboard
+    Route::get('dashboard/books/selling', [DashboardController::class, 'getSellingBook']);
+    Route::get('dashboard/orders/total', [DashboardController::class, 'getTotalOrdersInMonth']);
+    Route::get('dashboard/users/total', [DashboardController::class, 'getTotalUsersInMonth']);
+
     
 });
 /*

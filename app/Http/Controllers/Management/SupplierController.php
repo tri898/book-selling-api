@@ -18,7 +18,8 @@ class SupplierController extends BaseController
     public function index()
     {
         $records =  Supplier::orderByDesc('id')->get();         
-        return SupplierResource::collection($records);
+        return $this->sendResponse('Truy xuất danh sách nhà cung cấp thành công.',
+                                    SupplierResource::collection($records),200);
     }
     /**
      * Store a newly created resource in storage.
@@ -32,7 +33,8 @@ class SupplierController extends BaseController
         $customValues = $fields + ['slug' => Str::slug($fields['name'])];
 
         $supplier = Supplier::create($customValues);
-        return $this->sendResponse('Nhà cung cấp tạo thành công.', new SupplierResource($supplier),201);
+        return $this->sendResponse('Tạo nhà cung cấp thành công.',
+                                    new SupplierResource($supplier),201);
     }
 
     /**
@@ -71,7 +73,8 @@ class SupplierController extends BaseController
         }
 
         $supplier->update($customValues);
-        return $this->sendResponse('Đã cập nhật nhà cung cấp thành công.',  new SupplierResource($supplier),200);
+        return $this->sendResponse('Đã cập nhật nhà cung cấp thành công.',
+                                    new SupplierResource($supplier),200);
     }
 
     /**

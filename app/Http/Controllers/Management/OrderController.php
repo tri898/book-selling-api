@@ -17,7 +17,8 @@ class OrderController extends BaseController
     public function index()
     {
         $records = Order::with('details')->orderByDesc('id')->get();         
-        return OrderResource::collection($records);
+        return $this->sendResponse('Truy xuất danh sách đơn hàng thành công.',
+                                    OrderResource::collection($records),200);
     }
      /**
      * Display the specified resource.
@@ -53,7 +54,8 @@ class OrderController extends BaseController
         // update status
         $order->update(['status' => $fields['status']]);
         
-        return $this->sendResponse('Đã cập nhật trạng thái đơn hàng thành công.', new OrderResource($order->load('details')),200); 
+        return $this->sendResponse('Đã cập nhật trạng thái đơn hàng thành công.',
+                                    new OrderResource($order->load('details')),200); 
     }
    
 }
