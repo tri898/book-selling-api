@@ -21,7 +21,8 @@ class OrderController extends BaseController
         $records = Order::where('user_id',$getUserCurrent)
                    ->with('details')->orderByDesc('id')->get();     
             
-        return OrderResource::collection($records);
+        return $this->sendResponse('Truy xuất danh sách đơn hàng thành công.',
+                                    OrderResource::collection($records),200);
     }
     /**
      * Display the specified resource.
@@ -49,7 +50,7 @@ class OrderController extends BaseController
     public function store(OrderRequest $request)
     {
         //After validate then check books quantity in stock
-        foreach ($request->orderItems as $item) {
+        foreach ($request->items as $item) {
             $checkQuantity = Inventory::where('book_id', $item['book_id'])->get('available_quantity');
             $quantity = $checkQuantity[0]['available_quantity'];
             if($quantity < $item['quantity']) {
@@ -58,13 +59,13 @@ class OrderController extends BaseController
         } 
         // only get basic order information
         $fields = $request->only(['name', 'address', 'phone', 'total', 'note']);
-        $UserIdCurrent = auth()->user()->id;
-        $customValues = ['user_id' => $UserIdCurrent, 'status' => 'Chờ xác nhận'] + $fields;
+        $fields['user_id'] = auth()->user()->id;
+        $fields['status'] = 'Chờ xác nhận';
         // store basic order information
-        $order = Order::create($customValues);
+        $order = Order::create($fields);
         // get order details
         $orderDetails = [];
-        foreach ($request->orderItems as $item) {
+        foreach ($request->items as $item) {
             $orderDetails[$item['book_id']] = ['quantity' => $item['quantity'],
                                               'price' => $item['price'],
                                               'discount' => $item['discount']];

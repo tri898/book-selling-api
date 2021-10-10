@@ -20,12 +20,9 @@ class Book extends JsonResource
             'author' => $this->author->name,
             'description' => $this->description,
             'unit_price' => $this->unit_price,
-            'discount' => $this->discount->percent ?? '',
+            'discount' => $this->discount->percent ?? 0,
             'slug' => $this->slug,
-            'image' =>  [
-                'front_cover' => $this->image->front_cover,
-                'back_cover' => $this->image->back_cover
-            ]
+            'image' => $this->image->front_cover
         ];
     }
 }

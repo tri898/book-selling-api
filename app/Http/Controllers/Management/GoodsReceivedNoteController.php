@@ -30,14 +30,12 @@ class GoodsReceivedNoteController extends BaseController
     public function store(GRNRequest $request)
     {
         $fields = $request->only(['supplier_id', 'total']);
-        //information received note
-        $currentIdAdmin = auth()->user()->id;
-        $customValues = $fields + ['admin_id' => $currentIdAdmin];
+        $fields['admin_id'] = auth()->user()->id;
 
-        $goodsReceivedNote = GoodsReceivedNote::create($customValues);
+        $goodsReceivedNote = GoodsReceivedNote::create($fields);
         // get order details
         $grnDetails = [];
-        foreach ($request->grnItems as $item) {   
+        foreach ($request->items as $item) {   
             $grnDetails[$item['book_id']] = ['quantity' => $item['quantity'],
                                             'import_unit_price' => $item['import_unit_price']];       
             // update quantity in stock

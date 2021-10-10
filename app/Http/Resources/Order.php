@@ -22,10 +22,10 @@ class Order extends JsonResource
             'address' => $this->address,
             'phone' => $this->phone,
             'total' => $this->total,
-            'note' => $this->note,
+            'note' => $this->note ?? '',
             'status' => $this->status,
             'created_at' => $this->created_at->format('d/m/Y H:i:s'),
-            'details' => OrderDetailResource::collection($this->whenLoaded('details')),
+            'items' => OrderDetailResource::collection($this->whenLoaded('details')),
             
         ];
     }

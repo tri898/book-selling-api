@@ -30,9 +30,9 @@ class CategoryController extends BaseController
     public function store(CategoryRequest $request)
     {
         $fields = $request->validated(); 
-        $customValues = $fields + ['slug' => Str::slug($fields['name'])];
+        $fields['slug'] = Str::slug($fields['name']);
 
-        $category = Category::create($customValues);
+        $category = Category::create($fields);
         return $this->sendResponse('Tạo thể loại thành công.',  new CategoryResource($category),201);
     }
     /**
@@ -60,14 +60,14 @@ class CategoryController extends BaseController
     public function update(CategoryRequest $request, $id)
     {
         $fields = $request->validated(); 
-        $customValues = $fields + ['slug' => Str::slug($fields['name'])];
+        $fields['slug'] = Str::slug($fields['name']);
 
         $category = Category::find($id);
         if (is_null($category)) {
             return $this->sendError('Không tìm thấy thể loại',[], 404); 
         }
 
-        $category->update($customValues);
+        $category->update($fields);
         return $this->sendResponse('Đã cập nhật thể loại thành công',  new CategoryResource($category),200);
     }
 

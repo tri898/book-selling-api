@@ -1,6 +1,6 @@
 <h2>Xin chào !</h2>
 <h4>Bạn nhận được mail này bởi vì chúng tôi nhận được yêu cầu
-     cấp laị mật khẩu từ tài khoản của bạn tại trang {{$URL}}
+     cấp laị mật khẩu từ tài khoản của bạn tại trang https://staciabook.store
 </h4>
   <p>Đường dẫn lấy lại mật khẩu này sẽ có thời hạn là 5 phút.</p>
 <p>Nếu bạn không yêu cầu lấy lại mật khẩu, bạn có thể bỏ qua mail này

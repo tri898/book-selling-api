@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class Book extends Model
 {
     use HasFactory;
-    protected $hidden = ['pivot'];
     protected $fillable = [
         'name',
         'code',
@@ -68,6 +67,10 @@ class Book extends Model
     public function orders()
     {
         return $this->belongsToMany(Order::class ,'order_details', 'book_id', 'order_id');
+    }
+    public function reviews()
+    {
+        return $this->hasManyThrough(Review::class, OrderDetail::class,'book_id', 'order_detail_id', 'id');
     }
     
 }

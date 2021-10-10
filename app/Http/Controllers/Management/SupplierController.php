@@ -30,9 +30,9 @@ class SupplierController extends BaseController
     public function store(SupplierRequest $request)
     {
         $fields = $request->validated(); 
-        $customValues = $fields + ['slug' => Str::slug($fields['name'])];
+        $fields['slug'] = Str::slug($fields['name']);
 
-        $supplier = Supplier::create($customValues);
+        $supplier = Supplier::create($fields);
         return $this->sendResponse('Tạo nhà cung cấp thành công.',
                                     new SupplierResource($supplier),201);
     }
@@ -65,14 +65,14 @@ class SupplierController extends BaseController
     public function update(SupplierRequest $request, $id)
     {
         $fields = $request->validated(); 
-        $customValues = $fields + ['slug' => Str::slug($fields['name'])];
+        $fields['slug'] = Str::slug($fields['name']);
 
         $supplier = Supplier::find($id);
         if (is_null($supplier)) {
             return $this->sendError('Không tìm thấy nhà cung cấp',[], 404); 
         }
 
-        $supplier->update($customValues);
+        $supplier->update($fields);
         return $this->sendResponse('Đã cập nhật nhà cung cấp thành công.',
                                     new SupplierResource($supplier),200);
     }

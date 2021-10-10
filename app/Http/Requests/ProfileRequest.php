@@ -27,6 +27,7 @@ class ProfileRequest extends FormRequest
             'name' => 'required|string|max:255',
             'address' => 'required|string|max:255',
             'phone' => 'required|numeric|digits:10',
+            'image' => 'string|max:255|nullable'
             // 'email' => 'required|email|unique:users,email, ' .auth()->user()->id
         ];
     }

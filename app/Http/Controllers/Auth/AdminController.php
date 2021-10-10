@@ -21,7 +21,7 @@ class AdminController extends BaseController
             return $this->sendError('Đăng nhập không thành công. Email hoặc mật khẩu không chính xác.',[], 401); 
         }
 
-        $records['email'] = $admin->email;
+        $records['name'] = $admin->name;
         $records['token']  = $admin->createToken('admin_token', ['admin'])->plainTextToken;
 
         return $this->sendResponse('Đăng nhập quản trị thành công.', $records,200);

@@ -31,7 +31,8 @@ class AuthorRequest extends FormRequest
         }
         return [
             'name' => $nameRule,
-            'description' => 'required|string'
+            'description' => 'required|string',
+            'image' => 'required|string|max:255'
         ];
     }
 }

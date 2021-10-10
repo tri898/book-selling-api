@@ -21,7 +21,7 @@ class GoodsReceivedNote extends JsonResource
             'by_admin' => $this->admin->name,
             'total' => $this->total,
             'created_at' => $this->created_at->format('d/m/Y H:i:s'),
-            'details' => GRNDetailResource::collection($this->whenLoaded('details'))
+            'items' => GRNDetailResource::collection($this->whenLoaded('details'))
             
         ];
     }

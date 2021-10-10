@@ -8,14 +8,11 @@ use App\Http\Controllers\Management\{
     UserController as UserManagementController,
     AuthorController,
     CategoryController,
-    BookCategoryController,
     PublisherController,
     SupplierController,
     BookController,
     GoodsReceivedNoteController,
     DiscountController,
-    ImageController,
-    InventoryController,
     OrderController as AdminOrderController,
     DashboardController,
     SelectiveDataController
@@ -23,9 +20,14 @@ use App\Http\Controllers\Management\{
 use App\Http\Controllers\User\{
     ProfileController,
     PasswordController,
-    OrderController as UserOrderController
+    OrderController as UserOrderController,
+    ReviewController
 };
-use App\Http\Controllers\Data\BookController as BookDataController;
+use App\Http\Controllers\ImageController;
+use App\Http\Controllers\Data\{
+    BookController as BookDataController,
+    ReviewController as BookReviewController,
+};
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -59,6 +61,10 @@ Route::get('books/category/{id}', [BookDataController::class, 'getBookOfCategory
 Route::get('books/author/{id}', [BookDataController::class, 'getBookOfAuthor']);
 // Get books details
 Route::get('books/details/{id}', [BookDataController::class, 'getBookDetails']);
+// Get review book
+Route::get('books/reviews/{id}', [BookReviewController::class, 'getBookReview']);
+// Get rating book
+Route::get('books/ratings/{id}', [BookReviewController::class, 'getBookRating']);
 
 // Admin route
 Route::post('/admin/login', [AdminAuthController::class, 'login']); 
@@ -66,8 +72,8 @@ Route::post('/admin/login', [AdminAuthController::class, 'login']);
 // User route
 Route::post('user/register', [UserAuthController::class, 'register']);
 Route::post('user/login', [UserAuthController::class, 'login']);
-Route::post('user/forgot-password', [PasswordController::class, 'forgotPassword'])->name('password.forgot');
-Route::put('user/recover-password/{token}', [PasswordController::class, 'recoverPassword'])->name('password.recover');
+Route::post('user/password/forgot', [PasswordController::class, 'forgotPassword'])->name('password.forgot');
+Route::put('user/password/recover/{token}', [PasswordController::class, 'recoverPassword'])->name('password.recover');
 
 
 
@@ -79,10 +85,10 @@ Route::put('user/recover-password/{token}', [PasswordController::class, 'recover
 Route::group(['middleware' => ['auth:admins']], function () {
     Route::post('admin/logout', [AdminAuthController::class, 'logout']);    //logout admin route 
     // Manage User(get user list, manage status user)
-    Route::get('admin/users-list', [UserManagementController::class, 'getUserList']);
-    Route::put('admin/update-status-user/{id}', [UserManagementController::class, 'updateUserStatus']);
+    Route::get('admin/users/list', [UserManagementController::class, 'getUserList']);
+    Route::put('admin/users/status/{id}', [UserManagementController::class, 'updateUserStatus']);
     // Get selective data(cate, author, pub, supp)
-    Route::get('/data-list', [SelectiveDataController::class, 'index']);
+    Route::get('data/select', [SelectiveDataController::class, 'index']);
     // Manage Author
     Route::resource('authors', AuthorController::class);
     // Manage Category
@@ -92,11 +98,7 @@ Route::group(['middleware' => ['auth:admins']], function () {
     // Manage Supplier
     Route::resource('suppliers', SupplierController::class);
     // Manage Book (include book cate, image, inventory)
-    Route::get('books', [BookController::class, 'index'])->name('books.index');
-    Route::get('/books/{id}', [BookController::class, 'show'])->name('books.show');
-    Route::post('/books', [BookController::class, 'store'])->name('books.store');
-    Route::post('/books/{id}', [BookController::class, 'update'])->name('books.update');
-    Route::delete('/books/{id}', [BookController::class, 'destroy'])->name('books.destroy');
+    Route::resource('books', BookController::class);
     // Manage GRN no update
     Route::resource('goods-received-notes', GoodsReceivedNoteController::class)->except('update');
     // Manage Discount
@@ -106,11 +108,10 @@ Route::group(['middleware' => ['auth:admins']], function () {
     Route::get('orders/{id}', [AdminOrderController::class, 'show'])->name('orders.show');
     Route::put('orders/{id}', [AdminOrderController::class, 'updateOrderStatus'])->name('orders.update');
     // Dashboard
-    Route::get('dashboard/books/selling', [DashboardController::class, 'getSellingBook']);
-    Route::get('dashboard/orders/total', [DashboardController::class, 'getTotalOrdersInMonth']);
-    Route::get('dashboard/users/total', [DashboardController::class, 'getTotalUsersInMonth']);
+    Route::get('dashboards/books/selling', [DashboardController::class, 'getSellingBook']);
+    Route::get('dashboards/orders/total', [DashboardController::class, 'getTotalOrdersInMonth']);
+    Route::get('dashboards/users/total', [DashboardController::class, 'getTotalUsersInMonth']);
 
-    
 });
 /*
 |----------------------------------------------------------------
@@ -121,21 +122,24 @@ Route::group(['middleware' => ['auth:users']], function () {
     // Personal user route(logout, get and update info, change password)
     Route::post('user/logout', [UserAuthController::class, 'logout']);
     Route::get('user/profile', [ProfileController::class, 'getPersonalData'])->name('profile.index');
-    Route::put('user/update-profile', [ProfileController::class, 'updatePersonalData'])->name('profile.update');
-    Route::put('user/change-password', [PasswordController::class, 'changePassword'])->name('password.change');
+    Route::put('user/profile/update', [ProfileController::class, 'updatePersonalData'])->name('profile.update');
+    Route::put('user/password/change', [PasswordController::class, 'changePassword'])->name('password.change');
     // Order book route(create order, get all order, get details, cancel order)
     Route::post('user/orders', [UserOrderController::class, 'store'])->name('user-orders.store');
     Route::get('user/orders', [UserOrderController::class, 'index'])->name('user-orders.index');
     Route::get('user/orders/{id}', [UserOrderController::class, 'show'])->name('user-orders.show');
     Route::delete('user/orders/{id}', [UserOrderController::class, 'destroy'])->name('user-orders.destroy'); // cancel order if status "Chờ xử lý"(delete permanent)
+    // Review route(create,edit,show)
+    Route::post('user/reviews', [ReviewController::class, 'store'])->name('reviews.store');
+    Route::put('user/reviews/{id}', [ReviewController::class, 'update'])->name('reviews.update');
+    Route::get('user/reviews/{id}', [ReviewController::class, 'show'])->name('reviews.show');
+});
+
+    Route::post('image/upload', [ImageController::class, 'store'])->name('images.store');
     
-});
 
 
 
-
-
-
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
+// Route::middleware('auth:api')->get('/user', function (Request $request) {
+//     return $request->user();
+// });

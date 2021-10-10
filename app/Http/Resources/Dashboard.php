@@ -17,7 +17,7 @@ class Dashboard extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'sold' => $this->orders_sum_order_detailsquantity
+            'sold' => $this->orders_sum_order_detailsquantity ?? 0
         ];
     }
 }

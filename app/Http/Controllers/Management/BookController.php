@@ -17,7 +17,7 @@ class BookController extends BaseController
      */
     public function index()
     {
-        $records = Book::with(['bookCategory'])->orderByDesc('id')->get();
+        $records = Book::orderByDesc('id')->get();
         return $this->sendResponse('Truy xuất danh sách sách thành công.',
                                     BookResource::collection($records),200);
     }
@@ -31,19 +31,18 @@ class BookController extends BaseController
     public function store(BookRequest $request)
     {
         $fields = $request->validated(); 
-        $customValues = $fields + ['slug' => Str::slug($fields['name'])];
+        $fields['slug'] = Str::slug($fields['name']);
         
-        $book = Book::create($customValues);
+        $book = Book::create($fields);
         // insert book category
         $book->category()->attach($fields['category_id']);
         // insert quantity in inventory
         $book->inventory()->create(['available_quantity' => 0]);
-        // get image name
-        $imageName['front_cover'] = $this->getNameAndMoveImageFile('front_cover', $request);
-        $imageName['back_cover'] = $this->getNameAndMoveImageFile('back_cover', $request);
+
 
         //add image name  to (link)
-        $image = $book->image()->create($imageName);
+        $image = $book->image()->create(['front_cover'=>$fields['front_cover'],
+                                         'back_cover' =>$fields['back_cover']]);
 
         return $this->sendResponse('Tạo sách thành công.',
                                     new BookResource($book->load(['bookCategory'])),201);
@@ -75,27 +74,20 @@ class BookController extends BaseController
     public function update(BookRequest $request, $id)
     {
         $fields = $request->validated(); 
-        $customValues = $fields + ['slug' => Str::slug($fields['name'])];
+        $fields['slug'] = Str::slug($fields['name']);
 
         $book = Book::find($id);
         if (is_null($book)) {
             return $this->sendError('Không tìm thấy cuốn sách nào',[], 404); 
         }
 
-        $book->update($customValues);
+        $book->update($fields);
          // update book category
-         $book->category()->sync($fields['category_id']);
+        $book->category()->sync($fields['category_id']);
 
-        //If there is a file, it will be updated 
-        if($request->hasFile('front_cover')) {
-            $frontCover = $this->getNameAndMoveImageFile('front_cover', $request);
-            $image = $book->image()->update(['front_cover' => $frontCover]);
-        }
-
-        if($request->hasFile('back_cover')) {
-            $backCover = $this->getNameAndMoveImageFile('back_cover', $request);
-            $image = $book->image()->update(['back_cover' => $backCover]);
-        }
+        //Update image   
+        $image = $book->image()->update(['front_cover'=>$fields['front_cover'],
+                                         'back_cover' =>$fields['back_cover']]);
 
         return $this->sendResponse('Đã cập nhật sách thành công.',
                                     new BookResource($book->load(['bookCategory'])),200);
@@ -124,32 +116,10 @@ class BookController extends BaseController
         if($book->orders()->count()) {
             return $this->sendError('Không thể xóa do có liên kết đến đặt hàng.',[], 409); 
         }
-        // remove image book
-        $image = $book->image()->first();
-        if($image) {
-            $front_cover = public_path('images/books' . $image->front_cover);
-            $back_cover = public_path('images/books' . $image->back_cover);
-            if(file_exists($front_cover) && file_exists($back_cover)) {
-                unlink($front_cover);
-                unlink($back_cover);
-            }
-        }
+        
         $book->delete();
         return $this->sendResponse('Sách đã được xóa thành công.', [],204);
     }
-    private function getNameAndMoveImageFile($face,BookRequest $request) {
-        $image = $request->$face;
-        if($face == "front_cover") {
-            // get name image 
-            $getName = date('YmdHis') . 'f'. '.' . $image->getClientOriginalExtension();
-        }
-        else
-            // get name image 
-            $getName = date('YmdHis') . 'b'. '.' . $image->getClientOriginalExtension();
-        
-        // move image file to public images/books
-        $image->move(public_path('images/books'), $getName);
-        return $getName;
-    }
+    
      
 }

@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class GRNRequest extends FormRequest
+class ImageRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,12 +24,8 @@ class GRNRequest extends FormRequest
     public function rules()
     {
         return [
-            'supplier_id' => 'required|integer|exists:suppliers,id',
-            'total' => 'required|integer|min: 1',
-            'items' => 'required|array|min: 1',
-            'items.*.book_id' => 'required|integer|distinct|exists:books,id',
-            'items.*.quantity' => 'required|integer|min: 1',
-            'items.*.import_unit_price' => 'required|integer|min: 1'
+            'type' => 'required|numeric|between:1,3',
+            'image' => 'required|image|mimes:jpeg,png,jpg|max:2048'
         ];
     }
 }

@@ -29,9 +29,8 @@ class AuthorController extends BaseController
         public function store(AuthorRequest $request)
         {
             $fields = $request->validated(); 
-            $customValues = $fields + ['slug' => Str::slug($fields['name'])];
-
-            $author = Author::create($customValues);
+            $fields['slug'] = Str::slug($fields['name']);
+            $author = Author::create($fields);
             return $this->sendResponse('Tác giả được tạo thành công.',
                                         new AuthorResource($author),201);
         }
@@ -62,14 +61,14 @@ class AuthorController extends BaseController
     public function update(AuthorRequest $request, $id)
     {
         $fields = $request->validated(); 
-        $customValues = $fields + ['slug' => Str::slug($fields['name'])];
+        $fields['slug'] = Str::slug($fields['name']);
 
         $author = Author::find($id);
         if (is_null($author)) {
             return $this->sendError('Không tìm thấy tác giả',[], 404); 
         }
     
-        $author->update($customValues);
+        $author->update($fields);
         return $this->sendResponse('Đã cập nhật tác giả thành công.',
                                     new AuthorResource($author),200);
     }

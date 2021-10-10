@@ -20,9 +20,10 @@ class ProfileController extends BaseController
         $user = auth()->user();
         
         $records['name'] = $user->name;
-        $records['address'] = $user->address;
-        $records['phone'] = $user->phone;
-        $records['email'] = $user->email;
+        $records['address'] = $user->address ?? "";
+        $records['phone'] = $user->phone ?? "";
+        $records['email'] = $user->email ?? "";
+        $records['image'] = $user->image ?? "";
      
         return $this->sendResponse('Hồ sơ được truy xuất thành công', $records,200);
     }
@@ -36,13 +37,14 @@ class ProfileController extends BaseController
     public function updatePersonalData(ProfileRequest $request)
     {
         $fields = $request->validated();
-
         $user = auth()->user();
         $user->update($fields);
         //record data
         $records['name'] = $user->name;
-        $records['address'] = $user->address;
-        $records['phone'] = $user->phone;
+        $records['address'] = $user->address ?? "";
+        $records['phone'] = $user->phone ?? "";
+        $records['email'] = $user->email ?? "";
+        $records['image'] = $user->image ?? "";
     
         return $this->sendResponse('Hồ sơ đã được cập nhật thành công', $records,200);
         

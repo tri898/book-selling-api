@@ -15,10 +15,12 @@ class OrderDetail extends JsonResource
     public function toArray($request)
     {
         return [
+            'id' => $this->id,
             'book' => $this->book->name,
             'quantity' => $this->quantity,
             'price' => $this->price,
-            'discount' => $this->discount
+            'discount' => $this->discount,
+            'review_status' => $this->review_status
         ];
     }
 }

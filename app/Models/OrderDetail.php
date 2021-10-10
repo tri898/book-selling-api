@@ -13,10 +13,20 @@ class OrderDetail extends Model
         'book_id', 
         'quantity', 
         'price',
-        'discount'
+        'discount',
+        'review_status'
     ];
     public function book()
     {
         return $this->belongsTo(Book::class,'book_id','id');
     }
+    public function order()
+    {
+        return $this->belongsTo(Order::class,'order_id','id')->select(['user_id','status']);
+    }
+    public function review()
+    {
+        return $this->hasOne(Review::class,'order_detail_id','id');
+    }
+    
 }

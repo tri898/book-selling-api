@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use App\Http\Requests\{LoginRequest,RegisterRequest};
 use App\Models\User;
 use App\Http\Controllers\BaseController as BaseController;
@@ -21,10 +22,11 @@ class UserController extends BaseController
         // insert user to database
         $user = User::create([
             'email' => $fields['email'],
+            'name' => Str::random(10),
             'password' => bcrypt($fields['password'])
         ]);
 
-        $records['email'] = $user->email;
+        $records['name'] = $user->name;
         $records['token'] = $user->createToken('user_token', ['user'])->plainTextToken;
         return $this->sendResponse('Đăng ký người dùng thành công.', $records,201);
     }
@@ -45,7 +47,7 @@ class UserController extends BaseController
             return $this->sendError('Đăng nhập không thành công. Email hoặc mật khẩu không chính xác.',[], 401); 
         }
 
-        $records['email'] = $user->email;
+        $records['name'] = $user->name;
         $records['token'] = $user->createToken('user_token', ['user'])->plainTextToken;
 
         return $this->sendResponse('Người dùng đăng nhập thành công.', $records,200);
