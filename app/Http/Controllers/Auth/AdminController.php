@@ -29,8 +29,8 @@ class AdminController extends BaseController
 
     public function logout()
     {
-        // delete token
-        auth()->user()->tokens()->delete();
+        // delete current token 
+        auth()->user()->currentAccessToken()->delete();
     
         return $this->sendResponse('Đăng xuất.',[],204);
     }

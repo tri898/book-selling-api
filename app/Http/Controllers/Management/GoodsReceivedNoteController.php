@@ -29,8 +29,9 @@ class GoodsReceivedNoteController extends BaseController
      */
     public function store(GRNRequest $request)
     {
-        $fields = $request->only(['supplier_id', 'total']);
+        $fields = $request->only(['formality','supplier_id', 'total','note']);
         $fields['admin_id'] = auth()->user()->id;
+        $fields['status'] = 1;
 
         $goodsReceivedNote = GoodsReceivedNote::create($fields);
         // get order details
@@ -62,9 +63,22 @@ class GoodsReceivedNoteController extends BaseController
             return $this->sendError('Không tìm thấy phiếu nhập',[], 404); 
         }
 
-        return new  GoodsReceivedNoteResource($goodsReceivedNote);
+        return new GoodsReceivedNoteResource($goodsReceivedNote);
     }
 
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function statusShow($id)
+    {
+        $records = GoodsReceivedNote::where('status',$id)->with('details')->get();
+
+        return $this->sendResponse('Truy xuất danh sách phiếu nhập theo trạng thái thành công.',
+                                    GoodsReceivedNoteResource::collection($records),200);
+    }
     /**
      * Remove the specified resource from storage.
      *
@@ -73,7 +87,7 @@ class GoodsReceivedNoteController extends BaseController
      */
     public function destroy($id)
     {
-        $goodsReceivedNote = GoodsReceivedNote::find($id);
+        $goodsReceivedNote = GoodsReceivedNote::where('status',1)->find($id);
         if (is_null($goodsReceivedNote)) {
             return $this->sendError('Không tìm thấy phiếu nhập',[], 404); 
         }
@@ -82,8 +96,8 @@ class GoodsReceivedNoteController extends BaseController
         $result->each(function($key, $item) {
             $decrease= Inventory::where('book_id', $key)->decrement('available_quantity', $item);
         });
-        $goodsReceivedNote->delete();
-        return $this->sendResponse('Xóa phiếu nhập thành công', [],204);
+        $goodsReceivedNote->update(['status' => 0]);
+        return $this->sendResponse('Hủy phiếu nhập thành công', [],204);
     }
     
 }

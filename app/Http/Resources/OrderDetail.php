@@ -18,8 +18,8 @@ class OrderDetail extends JsonResource
             'id' => $this->id,
             'book' => $this->book->name,
             'quantity' => $this->quantity,
-            'price' => $this->price,
-            'discount' => $this->discount,
+            'unit_price' => $this->unit_price,
+            'sale_price' => $this->sale_price,
             'review_status' => $this->review_status
         ];
     }

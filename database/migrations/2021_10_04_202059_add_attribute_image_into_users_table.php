@@ -25,8 +25,10 @@ class AddAttributeImageIntoUsersTable extends Migration
      */
     public function down()
     {
-        Schema::table('users', function (Blueprint $table) {
-            //
-        });
+        if (Schema::hasColumn('users','image')) {
+            Schema::table('users', function (Blueprint $table) {
+                $table->dropColumn('image');
+            });
+        }
     }
 }

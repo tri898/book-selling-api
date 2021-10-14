@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddAttributeImageIntoAuthorsTable extends Migration
+class EditSomeAttrIntoOrderDetailsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,9 @@ class AddAttributeImageIntoAuthorsTable extends Migration
      */
     public function up()
     {
-        Schema::table('authors', function (Blueprint $table) {
-            $table->string('image')->after('slug');
+        Schema::table('order_details', function (Blueprint $table) {
+            $table->renameColumn('price', 'unit_price');
+            $table->renameColumn('discount', 'sale_price');
         });
     }
 
@@ -25,10 +26,8 @@ class AddAttributeImageIntoAuthorsTable extends Migration
      */
     public function down()
     {
-        if (Schema::hasColumn('authors','image')) {
-            Schema::table('authors', function (Blueprint $table) {
-                $table->dropColumn('image');
-            });
-        }
+        Schema::table('order_details', function (Blueprint $table) {
+            //
+        });
     }
 }

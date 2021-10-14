@@ -35,7 +35,7 @@ class UserController extends BaseController
     {
         $fields = $request->validated();
         //Check status User
-        $checkStatus= User::where('email', $fields['email'])->where('status','Khóa')->first();      //User was locked
+        $checkStatus= User::where('email', $fields['email'])->where('status','0')->first();      //User was locked
         if($checkStatus) {
             $checkStatus->tokens()->delete();
             return $this->sendError('Người dùng đã bị vô hiệu hóa.',[], 401); 
@@ -55,7 +55,7 @@ class UserController extends BaseController
 
     public function logout()
     {
-        auth()->user()->tokens()->delete();
+        auth()->user()->currentAccessToken()->delete();
        
         return $this->sendResponse('Đăng xuất',[],204);
     }

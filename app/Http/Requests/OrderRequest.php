@@ -30,19 +30,18 @@ class OrderRequest extends FormRequest
                 'address' => 'required|string|max:255',
                 'phone' => 'required|numeric|digits:10',
                 'total' => 'required|integer|min: 1',
+                'shipping_fee' => 'required|integer|min: 1',
+                'total_payment' => 'required|integer|min: 1',
                 'note' => 'string|nullable|max:255',
                 'items' => 'required|array|min: 1',
                 'items.*.book_id' => 'required|integer|distinct|exists:books,id',
                 'items.*.quantity' => 'required|integer|min: 1',
-                'items.*.price' => 'required|integer|min: 1',
-                'items.*.discount' => 'required|integer|min: 0|max: 100',
+                'items.*.unit_price' => 'required|integer|min: 1',
+                'items.*.sale_price' => 'required|integer|min: 1',
             ];
         } elseif (request()->routeIs('orders.update')) {
             return [
-                'status' => [
-                    'required',
-                    Rule::in(['Chờ xác nhận','Đã xác nhận','Đang giao','Giao thành công', 'Giao thất bại']),
-                ]
+                'status' =>'required|numeric|min:1|max:5', 
             ];
         }
         

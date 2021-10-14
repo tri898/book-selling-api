@@ -22,6 +22,8 @@ class Order extends JsonResource
             'address' => $this->address,
             'phone' => $this->phone,
             'total' => $this->total,
+            'shipping_fee' => $this->shipping_fee,
+            'total_payment' => $this->total_payment,
             'note' => $this->note ?? '',
             'status' => $this->status,
             'created_at' => $this->created_at->format('d/m/Y H:i:s'),

@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddAttributeImageIntoAuthorsTable extends Migration
+class EditAttrStatusIntoUsersTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,8 @@ class AddAttributeImageIntoAuthorsTable extends Migration
      */
     public function up()
     {
-        Schema::table('authors', function (Blueprint $table) {
-            $table->string('image')->after('slug');
+        Schema::table('users', function (Blueprint $table) {
+            $table->boolean('status')->default(true)->change();
         });
     }
 
@@ -25,10 +25,8 @@ class AddAttributeImageIntoAuthorsTable extends Migration
      */
     public function down()
     {
-        if (Schema::hasColumn('authors','image')) {
-            Schema::table('authors', function (Blueprint $table) {
-                $table->dropColumn('image');
-            });
-        }
+        Schema::table('users', function (Blueprint $table) {
+            //
+        });
     }
 }

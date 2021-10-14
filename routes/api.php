@@ -101,11 +101,13 @@ Route::group(['middleware' => ['auth:admins']], function () {
     Route::resource('books', BookController::class);
     // Manage GRN no update
     Route::resource('goods-received-notes', GoodsReceivedNoteController::class)->except('update');
+    Route::get('goods-received-notes/status/{id}', [GoodsReceivedNoteController::class, 'statusShow']);
     // Manage Discount
     Route::resource('discounts', DiscountController::class);
     // Manage Order (all order list, order details, update status order)
     Route::get('orders', [AdminOrderController::class, 'index'])->name('orders.index');
     Route::get('orders/{id}', [AdminOrderController::class, 'show'])->name('orders.show');
+    Route::get('orders/status/{id}', [AdminOrderController::class, 'statusShow'])->name('orders.status-show');
     Route::put('orders/{id}', [AdminOrderController::class, 'updateOrderStatus'])->name('orders.update');
     // Dashboard
     Route::get('dashboards/books/selling', [DashboardController::class, 'getSellingBook']);
@@ -128,6 +130,7 @@ Route::group(['middleware' => ['auth:users']], function () {
     Route::post('user/orders', [UserOrderController::class, 'store'])->name('user-orders.store');
     Route::get('user/orders', [UserOrderController::class, 'index'])->name('user-orders.index');
     Route::get('user/orders/{id}', [UserOrderController::class, 'show'])->name('user-orders.show');
+    Route::get('user/orders/status/{id}', [UserOrderController::class, 'statusShow'])->name('user-orders.status-show');
     Route::delete('user/orders/{id}', [UserOrderController::class, 'destroy'])->name('user-orders.destroy'); // cancel order if status "Chờ xử lý"(delete permanent)
     // Review route(create,edit,show)
     Route::post('user/reviews', [ReviewController::class, 'store'])->name('reviews.store');

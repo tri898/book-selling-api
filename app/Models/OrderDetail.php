@@ -12,8 +12,8 @@ class OrderDetail extends Model
         'order_id', 
         'book_id', 
         'quantity', 
-        'price',
-        'discount',
+        'unit_price',
+        'sale_price',
         'review_status'
     ];
     public function book()

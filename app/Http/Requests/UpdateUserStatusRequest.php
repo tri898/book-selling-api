@@ -25,10 +25,7 @@ class UpdateUserStatusRequest extends FormRequest
     public function rules()
     {
         return [
-            'status' => [
-                'required',
-                Rule::in(['Hoạt động', 'Khóa']),
-            ]
+            'status' => 'required|boolean', 
         ];
     }
 }

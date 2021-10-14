@@ -25,8 +25,10 @@ class AddAttributeRvStatusIntoOrderDetailsTable extends Migration
      */
     public function down()
     {
-        Schema::table('order_details', function (Blueprint $table) {
-            //
-        });
+        if (Schema::hasColumn('order_details','review_status')) {
+            Schema::table('order_details', function (Blueprint $table) {
+                $table->dropColumn('review_status');
+            });
+        }
     }
 }

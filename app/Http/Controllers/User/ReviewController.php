@@ -24,12 +24,12 @@ class ReviewController extends BaseController
         $order = $itemOrder->order()->get();
         $statusOrder = $order[0]['status'];
         $userIdOrder= $order[0]['user_id'];
-        if($statusOrder != 'Giao thành công' || $userIdOrder != auth()->user()->id) {
+        if($statusOrder != 4 || $userIdOrder != auth()->user()->id) {
             return $this->sendError('Có lỗi.Không thể thực hiện thao tác.', [], 409);  
         }
 
         $review = $itemOrder->review()->create($fields);
-        $itemOrder->update(['review_status' => true]);
+        $itemOrder->update(['review_status' => 1]);
         return $this->sendResponse('Tạo đánh giá & xếp hạng thành công.',
                                     new ReviewResource($review),201);
     }

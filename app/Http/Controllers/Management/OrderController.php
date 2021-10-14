@@ -37,6 +37,19 @@ class OrderController extends BaseController
     }
    
     /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function statusShow($id)
+    {
+        $records = Order::where('status',$id)->with('details')->get();
+
+        return $this->sendResponse('Truy xuất danh sách đơn hàng theo trạng thái thành công.',
+                                    OrderResource::collection($records),200);
+    }
+    /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request

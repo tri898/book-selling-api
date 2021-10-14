@@ -38,7 +38,9 @@ class UserController extends BaseController
         }
         // update status
         $user->update(['status' => $fields['status']]);
-
+        if($fields['status'] == 0) {
+            $user->tokens()->delete();
+        }
         return $this->sendResponse('Đã cập nhật trạng thái người dùng thành công.',
                                     new UserResource($user),200); 
     } 

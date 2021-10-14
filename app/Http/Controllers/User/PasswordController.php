@@ -22,10 +22,8 @@ class PasswordController extends BaseController
         $checkPassword = Hash::check($fields['old_password'], $user->password);
 
         if($checkPassword) {
-            $user->update([        
-                'password' => bcrypt($fields['new_password'])
-                ]);
-
+            $user->update(['password' => bcrypt($fields['new_password'])]);
+            $user->tokens()->delete();
             return $this->sendResponse('Thay đổi mật khẩu thành công.', [],200);
         }
         return $this->sendError('Mật khẩu cũ không chính xác.',[], 401); 
@@ -85,7 +83,7 @@ class PasswordController extends BaseController
                 $newPassword = bcrypt($fields['password']);
                 $updatePasswordUser = $user->update(['password' => $newPassword]);
                 $passwordReset->delete();
-
+                $user->tokens()->delete();
                 return $this->sendResponse('Thay đổi mật khẩu của bạn thành công', [],200);
             }
             else

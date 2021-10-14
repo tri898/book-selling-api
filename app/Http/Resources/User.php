@@ -19,7 +19,7 @@ class User extends JsonResource
             'name' => $this->name ?? '',
             'address' => $this->address ?? '',
             'phone' => $this->phone ?? '',
-            'image' => $this->image,
+            'image' => $this->image ?? '',
             'status' => $this->status,
             'email' => $this->email,
             'created_at' => $this->created_at->format('d/m/Y H:i:s'),

@@ -11,6 +11,9 @@ class GoodsReceivedNote extends Model
     protected $fillable = [
         'supplier_id',
         'admin_id',
+        'formality',
+        'status',
+        'note',
         'total'
     ];
     
