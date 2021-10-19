@@ -28,7 +28,7 @@ class BookRequest extends FormRequest
         if(request()->routeIs('books.store')) {
             $nameRule = 'required|string|max:255|unique:books';
         } elseif (request()->routeIs('books.update')) {
-            $id = $this->route('id');
+            $id = $this->route('book');
             $nameRule ='required|string|max:255|unique:books,name,' . $id;
         }
         return [

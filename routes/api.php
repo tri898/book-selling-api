@@ -47,33 +47,36 @@ use Illuminate\Support\Facades\Route;
 |----------------------------------------------------------------
 */
 
-/*
-  Get data book for main page
-  no authentication required
-*/ 
-// Get new books
-Route::get('books/new', [BookDataController::class, 'getNewBook']);
-// Get selling books
-Route::get('books/selling', [BookDataController::class, 'getSellingBook']);
-// Get books of category
-Route::get('books/category/{id}', [BookDataController::class, 'getBookOfCategory']);
-// Get books of author
-Route::get('books/author/{id}', [BookDataController::class, 'getBookOfAuthor']);
-// Get books details
-Route::get('books/details/{id}', [BookDataController::class, 'getBookDetails']);
-// Get review book
-Route::get('books/reviews/{id}', [BookReviewController::class, 'getBookReview']);
-// Get rating book
-Route::get('books/ratings/{id}', [BookReviewController::class, 'getBookRating']);
+// Retrieve data for website routes
+Route::prefix('books')->group(function () {
+    // Get new books
+    Route::get('new', [BookDataController::class, 'getNewBook']);
+    // Get selling books
+    Route::get('selling', [BookDataController::class, 'getSellingBook']);
+    // Get books of category
+    Route::get('category/{id}', [BookDataController::class, 'getBookOfCategory']);
+    // Get books of author
+    Route::get('author/{id}', [BookDataController::class, 'getBookOfAuthor']);
+    // Get book details
+    Route::get('details/{id}', [BookDataController::class, 'getBookDetails']);
+    // Get book review
+    Route::get('reviews/{id}', [BookReviewController::class, 'getBookReview']);
+    // Get book rating
+    Route::get('ratings/{id}', [BookReviewController::class, 'getBookRating']);
+});
+
 
 // Admin route
 Route::post('/admin/login', [AdminAuthController::class, 'login']); 
 
 // User route
-Route::post('user/register', [UserAuthController::class, 'register']);
-Route::post('user/login', [UserAuthController::class, 'login']);
-Route::post('user/password/forgot', [PasswordController::class, 'forgotPassword'])->name('password.forgot');
-Route::put('user/password/recover/{token}', [PasswordController::class, 'recoverPassword'])->name('password.recover');
+Route::prefix('user')->group(function () {
+    Route::post('register', [UserAuthController::class, 'register']);
+    Route::post('login', [UserAuthController::class, 'login']);
+    Route::post('password/forgot', [PasswordController::class, 'forgotPassword'])->name('password.forgot');
+    Route::put('password/recover/{token}', [PasswordController::class, 'recoverPassword'])->name('password.recover');
+
+});
 
 
 
@@ -83,10 +86,15 @@ Route::put('user/password/recover/{token}', [PasswordController::class, 'recover
 |----------------------------------------------------------------
 */
 Route::group(['middleware' => ['auth:admins']], function () {
-    Route::post('admin/logout', [AdminAuthController::class, 'logout']);    //logout admin route 
-    // Manage User(get user list, manage status user)
-    Route::get('admin/users/list', [UserManagementController::class, 'getUserList']);
-    Route::put('admin/users/status/{id}', [UserManagementController::class, 'updateUserStatus']);
+
+    Route::prefix('admin')->group(function () {
+        // logout admin route
+        Route::post('logout', [AdminAuthController::class, 'logout']);     
+        // Manage User(get user list, manage status user)
+        Route::get('users/list', [UserManagementController::class, 'getUserList']);
+        Route::put('users/status/{id}', [UserManagementController::class, 'updateUserStatus']);
+    });
+   
     // Get selective data(cate, author, pub, supp)
     Route::get('data/select', [SelectiveDataController::class, 'index']);
     // Manage Author
@@ -105,37 +113,40 @@ Route::group(['middleware' => ['auth:admins']], function () {
     // Manage Discount
     Route::resource('discounts', DiscountController::class);
     // Manage Order (all order list, order details, update status order)
-    Route::get('orders', [AdminOrderController::class, 'index'])->name('orders.index');
-    Route::get('orders/{id}', [AdminOrderController::class, 'show'])->name('orders.show');
-    Route::get('orders/status/{id}', [AdminOrderController::class, 'statusShow'])->name('orders.status-show');
-    Route::put('orders/{id}', [AdminOrderController::class, 'updateOrderStatus'])->name('orders.update');
+    Route::prefix('orders')->group(function () {
+        Route::get('/', [AdminOrderController::class, 'index'])->name('orders.index');
+        Route::get('{id}', [AdminOrderController::class, 'show'])->name('orders.show');
+        Route::get('status/{id}', [AdminOrderController::class, 'statusShow'])->name('orders.status-show');
+        Route::put('{id}', [AdminOrderController::class, 'updateOrderStatus'])->name('orders.update');
+    });   
     // Dashboard
-    Route::get('dashboards/books/selling', [DashboardController::class, 'getSellingBook']);
-    Route::get('dashboards/orders/total', [DashboardController::class, 'getTotalOrdersInMonth']);
-    Route::get('dashboards/users/total', [DashboardController::class, 'getTotalUsersInMonth']);
-
+    Route::prefix('dashboards')->group(function () {
+        Route::get('books/selling', [DashboardController::class, 'getSellingBook']);
+        Route::get('orders/total', [DashboardController::class, 'getTotalOrdersInMonth']);
+        Route::get('users/total', [DashboardController::class, 'getTotalUsersInMonth']);
+    });
 });
 /*
 |----------------------------------------------------------------
 |User Protected Route
 |----------------------------------------------------------------
 */
-Route::group(['middleware' => ['auth:users']], function () {
+Route::group(['middleware' => ['auth:users'], 'prefix' => 'user' ], function () {
     // Personal user route(logout, get and update info, change password)
-    Route::post('user/logout', [UserAuthController::class, 'logout']);
-    Route::get('user/profile', [ProfileController::class, 'getPersonalData'])->name('profile.index');
-    Route::put('user/profile/update', [ProfileController::class, 'updatePersonalData'])->name('profile.update');
-    Route::put('user/password/change', [PasswordController::class, 'changePassword'])->name('password.change');
+    Route::post('logout', [UserAuthController::class, 'logout']);
+    Route::get('profile', [ProfileController::class, 'getPersonalData'])->name('profile.index');
+    Route::put('profile/update', [ProfileController::class, 'updatePersonalData'])->name('profile.update');
+    Route::put('password/change', [PasswordController::class, 'changePassword'])->name('password.change');
     // Order book route(create order, get all order, get details, cancel order)
-    Route::post('user/orders', [UserOrderController::class, 'store'])->name('user-orders.store');
-    Route::get('user/orders', [UserOrderController::class, 'index'])->name('user-orders.index');
-    Route::get('user/orders/{id}', [UserOrderController::class, 'show'])->name('user-orders.show');
-    Route::get('user/orders/status/{id}', [UserOrderController::class, 'statusShow'])->name('user-orders.status-show');
-    Route::delete('user/orders/{id}', [UserOrderController::class, 'destroy'])->name('user-orders.destroy'); // cancel order if status "Chờ xử lý"(delete permanent)
+    Route::post('orders', [UserOrderController::class, 'store'])->name('user-orders.store');
+    Route::get('orders', [UserOrderController::class, 'index'])->name('user-orders.index');
+    Route::get('orders/{id}', [UserOrderController::class, 'show'])->name('user-orders.show');
+    Route::get('orders/status/{id}', [UserOrderController::class, 'statusShow'])->name('user-orders.status-show');
+    Route::delete('orders/{id}', [UserOrderController::class, 'destroy'])->name('user-orders.destroy'); // cancel order if status "Chờ xử lý"(delete permanent)
     // Review route(create,edit,show)
-    Route::post('user/reviews', [ReviewController::class, 'store'])->name('reviews.store');
-    Route::put('user/reviews/{id}', [ReviewController::class, 'update'])->name('reviews.update');
-    Route::get('user/reviews/{id}', [ReviewController::class, 'show'])->name('reviews.show');
+    Route::post('reviews', [ReviewController::class, 'store'])->name('reviews.store');
+    Route::put('reviews/{id}', [ReviewController::class, 'update'])->name('reviews.update');
+    Route::get('reviews/{id}', [ReviewController::class, 'show'])->name('reviews.show');
 });
 
     Route::post('image/upload', [ImageController::class, 'store'])->name('images.store');
