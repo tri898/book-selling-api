@@ -99,5 +99,25 @@ class GoodsReceivedNoteController extends BaseController
         $goodsReceivedNote->update(['status' => 0]);
         return $this->sendResponse('Hủy phiếu nhập thành công', [],204);
     }
+    /**
+     * Restore the specified resource from storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function update($id)
+    {
+        $goodsReceivedNote = GoodsReceivedNote::where('status',0)->find($id);
+        if (is_null($goodsReceivedNote)) {
+            return $this->sendError('Không tìm thấy phiếu nhập',[], 404); 
+        }
+        // update quantity in stock
+        $result = $goodsReceivedNote->details()->pluck('book_id','quantity');
+        $result->each(function($key, $item) {
+            $increase= Inventory::where('book_id', $key)->increment('available_quantity', $item);
+        });
+        $goodsReceivedNote->update(['status' => 1]);
+        return $this->sendResponse('Hoàn tác phiếu nhập thành công', [],200);
+    }
     
 }

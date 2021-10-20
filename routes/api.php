@@ -108,7 +108,7 @@ Route::group(['middleware' => ['auth:admins']], function () {
     // Manage Book (include book cate, image, inventory)
     Route::resource('books', BookController::class);
     // Manage GRN no update
-    Route::resource('goods-received-notes', GoodsReceivedNoteController::class)->except('update');
+    Route::resource('goods-received-notes', GoodsReceivedNoteController::class);
     Route::get('goods-received-notes/status/{id}', [GoodsReceivedNoteController::class, 'statusShow']);
     // Manage Discount
     Route::resource('discounts', DiscountController::class);
@@ -142,7 +142,7 @@ Route::group(['middleware' => ['auth:users'], 'prefix' => 'user' ], function () 
     Route::get('orders', [UserOrderController::class, 'index'])->name('user-orders.index');
     Route::get('orders/{id}', [UserOrderController::class, 'show'])->name('user-orders.show');
     Route::get('orders/status/{id}', [UserOrderController::class, 'statusShow'])->name('user-orders.status-show');
-    Route::delete('orders/{id}', [UserOrderController::class, 'destroy'])->name('user-orders.destroy'); // cancel order if status "Chờ xử lý"(delete permanent)
+    Route::delete('orders/{id}', [UserOrderController::class, 'destroy'])->name('user-orders.destroy'); 
     // Review route(create,edit,show)
     Route::post('reviews', [ReviewController::class, 'store'])->name('reviews.store');
     Route::put('reviews/{id}', [ReviewController::class, 'update'])->name('reviews.update');
