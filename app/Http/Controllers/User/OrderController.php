@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\User;
 
+use Illuminate\Http\Request;
 use App\Models\{Order, Inventory};
 use App\Http\Requests\OrderRequest;
 use App\Http\Controllers\BaseController as BaseController;
@@ -15,11 +16,16 @@ class OrderController extends BaseController
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $getUserCurrent = auth()->user()->id;
-        $records = Order::where('user_id',$getUserCurrent)
-                          ->with('details')->orderByDesc('id')->get();     
+        $type = $request->input('type');
+        if($request->has('type')) {
+            $records = Order::where(['user_id'=> auth()->user()->id, 'status' => $type])
+                              ->with('details')->orderByDesc('id')->get();
+        } else {
+            $records = Order::where('user_id',auth()->user()->id)
+                              ->with('details')->orderByDesc('id')->get();   
+        }   
             
         return $this->sendResponse('Truy xuất danh sách đơn hàng thành công.',
                                     OrderResource::collection($records),200);
@@ -32,22 +38,12 @@ class OrderController extends BaseController
      */
     public function show($id)
     {
-        $getUserCurrent = auth()->user()->id;
-        $order = Order::where('user_id', $getUserCurrent)->with('details')->find($id);
+        $order = Order::where('user_id', auth()->user()->id)->with('details')->find($id);
   
         if (is_null($order)) {
             return $this->sendError('Không tìm thấy đơn hàng',[], 404);
         }
         return new OrderResource($order);  
-    }
-    public function statusShow($id)
-    {
-        $getUserCurrent = auth()->user()->id;
-        $records = Order::where(['user_id'=> $getUserCurrent, 'status' => $id])
-                          ->with('details')->get();
-  
-        return $this->sendResponse('Truy xuất danh sách đơn hàng theo trạng thái thành công.',
-                                    OrderResource::collection($records),200);
     }
     /**
      * Store a newly created resource in storage.
@@ -97,9 +93,7 @@ class OrderController extends BaseController
      */
     public function destroy($id)
     {
-        $getUserCurrent = auth()->user()->id;
-        
-        $order = Order::where('user_id', $getUserCurrent)->where('status',1)->find($id);
+        $order = Order::where('user_id', auth()->user()->id)->where('status',1)->find($id);
         if (is_null($order)) {
             return $this->sendError('Có lỗi.Không thể thực hiện thao tác',[], 409); 
         }

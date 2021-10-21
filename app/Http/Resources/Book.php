@@ -30,6 +30,7 @@ class Book extends JsonResource
             'slug' => $this->slug,
             'translator' => $this->translator ?? '',
             'quantity' => $this->inventory->available_quantity,
+            'discount' => $this->discount->percent ?? 0,
             'author' => [
                 'id' => $this->author->id,
                 'name' => $this->author->name

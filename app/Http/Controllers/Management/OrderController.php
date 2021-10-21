@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Management;
 
+use Illuminate\Http\Request;
 use App\Models\Order;
 use App\Http\Requests\OrderRequest;
 use App\Http\Controllers\BaseController as BaseController;
@@ -14,9 +15,16 @@ class OrderController extends BaseController
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $records = Order::with('details')->orderByDesc('id')->get();         
+        $type = $request->input('type');
+        if($request->has('type')) {
+            $records = Order::where('status',$type)->with('details')
+                              ->orderByDesc('id')->get();
+        } else {
+            $records = Order::with('details')->orderByDesc('id')->get();   
+        }
+               
         return $this->sendResponse('Truy xuất danh sách đơn hàng thành công.',
                                     OrderResource::collection($records),200);
     }
@@ -34,20 +42,6 @@ class OrderController extends BaseController
             return $this->sendError('Không tìm thấy đơn hàng',[], 404); 
         }
         return new OrderResource($order);  
-    }
-   
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function statusShow($id)
-    {
-        $records = Order::where('status',$id)->with('details')->get();
-
-        return $this->sendResponse('Truy xuất danh sách đơn hàng theo trạng thái thành công.',
-                                    OrderResource::collection($records),200);
     }
     /**
      * Update the specified resource in storage.

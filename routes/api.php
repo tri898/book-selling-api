@@ -109,14 +109,12 @@ Route::group(['middleware' => ['auth:admins']], function () {
     Route::resource('books', BookController::class);
     // Manage GRN no update
     Route::resource('goods-received-notes', GoodsReceivedNoteController::class);
-    Route::get('goods-received-notes/status/{id}', [GoodsReceivedNoteController::class, 'statusShow']);
     // Manage Discount
     Route::resource('discounts', DiscountController::class);
     // Manage Order (all order list, order details, update status order)
     Route::prefix('orders')->group(function () {
         Route::get('/', [AdminOrderController::class, 'index'])->name('orders.index');
         Route::get('{id}', [AdminOrderController::class, 'show'])->name('orders.show');
-        Route::get('status/{id}', [AdminOrderController::class, 'statusShow'])->name('orders.status-show');
         Route::put('{id}', [AdminOrderController::class, 'updateOrderStatus'])->name('orders.update');
     });   
     // Dashboard
@@ -141,7 +139,6 @@ Route::group(['middleware' => ['auth:users'], 'prefix' => 'user' ], function () 
     Route::post('orders', [UserOrderController::class, 'store'])->name('user-orders.store');
     Route::get('orders', [UserOrderController::class, 'index'])->name('user-orders.index');
     Route::get('orders/{id}', [UserOrderController::class, 'show'])->name('user-orders.show');
-    Route::get('orders/status/{id}', [UserOrderController::class, 'statusShow'])->name('user-orders.status-show');
     Route::delete('orders/{id}', [UserOrderController::class, 'destroy'])->name('user-orders.destroy'); 
     // Review route(create,edit,show)
     Route::post('reviews', [ReviewController::class, 'store'])->name('reviews.store');

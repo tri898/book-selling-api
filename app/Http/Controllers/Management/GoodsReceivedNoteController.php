@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Management;
 
+use Illuminate\Http\Request;
 use App\Models\{GoodsReceivedNote, Inventory};
 use App\Http\Requests\GRNRequest;
 use App\Http\Controllers\BaseController as BaseController;
@@ -14,10 +15,16 @@ class GoodsReceivedNoteController extends BaseController
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
-    {
-        $records = GoodsReceivedNote::with('details')->orderByDesc('id')->get();    
-             
+    public function index(Request $request)
+    {    
+        $type = $request->input('type');
+        if($request->has('type')) {
+            $records = GoodsReceivedNote::where('status',$type)->with('details')
+                                          ->orderByDesc('id')->get();
+        } else {
+            $records = GoodsReceivedNote::with('details')->orderByDesc('id')->get(); 
+        }
+          
         return $this->sendResponse('Truy xuất danh sách phiếu nhập thành công.',
                                     GoodsReceivedNoteResource::collection($records),200);
     }
@@ -64,20 +71,6 @@ class GoodsReceivedNoteController extends BaseController
         }
 
         return new GoodsReceivedNoteResource($goodsReceivedNote);
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function statusShow($id)
-    {
-        $records = GoodsReceivedNote::where('status',$id)->with('details')->get();
-
-        return $this->sendResponse('Truy xuất danh sách phiếu nhập theo trạng thái thành công.',
-                                    GoodsReceivedNoteResource::collection($records),200);
     }
     /**
      * Remove the specified resource from storage.
