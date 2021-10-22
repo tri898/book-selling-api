@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Management;
 
 use Illuminate\Http\Request;
-use App\Models\Order;
+use App\Models\{Order, Inventory};
 use App\Http\Requests\OrderRequest;
 use App\Http\Controllers\BaseController as BaseController;
 use App\Http\Resources\Order as OrderResource;
@@ -58,7 +58,25 @@ class OrderController extends BaseController
         if(is_null($order)) {
             return $this->sendError('Không tìm thấy đơn hàng',[], 404);
         }
-        // update status
+
+        if($request->status === 2) {
+            $getBookOrder = $order->details()->get(['book_id','quantity'])->toArray();
+            // check quantity in stock
+            foreach ($getBookOrder as $item) {
+                $checkQuantity = Inventory::where('book_id', $item['book_id'])
+                                            ->get('available_quantity');
+    
+                $quantity = $checkQuantity[0]['available_quantity'];
+                if($quantity < $item['quantity']) {
+                return $this->sendError('Có lỗi. Sách trong kho không đủ.', [], 409);       
+               }
+            };
+            // update stock
+            foreach ($getBookOrder as $item) {
+                $decrease= Inventory::where('book_id', $item['book_id'])->decrement('available_quantity', $item['quantity']);
+             };
+            
+        }
         $order->update(['status' => $fields['status']]);
         
         return $this->sendResponse('Đã cập nhật trạng thái đơn hàng thành công.',

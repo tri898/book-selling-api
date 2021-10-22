@@ -85,10 +85,11 @@ class GoodsReceivedNoteController extends BaseController
             return $this->sendError('Không tìm thấy phiếu nhập',[], 404); 
         }
         // update quantity in stock
-        $result = $goodsReceivedNote->details()->pluck('book_id','quantity');
-        $result->each(function($key, $item) {
-            $decrease= Inventory::where('book_id', $key)->decrement('available_quantity', $item);
-        });
+        $result = $goodsReceivedNote->details()->get(['book_id','quantity'])->toArray();
+        foreach ($result as $item) {
+            $decrease= Inventory::where('book_id', $item['book_id'])
+                                  ->decrement('available_quantity', $item['quantity']);
+        };
         $goodsReceivedNote->update(['status' => 0]);
         return $this->sendResponse('Hủy phiếu nhập thành công', [],204);
     }
@@ -105,10 +106,11 @@ class GoodsReceivedNoteController extends BaseController
             return $this->sendError('Không tìm thấy phiếu nhập',[], 404); 
         }
         // update quantity in stock
-        $result = $goodsReceivedNote->details()->pluck('book_id','quantity');
-        $result->each(function($key, $item) {
-            $increase= Inventory::where('book_id', $key)->increment('available_quantity', $item);
-        });
+        $result = $goodsReceivedNote->details()->get(['book_id','quantity'])->toArray();
+        foreach ($result as $item) {
+            $increase= Inventory::where('book_id', $item['book_id'])
+                                  ->increment('available_quantity', $item['quantity']);
+        };
         $goodsReceivedNote->update(['status' => 1]);
         return $this->sendResponse('Hoàn tác phiếu nhập thành công', [],200);
     }

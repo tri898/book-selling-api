@@ -97,11 +97,6 @@ class OrderController extends BaseController
         if (is_null($order)) {
             return $this->sendError('Có lỗi.Không thể thực hiện thao tác',[], 409); 
         }
-         // update quantity in stock
-         $result = $order->details()->pluck('book_id','quantity');
-         $result->each(function($key, $item) {
-            $increase= Inventory::where('book_id', $key)->increment('available_quantity', $item);
-         });
 
         $order->update(['status' => 0]);
 
