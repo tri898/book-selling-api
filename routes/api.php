@@ -120,8 +120,11 @@ Route::group(['middleware' => ['auth:admins']], function () {
     // Dashboard
     Route::prefix('dashboards')->group(function () {
         Route::get('books/selling', [DashboardController::class, 'getSellingBook']);
-        Route::get('orders/total', [DashboardController::class, 'getTotalOrdersInMonth']);
-        Route::get('users/total', [DashboardController::class, 'getTotalUsersInMonth']);
+        Route::get('books/statistic', [DashboardController::class, 'getBookStatistics']);
+        Route::get('orders/statistic', [DashboardController::class, 'getOrderStatisticsInMonth']);
+        Route::get('users/statistic', [DashboardController::class, 'getUserStatisticsInMonth']);
+        Route::get('grn/statistic', [DashboardController::class, 'getGRNStatisticsInMonth']);
+
     });
 });
 /*

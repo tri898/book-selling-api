@@ -17,26 +17,32 @@ class ReviewController extends BaseController
      */
     public function getBookReview($id)
     {      
-        $review = Book::find($id)->reviews()->get();
-
+        $book = Book::find($id);      
+        if (is_null($book)) {
+            return $this->sendError('Không tìm thấy cuốn sách nào',[], 404); 
+        }
+        $review = $book->reviews()->get();
         return $this->sendResponse('Truy xuất đánh giá & xếp hạng sách thành công.',
                                     ReviewResource::collection($review),200);
     }
     public function getBookRating($id)
     {
-        $avgRating = Book::find($id)->reviews()->avg('rating') ?? 0;
-        $totalRating = Book::find($id)->reviews()->count('rating');
-        $starRating = Book::find($id)->reviews()->select('rating', DB::raw('count(reviews.id) as amount'))
-        ->groupBy('reviews.rating')
-        ->orderBy('rating', 'desc')
-        ->get();
-
-        $review = Book::find($id)->reviews()->get();
+        $book = Book::find($id);      
+        if (is_null($book)) {
+            return $this->sendError('Không tìm thấy cuốn sách nào',[], 404); 
+        }
+        $avgRating = $book->reviews()->avg('rating') ?? 0;
+        $totalRating = $book->reviews()->count('rating');
+        $starRating = $book->reviews()->select('rating', DB::raw('count(reviews.id) as amount'))
+                           ->groupBy('reviews.rating')
+                           ->orderBy('rating', 'desc')
+                           ->get();
+ 
         $record['total'] = $totalRating;
         $record['average'] = $avgRating;   
         $record['stars'] = $starRating;
 
-        return $this->sendResponse('Truy xuất thống kê xếp hạng sách thành công.',
+        return $this->sendResponse('Thống kê xếp hạng sách thành công.',
                                     $record,200);
     }
 }

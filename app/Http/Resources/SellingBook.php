@@ -4,7 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class Dashboard extends JsonResource
+class SellingBook extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -17,7 +17,8 @@ class Dashboard extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'sold' => $this->orders_sum_order_detailsquantity ?? 0
+            'sold' => $this->orders_sum_order_detailsquantity ?? 0,
+            'quantity_in_stock' => $this->inventory->available_quantity
         ];
     }
 }
