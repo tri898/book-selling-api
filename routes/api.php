@@ -27,6 +27,7 @@ use App\Http\Controllers\ImageController;
 use App\Http\Controllers\Data\{
     BookController as BookDataController,
     ReviewController as BookReviewController,
+    SelectiveDataController as BookSelectiveDataController
 };
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -64,7 +65,7 @@ Route::prefix('books')->group(function () {
     // Get book rating
     Route::get('ratings/{id}', [BookReviewController::class, 'getBookRating']);
 });
-
+Route::get('main/select', [BookSelectiveDataController::class, 'index']);
 
 // Admin route
 Route::post('/admin/login', [AdminAuthController::class, 'login']); 
@@ -121,9 +122,9 @@ Route::group(['middleware' => ['auth:admins']], function () {
     Route::prefix('dashboards')->group(function () {
         Route::get('books/selling', [DashboardController::class, 'getSellingBook']);
         Route::get('books/statistic', [DashboardController::class, 'getBookStatistics']);
-        Route::get('orders/statistic', [DashboardController::class, 'getOrderStatisticsInMonth']);
-        Route::get('users/statistic', [DashboardController::class, 'getUserStatisticsInMonth']);
-        Route::get('grn/statistic', [DashboardController::class, 'getGRNStatisticsInMonth']);
+        Route::get('orders/statistic', [DashboardController::class, 'getTotalIncomeInMonth']);
+        Route::get('users/statistic', [DashboardController::class, 'getUserStatistics']);
+        Route::get('grn/statistic', [DashboardController::class, 'getGRNStatistics']);
 
     });
 });

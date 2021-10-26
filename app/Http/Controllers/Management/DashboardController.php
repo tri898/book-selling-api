@@ -39,48 +39,66 @@ class DashboardController extends BaseController
                                     SellingBookResource::collection($records),200); 
     }
 
-    public function getOrderStatisticsInMonth(Request $request)
+    public function getTotalIncomeInMonth(Request $request)
     {
         $month = $request->input('month', Carbon::now()->month);
         $year = $request->input('year', Carbon::now()->year);
 
-        $records = Order::select('status', DB::raw('count(id) as total_orders'),
-                          DB::raw('sum(total) as total_income'))
+         $totalImport = GoodsReceivedNote::select(DB::raw('sum(total) as total_import'))
+                                        ->whereMonth('created_at', $month)
+                                        ->whereYear('created_at', $year)
+                                        ->whereFormality(1)
+                                        ->whereStatus(1)
+                                        ->get();
+        $totalExport = Order::select(DB::raw('sum(total) as total_export'))
                           ->whereMonth('created_at', $month)
                           ->whereYear('created_at', $year)
-                          ->groupBy('status')
+                          ->whereStatus(4)
                           ->get();
-
-        return $this->sendResponse('Tổng số đơn và giá trị đơn hàng theo trạng thái trong tháng.',
-                                    $records,200);
+        $totalIncome = $totalExport[0]['total_export'] - $totalImport[0]['total_import'];                
+        $response = [
+            'total_import' => $totalImport[0]['total_import'] ?? 0,
+            'total_export' => $totalExport[0]['total_export'] ?? 0,
+            'total_income' => $totalIncome
+        ];
+        return $this->sendResponse('Tổng nhập,tổng xuất, lợi nhuận trong tháng.',
+                                    $response,200);
                           
     }
-    public function getUserStatisticsInMonth(Request $request)
+    public function getUserStatistics(Request $request)
     {
-        $month = $request->input('month', Carbon::now()->month);
         $year = $request->input('year', Carbon::now()->year);
 
-        $records = User::whereMonth('created_at', $month)
-                          ->whereYear('created_at', $year)
-                          ->count();
-        return $this->sendResponse('Truy xuất tổng người dùng đăng ký mới trong tháng thành công.',
-                                    $records,200);
+        $records = User::select(DB::raw('MONTH(created_at) as month'),
+                        DB::raw('count(id) as value'))
+                        ->whereYear('created_at', $year)
+                        ->groupBy('month')
+                        ->get()->toArray();
+       
+        $userArray = $this->ConvertToArray($records,12);
+        
+        return $this->sendResponse('Truy xuất tổng người dùng đăng ký mới trong năm thành công.',
+                                    json_encode($userArray),200);
                           
     }
-    public function getGRNStatisticsInMonth(Request $request)
+    public function getGRNStatistics(Request $request)
     {
-        $month = $request->input('month', Carbon::now()->month);
         $year = $request->input('year', Carbon::now()->year);
 
-        $records = GoodsReceivedNote::select('formality', DB::raw('count(id) as total_import'),
-                                            DB::raw('sum(total) as total_income'))
-                                            ->whereMonth('created_at', $month)
+        $records = GoodsReceivedNote::select('formality',DB::raw('MONTH(created_at) as month'),
+                                      DB::raw('count(id) as value'))
                                             ->whereYear('created_at', $year)
-                                            ->whereStatus(1)
-                                            ->groupBy('formality')
-                                            ->get();
-        return $this->sendResponse('Tổng đơn nhập kho và giá trị của nhập mới/nhập lại kho trong tháng.',
-                                    $records,200);
+                                            ->whereStatus(1);
+        $recordsClone =  clone $records;                                                 
+        $import = $records->whereFormality(1)->groupBy('month')->get();
+        $reimport = $recordsClone->whereFormality(2)->groupBy('month')->get();
+        
+        $response = [
+            'import' => json_encode($this->ConvertToArray($import,12)),
+            'reimport' => json_encode($this->ConvertToArray($reimport,12)),
+        ];
+        return $this->sendResponse('Tổng đơn nhập kho của nhập mới/nhập lại kho trong năm.',
+                                    $response,200);
                           
     }
     public function getBookStatistics()
@@ -93,4 +111,5 @@ class DashboardController extends BaseController
         return $this->sendResponse('Số lượng sách đã nhập và còn lại trong kho.',
                                     BookStatisticResource::collection($records),200); 
     }
+    
 }

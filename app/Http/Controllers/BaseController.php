@@ -45,5 +45,24 @@ class BaseController extends Controller
 
         return response()->json($response, $code);
     }
+    /**
+     * return new array.
+     *
+     * @return array
+     */
+    public function ConvertToArray($object, $number)
+    { 
+        foreach($object as $item) {
+            $newObject[$item['month']] = $item['value'];
+        }
+        $result = [];
+        for($i = 1; $i<= $number; $i++) {
+            if( isset($newObject[$i]) ){
+                array_push($result,$newObject[$i]);
+             }
+             else array_push($result,0);
+        }
+        return $result;
+    }
 
 }
