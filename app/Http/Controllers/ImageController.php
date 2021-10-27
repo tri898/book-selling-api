@@ -13,6 +13,8 @@ class ImageController extends BaseController
         if($fields['type'] ==1) $folder = 'users';
         if($fields['type'] ==2) $folder = 'authors';
         if($fields['type'] ==3) $folder = 'books';
+        if($fields['type'] ==4) $folder = 'sliders';
+
         
         $getName = date('YmdHis') . '.' . $fields['image']->getClientOriginalExtension();
         if(file_exists($getName)) {

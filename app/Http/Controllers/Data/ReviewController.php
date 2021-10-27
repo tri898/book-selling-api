@@ -33,14 +33,14 @@ class ReviewController extends BaseController
         }
         $avgRating = $book->reviews()->avg('rating') ?? 0;
         $totalRating = $book->reviews()->count('rating');
-        $starRating = $book->reviews()->select('rating', DB::raw('count(reviews.id) as amount'))
+        $starRating = $book->reviews()->select('rating as code', DB::raw('count(reviews.id) as value'))
                            ->groupBy('reviews.rating')
-                           ->orderBy('rating', 'desc')
+                           ->orderBy('code', 'desc')
                            ->get();
- 
+        $starRatingArray = $this->ConvertToArray($starRating,5);
         $record['total'] = $totalRating;
         $record['average'] = $avgRating;   
-        $record['stars'] = $starRating;
+        $record['stars'] = json_encode($starRatingArray);
 
         return $this->sendResponse('Thống kê xếp hạng sách thành công.',
                                     $record,200);

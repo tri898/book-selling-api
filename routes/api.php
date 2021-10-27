@@ -13,6 +13,7 @@ use App\Http\Controllers\Management\{
     BookController,
     GoodsReceivedNoteController,
     DiscountController,
+    SliderController,
     OrderController as AdminOrderController,
     DashboardController,
     SelectiveDataController
@@ -27,6 +28,7 @@ use App\Http\Controllers\ImageController;
 use App\Http\Controllers\Data\{
     BookController as BookDataController,
     ReviewController as BookReviewController,
+    SliderController as BookSliderController,
     SelectiveDataController as BookSelectiveDataController
 };
 use Illuminate\Http\Request;
@@ -66,6 +68,8 @@ Route::prefix('books')->group(function () {
     Route::get('ratings/{id}', [BookReviewController::class, 'getBookRating']);
 });
 Route::get('main/select', [BookSelectiveDataController::class, 'index']);
+Route::get('main/sliders', [BookSliderController::class, 'index']);
+
 
 // Admin route
 Route::post('/admin/login', [AdminAuthController::class, 'login']); 
@@ -112,6 +116,8 @@ Route::group(['middleware' => ['auth:admins']], function () {
     Route::resource('goods-received-notes', GoodsReceivedNoteController::class);
     // Manage Discount
     Route::resource('discounts', DiscountController::class);
+    // Manage Slider
+    Route::resource('sliders', SliderController::class);
     // Manage Order (all order list, order details, update status order)
     Route::prefix('orders')->group(function () {
         Route::get('/', [AdminOrderController::class, 'index'])->name('orders.index');

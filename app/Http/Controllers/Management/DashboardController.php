@@ -69,10 +69,10 @@ class DashboardController extends BaseController
     {
         $year = $request->input('year', Carbon::now()->year);
 
-        $records = User::select(DB::raw('MONTH(created_at) as month'),
+        $records = User::select(DB::raw('MONTH(created_at) as code'),
                         DB::raw('count(id) as value'))
                         ->whereYear('created_at', $year)
-                        ->groupBy('month')
+                        ->groupBy('code')                   
                         ->get()->toArray();
        
         $userArray = $this->ConvertToArray($records,12);
@@ -85,13 +85,13 @@ class DashboardController extends BaseController
     {
         $year = $request->input('year', Carbon::now()->year);
 
-        $records = GoodsReceivedNote::select('formality',DB::raw('MONTH(created_at) as month'),
+        $records = GoodsReceivedNote::select('formality',DB::raw('MONTH(created_at) as code'),
                                       DB::raw('count(id) as value'))
                                             ->whereYear('created_at', $year)
                                             ->whereStatus(1);
         $recordsClone =  clone $records;                                                 
-        $import = $records->whereFormality(1)->groupBy('month')->get();
-        $reimport = $recordsClone->whereFormality(2)->groupBy('month')->get();
+        $import = $records->whereFormality(1)->groupBy('code')->get();
+        $reimport = $recordsClone->whereFormality(2)->groupBy('code')->get();
         
         $response = [
             'import' => json_encode($this->ConvertToArray($import,12)),

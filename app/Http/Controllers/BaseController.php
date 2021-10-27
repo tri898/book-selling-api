@@ -53,7 +53,7 @@ class BaseController extends Controller
     public function ConvertToArray($object, $number)
     { 
         foreach($object as $item) {
-            $newObject[$item['month']] = $item['value'];
+            $newObject[$item['code']] = $item['value'];
         }
         $result = [];
         for($i = 1; $i<= $number; $i++) {

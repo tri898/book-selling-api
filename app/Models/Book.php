@@ -40,6 +40,10 @@ class Book extends Model
     {
         return $this->hasOne(Discount::class,'book_id','id')->select('percent');
     }
+    public function slider()
+    {
+        return $this->hasOne(Slider::class,'book_id','id');
+    }
     public function image()
     {
         return $this->hasOne(Image::class,'book_id','id');

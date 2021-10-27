@@ -113,6 +113,9 @@ class BookController extends BaseController
         if($book->discount()->count()) {
             return $this->sendError('Không thể xóa do có liên kết đến giảm giá.',[], 409); 
         }
+        if($book->slider()->count()) {
+            return $this->sendError('Không thể xóa do có liên kết đến slider.',[], 409); 
+        }
         if($book->orders()->count()) {
             return $this->sendError('Không thể xóa do có liên kết đến đặt hàng.',[], 409); 
         }

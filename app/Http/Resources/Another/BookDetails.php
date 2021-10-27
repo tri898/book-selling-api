@@ -32,14 +32,16 @@ class BookDetails extends JsonResource
             'quantity' => $this->inventory->available_quantity,
             'discount' => $this->discount->percent ?? 0,
             'author' => [
+                'id' => $this->author->id,
                 'name' => $this->author->name,
                 'slug' => $this->author->slug,
             ],
             'publisher' => $this->publisher->name,
             'supplier' => $this->supplier->name,
             'category' => [
-                'id' => $this->bookCategory->category->name,
-                'name' => $this->bookCategory->category->slug
+                'id' => $this->bookCategory->category->id,
+                'name' => $this->bookCategory->category->name,
+                'slug' => $this->bookCategory->category->slug
             ],
             'image' =>  [
                 'front_cover' => $this->image->front_cover,
