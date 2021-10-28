@@ -129,6 +129,7 @@ Route::group(['middleware' => ['auth:admins']], function () {
         Route::get('books/selling', [DashboardController::class, 'getSellingBook']);
         Route::get('books/statistic', [DashboardController::class, 'getBookStatistics']);
         Route::get('orders/statistic', [DashboardController::class, 'getTotalIncomeInMonth']);
+        Route::get('orders/total', [DashboardController::class, 'getTotalOrderInMonth']);
         Route::get('users/statistic', [DashboardController::class, 'getUserStatistics']);
         Route::get('grn/statistic', [DashboardController::class, 'getGRNStatistics']);
 

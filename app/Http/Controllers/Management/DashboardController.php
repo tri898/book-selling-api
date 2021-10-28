@@ -65,6 +65,20 @@ class DashboardController extends BaseController
                                     $response,200);
                           
     }
+    public function getTotalOrderInMonth(Request $request)
+    {
+        $month = $request->input('month', Carbon::now()->month);
+        $year = $request->input('year', Carbon::now()->year);
+
+        $records = Order::select('status', DB::raw('count(id) as total_orders'),
+                          DB::raw('sum(total) as total_income'))
+                          ->whereMonth('created_at', $month)
+                          ->whereYear('created_at', $year)
+                          ->groupBy('status')
+                          ->get();
+        return $this->sendResponse('Tổng số đơn và giá trị đơn hàng theo trạng thái trong tháng.',
+                                    $records,200);                  
+    }
     public function getUserStatistics(Request $request)
     {
         $year = $request->input('year', Carbon::now()->year);
