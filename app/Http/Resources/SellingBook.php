@@ -17,7 +17,9 @@ class SellingBook extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'sold' => $this->orders_sum_order_detailsquantity ?? 0,
-            'quantity_in_stock' => $this->inventory->available_quantity
+            'quantity_in_stock' => $this->whenLoaded('inventory', function () {
+                return $this->inventory->available_quantity;
+            })
         ];
     }
 }

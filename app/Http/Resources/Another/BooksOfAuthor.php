@@ -16,9 +16,11 @@ class BooksOfAuthor extends JsonResource
     public function toArray($request)
     {
         return [
+            'id' => $this->id,
             'name' => $this->name,
             'description' => $this->description,
             'slug' => $this->slug,
+            'image' => $this->image,
             'books' => BookResource::collection($this->whenLoaded('books')),
         ];
     }

@@ -26,14 +26,15 @@ class DashboardController extends BaseController
         $year = $request->input('year', Carbon::now()->year);
 
         $records = Book::query()
-            ->select('id','name')
-            ->withSum(['orders' => function ($query) use ($month, $year) {
-                $query->whereMonth('orders.created_at', $month)
-                      ->whereYear('orders.created_at', $year);                 
-            }],'order_details.quantity')
-            ->orderByDesc('orders_sum_order_detailsquantity')
-            ->take($limit)
-            ->get();
+                        ->select('id','name')
+                        ->with('inventory')
+                        ->withSum(['orders' => function ($query) use ($month, $year) {
+                            $query->whereMonth('orders.created_at', $month)
+                                  ->whereYear('orders.created_at', $year);                 
+                        }],'order_details.quantity')
+                        ->orderByDesc('orders_sum_order_detailsquantity')
+                        ->take($limit)
+                        ->get();
 
         return $this->sendResponse('Top sách bán chạy và số lượng đã bán trong tháng.',
                                     SellingBookResource::collection($records),200); 
@@ -101,8 +102,8 @@ class DashboardController extends BaseController
 
         $records = GoodsReceivedNote::select('formality',DB::raw('MONTH(created_at) as code'),
                                       DB::raw('count(id) as value'))
-                                            ->whereYear('created_at', $year)
-                                            ->whereStatus(1);
+                                      ->whereYear('created_at', $year)
+                                      ->whereStatus(1);
         $recordsClone =  clone $records;                                                 
         $import = $records->whereFormality(1)->groupBy('code')->get();
         $reimport = $recordsClone->whereFormality(2)->groupBy('code')->get();
@@ -119,6 +120,7 @@ class DashboardController extends BaseController
     {
         $records = Book::query()
                         ->select('id','name')
+                        ->with('inventory')
                         ->withSum('goodsReceivedNotes as import','goods_received_note_details.quantity')
                         ->orderByDesc('import')
                         ->get();

@@ -17,7 +17,10 @@ class SliderController extends BaseController
      */
     public function index()
     {
-        $records = Slider::orderByDesc('id')->get();         
+        $records = Slider::with('book')
+                           ->orderByDesc('id')
+                           ->get();        
+
         return $this->sendResponse('Truy xuất danh sách slider thành công.',
                                     SliderResource::collection($records),200);
     }
@@ -34,7 +37,7 @@ class SliderController extends BaseController
         
         $slider = Slider::create($fields);
         return $this->sendResponse('Tạo slider thành công.',
-                                    new SliderResource($slider),201);
+                                    new SliderResource($slider->load('book')),201);
     }
 
     /**
@@ -45,7 +48,7 @@ class SliderController extends BaseController
      */
     public function show($id)
     {
-        $slider = Slider::find($id);
+        $slider = Slider::with('book')->find($id);
   
         if (is_null($slider)) {
             return $this->sendError(' Không tìm thấy slider',[], 404); 
@@ -71,7 +74,7 @@ class SliderController extends BaseController
 
         $slider->update($fields);
         return $this->sendResponse('Đã cập nhật slider thành công.',
-                                    new SliderResource($slider),200);
+                                    new SliderResource($slider->load('book')),200);
     }
 
     /**

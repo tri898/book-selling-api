@@ -22,7 +22,7 @@ class OrderDetail extends Model
     }
     public function order()
     {
-        return $this->belongsTo(Order::class,'order_id','id')->select(['user_id','status']);
+        return $this->belongsTo(Order::class,'order_id','id');
     }
     public function review()
     {

@@ -17,7 +17,9 @@ class Order extends JsonResource
     {
         return [
             'id' => $this->id,
-            'user' => $this->user->email,
+            'user' => $this->whenLoaded('user', function () {
+                return $this->user->email;
+            }),
             'name' => $this->name,
             'address' => $this->address,
             'phone' => $this->phone,

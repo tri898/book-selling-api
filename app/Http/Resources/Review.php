@@ -18,7 +18,9 @@ class Review extends JsonResource
             'order_detail_id' => $this->order_detail_id,
             'rating' => $this->rating,
             'comment' => $this->comment,
-            'user' => $this->orderDetails->order->user->name,            
+            'user' => $this->whenLoaded('orderDetails', function () {
+                return $this->orderDetails->order->user->name;
+            }),            
             'created_at' => $this->created_at->format('d/m/Y H:i:s'),
             'updated_at' => $this->updated_at->format('d/m/Y H:i:s')
         ];

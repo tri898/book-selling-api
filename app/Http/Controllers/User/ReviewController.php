@@ -31,7 +31,7 @@ class ReviewController extends BaseController
         $review = $itemOrder->review()->create($fields);
         $itemOrder->update(['review_status' => 1]);
         return $this->sendResponse('Tạo đánh giá & xếp hạng thành công.',
-                                    new ReviewResource($review),201);
+                                    new ReviewResource($review->load('orderDetails')),201);
     }
 
     /**
@@ -42,7 +42,9 @@ class ReviewController extends BaseController
      */
     public function show($id)
     {
-        $review = Review::where('order_detail_id',$id)->first();
+        $review = Review::where('order_detail_id',$id)
+                          ->with('orderDetails.order.user')
+                          ->first();
         if (is_null($review)) {
             return $this->sendError('Không tìm thấy đánh giá.',[], 404); 
         }
@@ -75,6 +77,6 @@ class ReviewController extends BaseController
         }
         $review->update($fields);
         return $this->sendResponse('Sửa đánh giá & xếp hạng thành công.',
-                                    new ReviewResource($review),200);
+                                    new ReviewResource($review->load('orderDetails.order.user')),200);
     }
 }

@@ -24,6 +24,7 @@ class BookController extends BaseController
         $limit =  $request->input('limit', 10);
         $records = Book::query()
             ->select('id','name','author_id','description','unit_price','slug')
+            ->with('author','discount','image')
             ->take($limit)
             ->latest()
             ->get();
@@ -41,6 +42,7 @@ class BookController extends BaseController
         $limit =  $request->input('limit', 10);
         $records = Book::query()
             ->select('id','name','author_id','description','unit_price','slug')
+            ->with('author','discount','image')
             ->withSum('orders','order_details.quantity')
             ->orderByDesc('orders_sum_order_detailsquantity')
             ->take($limit)
@@ -57,7 +59,7 @@ class BookController extends BaseController
      */
     public function getBookDetails($id)
     {
-        $book = Book::with(['bookCategory'])->find($id); 
+        $book = Book::find($id); 
         if (is_null($book)) {
             return $this->sendError('Không tìm thấy cuốn sách nào',[], 404); 
         }
@@ -74,7 +76,7 @@ class BookController extends BaseController
     {
         $booksOfCategory = Category::query()
             ->select('id','name','slug')
-            ->with('books')
+            ->with(['books','books.author','books.discount','books.image'])
             ->find($id);
   
         if (is_null($booksOfCategory)) {
@@ -92,8 +94,8 @@ class BookController extends BaseController
     public function getBookOfAuthor($id)
     {
         $booksOfAuthor = Author::query()
-            ->select('id','name','description','slug')
-            ->with(['books'])
+            ->select('id','name','description','slug','image')
+            ->with(['books','books.author','books.discount','books.image'])
             ->find($id);
 
         if (is_null($booksOfAuthor)) {

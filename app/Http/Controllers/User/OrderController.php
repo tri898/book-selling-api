@@ -21,10 +21,10 @@ class OrderController extends BaseController
         $type = $request->input('type');
         if($request->has('type')) {
             $records = Order::where(['user_id'=> auth()->user()->id, 'status' => $type])
-                              ->with('details')->orderByDesc('id')->get();
+                              ->with(['user','details.book'])->orderByDesc('id')->get();
         } else {
             $records = Order::where('user_id',auth()->user()->id)
-                              ->with('details')->orderByDesc('id')->get();   
+                              ->with(['user','details.book'])->orderByDesc('id')->get();   
         }   
             
         return $this->sendResponse('Truy xuất danh sách đơn hàng thành công.',
@@ -38,7 +38,7 @@ class OrderController extends BaseController
      */
     public function show($id)
     {
-        $order = Order::where('user_id', auth()->user()->id)->with('details')->find($id);
+        $order = Order::where('user_id', auth()->user()->id)->with(['user','details.book'])->find($id);
   
         if (is_null($order)) {
             return $this->sendError('Không tìm thấy đơn hàng',[], 404);
@@ -83,7 +83,7 @@ class OrderController extends BaseController
         $order->books()->attach($orderDetails);  
         
         return $this->sendResponse('Tạo đơn hàng thành công.',
-                                    new OrderResource($order->load('details')),201);
+                                    new OrderResource($order->load(['user','details.book'])),201);
     }
     /**
      * Remove the specified resource from storage.

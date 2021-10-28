@@ -18,8 +18,12 @@ class GoodsReceivedNote extends JsonResource
         return [
             'id' => $this->id,
             'formality' => $this->formality,
-            'supplier' => $this->supplier->name ?? '',
-            'by_admin' => $this->admin->name,
+            'supplier' => $this->whenLoaded('supplier', function () {
+                return $this->supplier->name;
+            }),
+            'by_admin' => $this->whenLoaded('admin', function () {
+                return $this->admin->name;
+            }),
             'total' => $this->total,
             'status' => $this->status,
             'note' => $this->note,

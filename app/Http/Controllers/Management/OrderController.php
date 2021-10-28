@@ -19,10 +19,10 @@ class OrderController extends BaseController
     {
         $type = $request->input('type');
         if($request->has('type')) {
-            $records = Order::where('status',$type)->with('details')
+            $records = Order::where('status',$type)->with(['user','details.book'])
                               ->orderByDesc('id')->get();
         } else {
-            $records = Order::with('details')->orderByDesc('id')->get();   
+            $records = Order::with(['user','details.book'])->orderByDesc('id')->get();   
         }
                
         return $this->sendResponse('Truy xuất danh sách đơn hàng thành công.',
@@ -36,7 +36,7 @@ class OrderController extends BaseController
      */
     public function show($id)
     {
-        $order = Order::with('details')->find($id);
+        $order = Order::with(['user','details.book'])->find($id);
   
         if (is_null($order)) {
             return $this->sendError('Không tìm thấy đơn hàng',[], 404); 
@@ -80,7 +80,7 @@ class OrderController extends BaseController
         $order->update(['status' => $fields['status']]);
         
         return $this->sendResponse('Đã cập nhật trạng thái đơn hàng thành công.',
-                                    new OrderResource($order->load('details')),200); 
+                                    new OrderResource($order->load(['user','details.book'])),200); 
     }
    
 }

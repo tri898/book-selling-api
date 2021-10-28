@@ -21,8 +21,8 @@ class ReviewController extends BaseController
         if (is_null($book)) {
             return $this->sendError('Không tìm thấy cuốn sách nào',[], 404); 
         }
-        $review = $book->reviews()->get();
-        return $this->sendResponse('Truy xuất đánh giá & xếp hạng sách thành công.',
+        $review = $book->reviews()->with('orderDetails.order.user')->get();
+        return $this->sendResponse('Truy xuất các đánh giá sách thành công.',
                                     ReviewResource::collection($review),200);
     }
     public function getBookRating($id)

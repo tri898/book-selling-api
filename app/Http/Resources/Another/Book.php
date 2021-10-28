@@ -17,12 +17,18 @@ class Book extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'author' => $this->author->name,
+            'author' => $this->whenLoaded('author', function () {
+                return $this->author->name;
+            }),
             'description' => $this->description,
             'unit_price' => $this->unit_price,
-            'discount' => $this->discount->percent ?? 0,
+            'discount' => $this->whenLoaded('discount', function () {
+                return $this->discount->percent;
+            }) ?? 0,
             'slug' => $this->slug,
-            'image' => $this->image->front_cover
+            'image' => $this->whenLoaded('image', function () {
+                return $this->image->front_cover;
+            })
         ];
     }
 }

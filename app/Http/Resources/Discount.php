@@ -16,11 +16,15 @@ class Discount extends JsonResource
     {
         return [
             'id' => $this->id,
-            'book' => [
-                'id' =>$this->book->id,
-                'name' =>$this->book->name,
-            ],
-            'quantity' => $this->book->inventory->available_quantity,
+            'book' => $this->whenLoaded('book', function () {
+                return [
+                    'id' => $this->book->id,
+                    'name' => $this->book->name
+                ];
+            }),
+            'quantity' => $this->whenLoaded('book', function () {
+                return $this->book->inventory->available_quantity;
+            }),
             'percent' => $this->percent,
             'created_at' => $this->created_at->format('d/m/Y H:i:s'),
             'updated_at' => $this->updated_at->format('d/m/Y H:i:s')

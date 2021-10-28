@@ -17,7 +17,10 @@ class BookController extends BaseController
      */
     public function index()
     {
-        $records = Book::orderByDesc('id')->get();
+        $records = Book::with(['inventory','discount','author','publisher',
+                               'supplier','image','bookCategory.category'])
+                               ->orderByDesc('id')->get();
+
         return $this->sendResponse('Truy xuất danh sách sách thành công.',
                                     BookResource::collection($records),200);
     }
@@ -45,7 +48,9 @@ class BookController extends BaseController
                                          'back_cover' =>$fields['back_cover']]);
 
         return $this->sendResponse('Tạo sách thành công.',
-                                    new BookResource($book->load(['bookCategory'])),201);
+                                    new BookResource($book->load(
+                                    ['inventory','discount','author','publisher',
+                                    'supplier','image','bookCategory.category'])),201);
     }
 
     /**
@@ -56,7 +61,9 @@ class BookController extends BaseController
      */
     public function show($id)
     {
-        $book = Book::with(['bookCategory','image'])->find($id);
+        $book = Book::with(['inventory','discount','author','publisher',
+                            'supplier','image','bookCategory.category'])
+                            ->find($id);
     
         if (is_null($book)) {
             return $this->sendError('Không tìm thấy cuốn sách nào',[], 404); 
@@ -90,7 +97,9 @@ class BookController extends BaseController
                                          'back_cover' =>$fields['back_cover']]);
 
         return $this->sendResponse('Đã cập nhật sách thành công.',
-                                    new BookResource($book->load(['bookCategory'])),200);
+                                    new BookResource($book->load(
+                                    ['inventory','discount','author','publisher',
+                                    'supplier','image','bookCategory.category'])),200);
     }
 
     /**

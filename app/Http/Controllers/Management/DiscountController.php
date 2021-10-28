@@ -16,7 +16,9 @@ class DiscountController extends BaseController
      */
     public function index()
     {
-        $records = Discount::orderByDesc('id')->get();         
+        $records = Discount::with(['book','book.inventory'])
+                            ->orderByDesc('id')->get();   
+
         return $this->sendResponse('Truy xuất danh sách giảm giá thành công.',
                                     DiscountResource::collection($records),200);
     }
@@ -31,7 +33,8 @@ class DiscountController extends BaseController
         $fields = $request->validated();
         $discount = Discount::create($fields);
         return $this->sendResponse('Tạo giảm giá thành công.',
-                                    new DiscountResource($discount),201);
+                                    new DiscountResource($discount->load(
+                                    ['book','book.inventory'])),201);
     }
 
     /**
@@ -42,7 +45,7 @@ class DiscountController extends BaseController
      */
     public function show($id)
     {
-        $discount = Discount::find($id);
+        $discount = Discount::with(['book','book.inventory'])->find($id);
   
         if (is_null($discount)) {
             return $this->sendError(' Không tìm thấy giảm giá',[], 404); 
@@ -68,7 +71,8 @@ class DiscountController extends BaseController
 
         $discount->update($fields);
         return $this->sendResponse('Đã cập nhật giảm giá thành công.',
-                                    new DiscountResource($discount),200);
+                                    new DiscountResource($discount->load(
+                                    ['book','book.inventory'])),200);
     }
 
     /**

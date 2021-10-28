@@ -30,7 +30,7 @@ class Book extends Model
 
     public function category()
     {
-        return $this->belongsToMany(Category::class ,'book_categories', 'book_id', 'category_id')->select('name','slug')->withTimestamps();
+        return $this->belongsToMany(Category::class ,'book_categories', 'book_id', 'category_id')->withTimestamps();
     }
     public function bookCategory()
     {
@@ -38,7 +38,7 @@ class Book extends Model
     }
     public function discount()
     {
-        return $this->hasOne(Discount::class,'book_id','id')->select('percent');
+        return $this->hasOne(Discount::class,'book_id','id');
     }
     public function slider()
     {

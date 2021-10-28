@@ -19,10 +19,11 @@ class GoodsReceivedNoteController extends BaseController
     {    
         $type = $request->input('type');
         if($request->has('type')) {
-            $records = GoodsReceivedNote::where('status',$type)->with('details')
-                                          ->orderByDesc('id')->get();
+            $records = GoodsReceivedNote::where('status',$type)
+                                        ->with(['supplier','admin','details.book'])
+                                        ->orderByDesc('id')->get();
         } else {
-            $records = GoodsReceivedNote::with('details')->orderByDesc('id')->get(); 
+            $records = GoodsReceivedNote::with(['supplier','admin','details.book'])->orderByDesc('id')->get(); 
         }
           
         return $this->sendResponse('Truy xuất danh sách phiếu nhập thành công.',
@@ -53,7 +54,8 @@ class GoodsReceivedNoteController extends BaseController
         $goodsReceivedNote->books()->attach($grnDetails);
 
         return $this->sendResponse('Phiếu nhập tạo thành công.',
-                                    new GoodsReceivedNoteResource($goodsReceivedNote->load('details')),201);
+                                    new GoodsReceivedNoteResource($goodsReceivedNote->load(
+                                    ['supplier','admin','details.book'])),201);
     }
 
     /**
@@ -64,7 +66,8 @@ class GoodsReceivedNoteController extends BaseController
      */
     public function show($id)
     {
-        $goodsReceivedNote = GoodsReceivedNote::with('details')->find($id);
+        $goodsReceivedNote = GoodsReceivedNote::with(['supplier','admin','details.book'])
+                                                ->find($id);
   
         if (is_null($goodsReceivedNote)) {
             return $this->sendError('Không tìm thấy phiếu nhập',[], 404); 
