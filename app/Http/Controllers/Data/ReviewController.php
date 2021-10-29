@@ -8,7 +8,12 @@ use App\Http\Resources\Review as ReviewResource;
 use DB;
 
 class ReviewController extends BaseController
-{
+{   
+    private $query = [
+        'orderDetails:id,order_id',
+        'orderDetails.order:id,user_id',
+        'orderDetails.order.user:id,name'
+    ];
    /**
      * Display the specified resource.
      *
@@ -21,9 +26,9 @@ class ReviewController extends BaseController
         if (is_null($book)) {
             return $this->sendError('Không tìm thấy cuốn sách nào',[], 404); 
         }
-        $review = $book->reviews()->with('orderDetails.order.user')->get();
+        $reviews = $book->reviews()->with($this->query)->get();
         return $this->sendResponse('Truy xuất các đánh giá sách thành công.',
-                                    ReviewResource::collection($review),200);
+                                    ReviewResource::collection($reviews),200);
     }
     public function getBookRating($id)
     {

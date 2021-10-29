@@ -10,6 +10,9 @@ use Carbon\Carbon;
 
 class SliderController extends BaseController
 {
+    private $query = [
+        'book:id,name'
+    ];
     /**
      * Display a listing of the resource.
      *
@@ -17,7 +20,7 @@ class SliderController extends BaseController
      */
     public function index()
     {
-        $records = Slider::with('book')
+        $records = Slider::with($this->query)
                            ->orderByDesc('id')
                            ->get();        
 
@@ -37,7 +40,7 @@ class SliderController extends BaseController
         
         $slider = Slider::create($fields);
         return $this->sendResponse('Tạo slider thành công.',
-                                    new SliderResource($slider->load('book')),201);
+                                    new SliderResource($slider->load($this->query)),201);
     }
 
     /**
@@ -48,7 +51,7 @@ class SliderController extends BaseController
      */
     public function show($id)
     {
-        $slider = Slider::with('book')->find($id);
+        $slider = Slider::with($this->query)->find($id);
   
         if (is_null($slider)) {
             return $this->sendError(' Không tìm thấy slider',[], 404); 
@@ -74,7 +77,7 @@ class SliderController extends BaseController
 
         $slider->update($fields);
         return $this->sendResponse('Đã cập nhật slider thành công.',
-                                    new SliderResource($slider->load('book')),200);
+                                    new SliderResource($slider->load($this->query)),200);
     }
 
     /**

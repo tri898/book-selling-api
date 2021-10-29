@@ -13,7 +13,35 @@ use App\Http\Resources\Another\{
 };
 
 class BookController extends BaseController
-{
+{   
+    private $query = [
+        'id','name',
+        'author_id',
+        'description',
+        'unit_price','slug'
+    ];
+    private $subQuery = [
+        'author:id,name',
+        'discount:book_id,percent',
+        'image:book_id,front_cover'
+    ];
+   
+     /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function getAllBook()
+    {
+        $records = Book::query()
+            ->select($this->query)
+            ->with($this->subQuery)
+            ->orderByDesc('id')
+            ->get();
+    
+        return $this->sendResponse('Truy xuất tất cả sách mới cập nhật thành công.',
+                                    BookResource::collection($records),200); 
+    }
       /**
      * Display a listing of the resource.
      *
@@ -23,10 +51,10 @@ class BookController extends BaseController
     {
         $limit =  $request->input('limit', 10);
         $records = Book::query()
-            ->select('id','name','author_id','description','unit_price','slug')
-            ->with('author','discount','image')
+            ->select($this->query)
+            ->with($this->subQuery)
             ->take($limit)
-            ->latest()
+            ->orderByDesc('id')
             ->get();
     
         return $this->sendResponse('Truy xuất top sách mới cập nhật thành công.',
@@ -41,8 +69,8 @@ class BookController extends BaseController
     {
         $limit =  $request->input('limit', 10);
         $records = Book::query()
-            ->select('id','name','author_id','description','unit_price','slug')
-            ->with('author','discount','image')
+            ->select($this->query)
+            ->with($this->subQuery)
             ->withSum('orders','order_details.quantity')
             ->orderByDesc('orders_sum_order_detailsquantity')
             ->take($limit)
@@ -50,6 +78,27 @@ class BookController extends BaseController
        
         return $this->sendResponse('Truy xuất top sách bán chạy thành công.',
                                     BookResource::collection($records),200);
+    }
+      /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function bookSearch(Request $request)
+    {
+        $q =  $request->input('q');
+        $records = Book::query()
+            ->select($this->query)
+            ->where('name', 'like','%'.$q.'%')
+            ->orWhereHas('author', function ($query) use ($q) {
+                $query->where('name', 'like', '%'.$q.'%');
+                })
+            ->with($this->subQuery)
+            ->orderByDesc('id')
+            ->get();
+    
+        return $this->sendResponse('Tìm kiếm sách thành công.',
+                                    BookResource::collection($records),200); 
     }
       /**
      * Display the specified resource.

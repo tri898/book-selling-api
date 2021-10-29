@@ -52,10 +52,14 @@ use Illuminate\Support\Facades\Route;
 
 // Retrieve data for website routes
 Route::prefix('books')->group(function () {
+    // Get all books
+    Route::get('all', [BookDataController::class, 'getAllBook']);
     // Get new books
     Route::get('new', [BookDataController::class, 'getNewBook']);
     // Get selling books
     Route::get('selling', [BookDataController::class, 'getSellingBook']);
+    // Books search
+    Route::get('search', [BookDataController::class, 'bookSearch']);
     // Get books of category
     Route::get('category/{id}', [BookDataController::class, 'getBookOfCategory']);
     // Get books of author

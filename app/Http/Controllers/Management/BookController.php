@@ -10,6 +10,15 @@ use App\Http\Resources\Book as BookResource;
 
 class BookController extends BaseController
 {
+    private $query = [
+        'inventory:book_id,available_quantity',
+        'discount:book_id,percent',
+        'author:id,name',
+        'publisher:id,name',
+        'supplier:id,name',
+        'bookCategory.category:id,name',
+        'image:book_id,front_cover,back_cover'
+    ];
     /**
      * Display a listing of the resource.
      *
@@ -17,9 +26,7 @@ class BookController extends BaseController
      */
     public function index()
     {
-        $records = Book::with(['inventory','discount','author','publisher',
-                               'supplier','image','bookCategory.category'])
-                               ->orderByDesc('id')->get();
+        $records = Book::with($this->query)->orderByDesc('id')->get();
 
         return $this->sendResponse('Truy xuất danh sách sách thành công.',
                                     BookResource::collection($records),200);
@@ -48,9 +55,7 @@ class BookController extends BaseController
                                          'back_cover' =>$fields['back_cover']]);
 
         return $this->sendResponse('Tạo sách thành công.',
-                                    new BookResource($book->load(
-                                    ['inventory','discount','author','publisher',
-                                    'supplier','image','bookCategory.category'])),201);
+                                    new BookResource($book->load($this->query)),201);
     }
 
     /**
@@ -61,9 +66,7 @@ class BookController extends BaseController
      */
     public function show($id)
     {
-        $book = Book::with(['inventory','discount','author','publisher',
-                            'supplier','image','bookCategory.category'])
-                            ->find($id);
+        $book = Book::with($this->query)->find($id);
     
         if (is_null($book)) {
             return $this->sendError('Không tìm thấy cuốn sách nào',[], 404); 
@@ -97,9 +100,7 @@ class BookController extends BaseController
                                          'back_cover' =>$fields['back_cover']]);
 
         return $this->sendResponse('Đã cập nhật sách thành công.',
-                                    new BookResource($book->load(
-                                    ['inventory','discount','author','publisher',
-                                    'supplier','image','bookCategory.category'])),200);
+                                    new BookResource($book->load($this->query)),200);
     }
 
     /**

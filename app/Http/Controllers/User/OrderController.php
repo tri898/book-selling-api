@@ -10,7 +10,10 @@ use App\Http\Resources\Order as OrderResource;
 
 class OrderController extends BaseController
 {
-    
+    private $query = [
+        'user:id,email',
+        'details.book:id,name'
+    ];
     /**
      * Display a listing of the resource.
      *
@@ -21,10 +24,10 @@ class OrderController extends BaseController
         $type = $request->input('type');
         if($request->has('type')) {
             $records = Order::where(['user_id'=> auth()->user()->id, 'status' => $type])
-                              ->with(['user','details.book'])->orderByDesc('id')->get();
+                              ->with($this->query)->orderByDesc('id')->get();
         } else {
             $records = Order::where('user_id',auth()->user()->id)
-                              ->with(['user','details.book'])->orderByDesc('id')->get();   
+                              ->with($this->query)->orderByDesc('id')->get();   
         }   
             
         return $this->sendResponse('Truy xuất danh sách đơn hàng thành công.',
@@ -38,7 +41,7 @@ class OrderController extends BaseController
      */
     public function show($id)
     {
-        $order = Order::where('user_id', auth()->user()->id)->with(['user','details.book'])->find($id);
+        $order = Order::where('user_id', auth()->user()->id)->with($this->query)->find($id);
   
         if (is_null($order)) {
             return $this->sendError('Không tìm thấy đơn hàng',[], 404);
@@ -83,7 +86,7 @@ class OrderController extends BaseController
         $order->books()->attach($orderDetails);  
         
         return $this->sendResponse('Tạo đơn hàng thành công.',
-                                    new OrderResource($order->load(['user','details.book'])),201);
+                                    new OrderResource($order->load($this->query)),201);
     }
     /**
      * Remove the specified resource from storage.

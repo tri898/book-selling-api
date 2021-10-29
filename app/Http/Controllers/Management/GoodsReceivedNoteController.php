@@ -10,6 +10,11 @@ use App\Http\Resources\GoodsReceivedNote as GoodsReceivedNoteResource;
 
 class GoodsReceivedNoteController extends BaseController
 {
+    private $query = [
+        'supplier:id,name',
+        'admin:id,name',
+        'details.book:id,name'
+    ];
     /**
      * Display a listing of the resource.
      *
@@ -20,10 +25,10 @@ class GoodsReceivedNoteController extends BaseController
         $type = $request->input('type');
         if($request->has('type')) {
             $records = GoodsReceivedNote::where('status',$type)
-                                        ->with(['supplier','admin','details.book'])
+                                        ->with($this->query)
                                         ->orderByDesc('id')->get();
         } else {
-            $records = GoodsReceivedNote::with(['supplier','admin','details.book'])->orderByDesc('id')->get(); 
+            $records = GoodsReceivedNote::with($this->query)->orderByDesc('id')->get(); 
         }
           
         return $this->sendResponse('Truy xuất danh sách phiếu nhập thành công.',
@@ -54,8 +59,8 @@ class GoodsReceivedNoteController extends BaseController
         $goodsReceivedNote->books()->attach($grnDetails);
 
         return $this->sendResponse('Phiếu nhập tạo thành công.',
-                                    new GoodsReceivedNoteResource($goodsReceivedNote->load(
-                                    ['supplier','admin','details.book'])),201);
+                                    new GoodsReceivedNoteResource(
+                                    $goodsReceivedNote->load($this->query)),201);
     }
 
     /**
@@ -66,7 +71,7 @@ class GoodsReceivedNoteController extends BaseController
      */
     public function show($id)
     {
-        $goodsReceivedNote = GoodsReceivedNote::with(['supplier','admin','details.book'])
+        $goodsReceivedNote = GoodsReceivedNote::with($this->query)
                                                 ->find($id);
   
         if (is_null($goodsReceivedNote)) {

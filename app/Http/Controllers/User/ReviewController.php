@@ -9,7 +9,11 @@ use App\Http\Resources\Review as ReviewResource;
 
 class ReviewController extends BaseController
 {
-
+    private $query = [
+        'orderDetails:id,order_id',
+        'orderDetails.order:id,user_id',
+        'orderDetails.order.user:id,name'
+    ];
     /**
      * Store a newly created resource in storage.
      *
@@ -31,7 +35,7 @@ class ReviewController extends BaseController
         $review = $itemOrder->review()->create($fields);
         $itemOrder->update(['review_status' => 1]);
         return $this->sendResponse('Tạo đánh giá & xếp hạng thành công.',
-                                    new ReviewResource($review->load('orderDetails')),201);
+                                    new ReviewResource($review->load($this->query)),201);
     }
 
     /**
@@ -43,7 +47,7 @@ class ReviewController extends BaseController
     public function show($id)
     {
         $review = Review::where('order_detail_id',$id)
-                          ->with('orderDetails.order.user')
+                          ->with($this->query)
                           ->first();
         if (is_null($review)) {
             return $this->sendError('Không tìm thấy đánh giá.',[], 404); 
@@ -77,6 +81,6 @@ class ReviewController extends BaseController
         }
         $review->update($fields);
         return $this->sendResponse('Sửa đánh giá & xếp hạng thành công.',
-                                    new ReviewResource($review->load('orderDetails.order.user')),200);
+                                    new ReviewResource($review->load($this->query)),200);
     }
 }
