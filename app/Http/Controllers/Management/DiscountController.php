@@ -9,7 +9,7 @@ use App\Http\Resources\Discount as DiscountResource;
 
 class DiscountController extends BaseController
 {
-    private $sql = [
+    private $query = [
         'book:id,name',
         'book.inventory:book_id,available_quantity'
     ];
