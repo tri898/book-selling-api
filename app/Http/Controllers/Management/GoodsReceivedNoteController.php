@@ -91,10 +91,20 @@ class GoodsReceivedNoteController extends BaseController
         $goodsReceivedNote = GoodsReceivedNote::where('status',1)->find($id);
         if (is_null($goodsReceivedNote)) {
             return $this->sendError('Không tìm thấy phiếu nhập',[], 404); 
-        }
+        }  
+        $getQtyGRN = $goodsReceivedNote->details()->get(['book_id','quantity'])->toArray();
+         // check quantity in stock
+        foreach ($getQtyGRN as $item) {
+            $getQtyInventory = Inventory::where('book_id', $item['book_id'])
+                                        ->get('available_quantity');
+
+            $quantity = $getQtyInventory[0]['available_quantity'];
+            if($quantity < $item['quantity']) {
+                return $this->sendError('Có lỗi. Sách trong kho không đủ.', [], 409);       
+            }
+        };
         // update quantity in stock
-        $result = $goodsReceivedNote->details()->get(['book_id','quantity'])->toArray();
-        foreach ($result as $item) {
+        foreach ($getQtyGRN as $item) {
             $decrease= Inventory::where('book_id', $item['book_id'])
                                   ->decrement('available_quantity', $item['quantity']);
         };
@@ -114,8 +124,8 @@ class GoodsReceivedNoteController extends BaseController
             return $this->sendError('Không tìm thấy phiếu nhập',[], 404); 
         }
         // update quantity in stock
-        $result = $goodsReceivedNote->details()->get(['book_id','quantity'])->toArray();
-        foreach ($result as $item) {
+        $getQtyGRN = $goodsReceivedNote->details()->get(['book_id','quantity'])->toArray();
+        foreach ($getQtyGRN as $item) {
             $increase= Inventory::where('book_id', $item['book_id'])
                                   ->increment('available_quantity', $item['quantity']);
         };

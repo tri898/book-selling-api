@@ -63,7 +63,7 @@ class OrderController extends BaseController
 
             $quantity = $checkQuantity[0]['available_quantity'];
             if($quantity < $item['quantity']) {
-            return $this->sendError('Có lỗi.Không thể thực hiện thao tác.', [], 409);       
+            return $this->sendError('Có lỗi.Sách trong kho không đủ.', [], 409);       
            }
         } 
         // only get basic order information

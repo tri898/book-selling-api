@@ -41,7 +41,7 @@ class OrderRequest extends FormRequest
             ];
         } elseif (request()->routeIs('orders.update')) {
             return [
-                'status' =>'required|numeric|min:1|max:5', 
+                'status' =>'required|numeric|min:2|max:6', 
             ];
         }
         

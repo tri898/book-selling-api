@@ -58,29 +58,31 @@ class OrderController extends BaseController
     {
         $fields = $request->validated(); 
 
-        $order = Order::find($id);
+        $order = Order::whereIn('status', [1,2,3,4,5,6])->find($id);
         if(is_null($order)) {
             return $this->sendError('Không tìm thấy đơn hàng',[], 404);
         }
-
-        if($request->status === 2) {
-            $getBookOrder = $order->details()->get(['book_id','quantity'])->toArray();
-            // check quantity in stock
-            foreach ($getBookOrder as $item) {
-                $checkQuantity = Inventory::where('book_id', $item['book_id'])
-                                            ->get('available_quantity');
+        if($request->status == 2) {
+            if($order->status == 1) {
+                $getQtyOrder = $order->details()->get(['book_id','quantity'])->toArray();
+                // check quantity in stock
+                foreach ($getQtyOrder as $item) {
+                    $getQtyInventory = Inventory::where('book_id', $item['book_id'])
+                                                ->get('available_quantity');
     
-                $quantity = $checkQuantity[0]['available_quantity'];
-                if($quantity < $item['quantity']) {
-                return $this->sendError('Có lỗi. Sách trong kho không đủ.', [], 409);       
-               }
-            };
-            // update stock
-            foreach ($getBookOrder as $item) {
-                $decrease= Inventory::where('book_id', $item['book_id'])->decrement('available_quantity', $item['quantity']);
-             };
-            
-        }
+                    $quantity = $getQtyInventory[0]['available_quantity'];
+                    if($quantity < $item['quantity']) {
+                        return $this->sendError('Có lỗi. Sách trong kho không đủ.', [], 409);       
+                    }
+                };
+                // update stock
+                foreach ($getQtyOrder as $item) {
+                    $decrease= Inventory::where('book_id', $item['book_id'])
+                                        ->decrement('available_quantity', $item['quantity']);
+                };
+            } else return $this->sendError('Có lỗi. Đơn đã được xác nhận.', [], 409);     
+        } else if($order->status == 1) return $this->sendError('Có lỗi. Đơn chưa xác nhận.', [], 409); 
+        
         $order->update(['status' => $fields['status']]);
         
         return $this->sendResponse('Đã cập nhật trạng thái đơn hàng thành công.',
