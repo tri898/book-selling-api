@@ -17,7 +17,6 @@ class AdminController extends BaseController
         $admin = Admin::where('email', $fields['email'])->first();
         // Check email & password
         if(!$admin || !Hash::check($fields['password'], $admin->password)) {
-
             return $this->sendError('Đăng nhập không thành công. Email hoặc mật khẩu không chính xác.',[], 401); 
         }
 

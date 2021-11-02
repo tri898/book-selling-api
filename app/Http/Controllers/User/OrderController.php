@@ -24,10 +24,10 @@ class OrderController extends BaseController
         $type = $request->input('type');
         if($request->has('type')) {
             $records = Order::where(['user_id'=> auth()->user()->id, 'status' => $type])
-                              ->with($this->query)->orderByDesc('id')->get();
+                ->with($this->query)->orderByDesc('id')->get();
         } else {
             $records = Order::where('user_id',auth()->user()->id)
-                              ->with($this->query)->orderByDesc('id')->get();   
+                ->with($this->query)->orderByDesc('id')->get();   
         }   
             
         return $this->sendResponse('Truy xuất danh sách đơn hàng thành công.',
@@ -41,7 +41,9 @@ class OrderController extends BaseController
      */
     public function show($id)
     {
-        $order = Order::where('user_id', auth()->user()->id)->with($this->query)->find($id);
+        $order = Order::where('user_id', auth()->user()->id)
+            ->with($this->query)
+            ->find($id);
   
         if (is_null($order)) {
             return $this->sendError('Không tìm thấy đơn hàng',[], 404);
@@ -59,7 +61,7 @@ class OrderController extends BaseController
         //After validate then check books quantity in stock
         foreach ($request->items as $item) {
             $checkQuantity = Inventory::where('book_id', $item['book_id'])
-                                        ->get('available_quantity');
+                            ->get('available_quantity');
 
             $quantity = $checkQuantity[0]['available_quantity'];
             if($quantity < $item['quantity']) {
@@ -67,7 +69,8 @@ class OrderController extends BaseController
            }
         } 
         // only get basic order information
-        $fields = $request->only(['name', 'address', 'phone', 'total','shipping_fee','total_payment', 'note']);
+        $fields = $request->only(['name', 'address', 'phone', 'total',
+                                  'shipping_fee','total_payment', 'note']);
         $fields['user_id'] = auth()->user()->id;
         $fields['status'] = 1;
         // store basic order information
@@ -80,7 +83,7 @@ class OrderController extends BaseController
                                               'sale_price' => $item['sale_price']];
             // update books quantity in stock
             $decrease= Inventory::where('book_id', $item['book_id'])
-                                ->decrement('available_quantity',  $item['quantity']);
+                 ->decrement('available_quantity',  $item['quantity']);
         }
 
         $order->books()->attach($orderDetails);  

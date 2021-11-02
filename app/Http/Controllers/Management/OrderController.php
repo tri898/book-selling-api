@@ -23,8 +23,9 @@ class OrderController extends BaseController
     {
         $type = $request->input('type');
         if($request->has('type')) {
-            $records = Order::where('status',$type)->with($this->query)
-                              ->orderByDesc('id')->get();
+            $records = Order::where('status',$type)
+                        ->with($this->query)
+                        ->orderByDesc('id')->get();
         } else {
             $records = Order::with($this->query)->orderByDesc('id')->get();   
         }
@@ -78,7 +79,7 @@ class OrderController extends BaseController
                 // update stock
                 foreach ($getQtyOrder as $item) {
                     $decrease= Inventory::where('book_id', $item['book_id'])
-                                        ->decrement('available_quantity', $item['quantity']);
+                        ->decrement('available_quantity', $item['quantity']);
                 };
             } else return $this->sendError('Có lỗi. Đơn đã được xác nhận.', [], 409);     
         } else if($order->status == 1) return $this->sendError('Có lỗi. Đơn chưa xác nhận.', [], 409); 

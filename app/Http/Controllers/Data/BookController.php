@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Data;
 
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use App\Http\Controllers\BaseController as BaseController;
 use App\Models\{Book, Category, Author};
 use App\Http\Resources\Another\{
@@ -38,7 +37,7 @@ class BookController extends BaseController
             ->select($this->query)
             ->with($this->subQuery)
             ->orderByDesc('id')
-            ->paginate(10);
+            ->paginate(12);
        
         return BookResource::collection($records); 
     }
@@ -49,7 +48,7 @@ class BookController extends BaseController
      */
     public function getNewBook(Request $request)
     {
-        $limit =  $request->input('limit', 10);
+        $limit =  $request->input('limit', 12);
         $records = Book::query()
             ->select($this->query)
             ->with($this->subQuery)
@@ -67,7 +66,7 @@ class BookController extends BaseController
      */
     public function getSellingBook(Request $request)
     {
-        $limit =  $request->input('limit', 10);
+        $limit =  $request->input('limit', 12);
         $records = Book::query()
             ->select($this->query)
             ->with($this->subQuery)
@@ -95,10 +94,9 @@ class BookController extends BaseController
                 })
             ->with($this->subQuery)
             ->orderByDesc('id')
-            ->get();
+            ->paginate(12);
     
-        return $this->sendResponse('Tìm kiếm sách thành công.',
-                                    BookResource::collection($records),200); 
+        return BookResource::collection($records); 
     }
       /**
      * Display the specified resource.
@@ -128,13 +126,14 @@ class BookController extends BaseController
             ->find($id);
 
         $booksOfCategory = Book::query()
-                            ->select($this->query)
-                            ->WhereHas('category', function ($query) use ($id) {
-                                $query->where('categories.id', $id);
-                            })
-                            ->with($this->subQuery)
-                            ->orderByDesc('id')
-                            ->paginate(10);
+            ->select($this->query)
+            ->WhereHas('category', function ($query) use ($id) {
+                $query->where('categories.id', $id);
+            })
+            ->with($this->subQuery)
+            ->orderByDesc('id')
+            ->paginate(12);
+
         if (is_null($booksOfCategory)) {
             return $this->sendError('Không tìm thấy thể loại nào',[], 404); 
         }
@@ -152,16 +151,16 @@ class BookController extends BaseController
     public function getBookOfAuthor($id)
     {
         $author = Author::query()
-                        ->select('id','name','description','slug','image')
-                        ->find($id);
+                    ->select('id','name','description','slug','image')
+                    ->find($id);
         $booksOfAuthor = Book::query()
-                            ->select($this->query)
-                            ->WhereHas('author', function ($query) use ($id) {
-                                $query->where('id', $id);
-                            })
-                            ->with($this->subQuery)
-                            ->orderByDesc('id')
-                            ->paginate(10);
+            ->select($this->query)
+            ->WhereHas('author', function ($query) use ($id) {
+                $query->where('id', $id);
+            })
+            ->with($this->subQuery)
+            ->orderByDesc('id')
+            ->paginate(12);
 
         if (is_null($booksOfAuthor)) {
             return $this->sendError('Không tìm thấy tác giả nào',[], 404); 

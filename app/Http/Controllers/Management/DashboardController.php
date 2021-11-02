@@ -26,15 +26,15 @@ class DashboardController extends BaseController
         $year = $request->input('year', Carbon::now()->year);
 
         $records = Book::query()
-                        ->select('id','name')
-                        ->with('inventory')
-                        ->withSum(['orders' => function ($query) use ($month, $year) {
-                            $query->whereMonth('orders.created_at', $month)
-                                  ->whereYear('orders.created_at', $year);                 
-                        }],'order_details.quantity')
-                        ->orderByDesc('orders_sum_order_detailsquantity')
-                        ->take($limit)
-                        ->get();
+            ->select('id','name')
+            ->with('inventory')
+            ->withSum(['orders' => function ($query) use ($month, $year) {
+                $query->whereMonth('orders.created_at', $month)
+                      ->whereYear('orders.created_at', $year);                 
+            }],'order_details.quantity')
+            ->orderByDesc('orders_sum_order_detailsquantity')
+            ->take($limit)
+            ->get();
 
         return $this->sendResponse('Top sách bán chạy và số lượng đã bán trong tháng.',
                                     SellingBookResource::collection($records),200); 
@@ -46,11 +46,11 @@ class DashboardController extends BaseController
         $year = $request->input('year', Carbon::now()->year);
 
          $totalImport = GoodsReceivedNote::select(DB::raw('sum(total) as total_import'))
-                                        ->whereMonth('created_at', $month)
-                                        ->whereYear('created_at', $year)
-                                        ->whereFormality(1)
-                                        ->whereStatus(1)
-                                        ->get();
+                            ->whereMonth('created_at', $month)
+                            ->whereYear('created_at', $year)
+                            ->whereFormality(1)
+                            ->whereStatus(1)
+                            ->get();
         $totalExport = Order::select(DB::raw('sum(total) as total_export'))
                           ->whereMonth('created_at', $month)
                           ->whereYear('created_at', $year)
@@ -100,10 +100,11 @@ class DashboardController extends BaseController
     {
         $year = $request->input('year', Carbon::now()->year);
 
-        $records = GoodsReceivedNote::select('formality',DB::raw('MONTH(created_at) as code'),
-                                      DB::raw('count(id) as value'))
-                                      ->whereYear('created_at', $year)
-                                      ->whereStatus(1);
+        $records = GoodsReceivedNote::select('formality',
+                        DB::raw('MONTH(created_at) as code'),
+                        DB::raw('count(id) as value'))
+                        ->whereYear('created_at', $year)
+                        ->whereStatus(1);
         $recordsClone =  clone $records;                                                 
         $import = $records->whereFormality(1)->groupBy('code')->get();
         $reimport = $recordsClone->whereFormality(2)->groupBy('code')->get();
@@ -119,11 +120,11 @@ class DashboardController extends BaseController
     public function getBookStatistics()
     {
         $records = Book::query()
-                        ->select('id','name')
-                        ->with('inventory')
-                        ->withSum('goodsReceivedNotes as import','goods_received_note_details.quantity')
-                        ->orderByDesc('import')
-                        ->get();
+            ->select('id','name')
+            ->with('inventory')
+            ->withSum('goodsReceivedNotes as import','goods_received_note_details.quantity')
+            ->orderByDesc('import')
+            ->get();
         return $this->sendResponse('Số lượng sách đã nhập và còn lại trong kho.',
                                     BookStatisticResource::collection($records),200); 
     }
