@@ -51,10 +51,11 @@ class PasswordController extends BaseController
             ['email' => $email],
             ['token' => Str::random(30)]
         );
+        $url = 'https://staciabook.store/khoi-phuc-mat-khau?token=';
         //send email confirmation
         if($passwordReset) {
            
-            Mail::send('Mails.forgot', ['token' => $passwordReset->token, 'URL' => env('APP_URL')], function ($m) use ($email) {
+            Mail::send('Mails.forgot', ['token' => $passwordReset->token, 'url' => $url], function ($m) use ($email) {
                 $m->from('staciabook@gmail.com', 'Bookstore'); 
                 $m->to($email);
                 $m->subject('Lấy lại mật khẩu!');

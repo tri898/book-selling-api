@@ -6,7 +6,7 @@
 <p>Nếu bạn không yêu cầu lấy lại mật khẩu, bạn có thể bỏ qua mail này
     .Ngược lại hãy click vào nút bên dưới để cấp lại mật khẩu.
 </p>
-<a href="{{$URL}}/user/reset-password/{{$token}}">
+<a href="{{$url}}{{$token}}">
         <button style="
         background-color: #008CBA;
         border: none;
