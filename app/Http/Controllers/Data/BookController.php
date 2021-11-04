@@ -11,6 +11,7 @@ use App\Http\Resources\Another\{
     BooksOfAuthor as BooksOfAuthorResource,
     BookDetails as BookDetailsResource
 };
+use DB;
 
 class BookController extends BaseController
 {   
@@ -77,6 +78,75 @@ class BookController extends BaseController
        
         return $this->sendResponse('Truy xuất top sách bán chạy thành công.',
                                     BookResource::collection($records),200);
+    }
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function getRandomBook(Request $request)
+    {
+        $limit =  $request->input('limit', 12);
+        $records = Book::query()
+            ->select($this->query)
+            ->with($this->subQuery)
+            ->inRandomOrder()
+            ->take($limit)
+            ->orderByDesc('id')
+            ->get();
+    
+        return $this->sendResponse('Truy xuất sách ngẫu nhiên.',
+                                    BookResource::collection($records),200); 
+    }
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function getTheMostDiscountedBook()
+    {
+        $records = Book::query()
+            ->select($this->query)
+            ->with($this->subQuery)
+            ->withMax('discount','percent')
+            ->orderByDesc('discount_max_percent')
+            ->limit(1)
+            ->get();
+       
+        return $this->sendResponse('Sách giảm giá cao nhất.',
+                                    BookResource::collection($records),200);
+    }
+      /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function getHighlightAuthor()
+    {
+        $getIdAuthor = Book::query()
+            ->select('author_id',
+            DB::raw('count(id) as value'))
+            ->orderByDesc('value')
+            ->groupBy('author_id')
+            ->limit(1)
+            ->get();
+        $id = $getIdAuthor[0]['author_id'];
+        $author = Author::query()
+                    ->select('id','name','description','slug','image')
+                    ->find($id);
+        $booksOfAuthor = Book::query()
+            ->select(['id','name','slug'])
+            ->WhereHas('author', function ($query) use ($id) {
+                $query->where('id', $id);
+            })
+            ->with(['image:book_id,front_cover'])
+            ->limit(2)
+            ->get();
+        
+        return [
+            'author' => $author,
+            'books' =>BookResource::collection($booksOfAuthor)
+        ];
     }
       /**
      * Display a listing of the resource.

@@ -58,8 +58,14 @@ Route::prefix('books')->group(function () {
     Route::get('new', [BookDataController::class, 'getNewBook']);
     // Get selling books
     Route::get('selling', [BookDataController::class, 'getSellingBook']);
+    // Get random books
+    Route::get('random', [BookDataController::class, 'getRandomBook']);
     // Books search
     Route::get('search', [BookDataController::class, 'bookSearch']);
+    // The most discounted book
+    Route::get('most-discount', [BookDataController::class, 'getTheMostDiscountedBook']);
+    // The most highlight author
+    Route::get('highlight-author', [BookDataController::class, 'getHighlightAuthor']);
     // Get books of category
     Route::get('category/{id}', [BookDataController::class, 'getBookOfCategory']);
     // Get books of author
