@@ -18,7 +18,13 @@ class Slider extends JsonResource
         return [
             'name' => $this->name,
             'start_date' => Carbon::parse($this->start_date)->format('d/m/yy'),
-            'end_date' =>Carbon::parse($this->end_date)->format('d/m/yy'),         
+            'end_date' =>Carbon::parse($this->end_date)->format('d/m/yy'),
+            'book' => $this->whenLoaded('book', function () {
+                return [
+                    'id' => $this->book->id,
+                    'slug' => $this->book->slug
+                ];
+            }),        
             'image' => $this->image
         ];
     }

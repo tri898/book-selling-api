@@ -105,16 +105,13 @@ class BookController extends BaseController
      */
     public function getTheMostDiscountedBook()
     {
-        $records = Book::query()
-            ->select($this->query)
-            ->with($this->subQuery)
-            ->withMax('discount','percent')
+        $records = Book::withMax('discount','percent')
             ->orderByDesc('discount_max_percent')
             ->limit(1)
             ->get();
        
         return $this->sendResponse('Sách giảm giá cao nhất.',
-                                    BookResource::collection($records),200);
+                        BookDetailsResource::collection($records),200);
     }
       /**
      * Display a listing of the resource.
