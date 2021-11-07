@@ -19,6 +19,9 @@ class OrderDetail extends JsonResource
             'book' => $this->whenLoaded('book', function () {
                 return $this->book->name;
             }),
+            'book_id' => $this->whenLoaded('book', function () {
+                return $this->book->id;
+            }),
             'quantity' => $this->quantity,
             'unit_price' => $this->unit_price,
             'sale_price' => $this->sale_price,

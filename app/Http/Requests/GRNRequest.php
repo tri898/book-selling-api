@@ -26,7 +26,7 @@ class GRNRequest extends FormRequest
         return [
             'formality' => 'required|numeric|min:1|max:2',
             'supplier_id' => 'integer|exists:suppliers,id|nullable',
-            'total' => 'required|integer|min: 1',
+            'total' => 'required|integer|min: 0',
             'note' => 'required|string|max:255',
             'items' => 'required|array|min: 1',
             'items.*.book_id' => 'required|integer|distinct|exists:books,id',

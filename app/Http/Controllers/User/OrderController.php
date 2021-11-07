@@ -25,13 +25,15 @@ class OrderController extends BaseController
         if($request->has('type')) {
             $records = Order::where(['user_id'=> auth()->user()->id, 'status' => $type])
                 ->with($this->query)->orderByDesc('id')->get();
+
+            return $this->sendResponse('Truy xuất danh sách đơn hàng thành công.',
+                                        OrderResource::collection($records),200);
         } else {
             $records = Order::where('user_id',auth()->user()->id)
-                ->with($this->query)->orderByDesc('id')->get();   
-        }   
-            
-        return $this->sendResponse('Truy xuất danh sách đơn hàng thành công.',
-                                    OrderResource::collection($records),200);
+                ->with($this->query)->orderByDesc('id')->paginate(5);
+
+            return OrderResource::collection($records)->response()->getData(true);                                
+        }           
     }
     /**
      * Display the specified resource.
@@ -81,9 +83,6 @@ class OrderController extends BaseController
             $orderDetails[$item['book_id']] = ['quantity' => $item['quantity'],
                                               'unit_price' => $item['unit_price'],
                                               'sale_price' => $item['sale_price']];
-            // update books quantity in stock
-            $decrease= Inventory::where('book_id', $item['book_id'])
-                 ->decrement('available_quantity',  $item['quantity']);
         }
 
         $order->books()->attach($orderDetails);  

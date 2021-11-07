@@ -29,7 +29,8 @@ class DashboardController extends BaseController
             ->select('id','name')
             ->with('inventory')
             ->withSum(['orders' => function ($query) use ($month, $year) {
-                $query->whereMonth('orders.created_at', $month)
+                $query->whereStatus(4)
+                      ->whereMonth('orders.created_at', $month)
                       ->whereYear('orders.created_at', $year);                 
             }],'order_details.quantity')
             ->orderByDesc('orders_sum_order_detailsquantity')
@@ -122,7 +123,10 @@ class DashboardController extends BaseController
         $records = Book::query()
             ->select('id','name')
             ->with('inventory')
-            ->withSum('goodsReceivedNotes as import','goods_received_note_details.quantity')
+            ->withSum(['goodsReceivedNotes as import' => function ($query) {
+                $query->whereStatus(1)
+                      ->whereFormality(1);                 
+            }],'goods_received_note_details.quantity')
             ->orderByDesc('import')
             ->get();
         return $this->sendResponse('Số lượng sách đã nhập và còn lại trong kho.',

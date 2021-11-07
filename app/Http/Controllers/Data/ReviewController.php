@@ -12,7 +12,7 @@ class ReviewController extends BaseController
     private $query = [
         'orderDetails:id,order_id',
         'orderDetails.order:id,user_id',
-        'orderDetails.order.user:id,name'
+        'orderDetails.order.user:id,name,image'
     ];
    /**
      * Display the specified resource.
