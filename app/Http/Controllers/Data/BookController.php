@@ -11,6 +11,7 @@ use App\Http\Resources\Another\{
     BooksOfAuthor as BooksOfAuthorResource,
     BookDetails as BookDetailsResource
 };
+use Carbon\Carbon;
 use DB;
 
 class BookController extends BaseController
@@ -68,16 +69,22 @@ class BookController extends BaseController
     public function getSellingBook(Request $request)
     {
         $limit =  $request->input('limit', 12);
+        $currentDate = Carbon::now()->format('Y-m-d');
+        $threeMonthAgo = Carbon::now()->subMonths(3)->format('Y-m-d');
         $records = Book::query()
             ->select($this->query)
             ->with($this->subQuery)
-            ->withSum('orders','order_details.quantity')
+            ->withSum(['orders' => function ($query) use ($currentDate, $threeMonthAgo) {
+                $query->whereBetween('orders.created_at', [$threeMonthAgo, $currentDate]);               
+            }],'order_details.quantity')
             ->orderByDesc('orders_sum_order_detailsquantity')
             ->take($limit)
             ->get();
        
-        return $this->sendResponse('Truy xuất top sách bán chạy thành công.',
-                                    BookResource::collection($records),200);
+  
+       
+        return $this->sendResponse('Truy xuất sách bán chạy.',
+                                    BookResource::collection($records),200); 
     }
     /**
      * Display a listing of the resource.
@@ -120,26 +127,23 @@ class BookController extends BaseController
      */
     public function getHighlightAuthor()
     {
-        $getIdAuthor = Book::query()
-            ->select('author_id',
-            DB::raw('count(id) as value'))
-            ->orderByDesc('value')
-            ->groupBy('author_id')
-            ->limit(1)
-            ->get();
-        $id = $getIdAuthor[0]['author_id'];
+        $highlightAuthor = Author::select(['id','name','description','slug','image'])
+                    ->withSum('orderDetails as total_book_ordered','order_details.quantity')
+                    ->orderByDesc('total_book_ordered')
+                    ->limit(1)
+                    ->get();
+
+        $idAuthor = $highlightAuthor[0]['id'];
         $author = Author::query()
                     ->select('id','name','description','slug','image')
-                    ->find($id);
+                    ->find($idAuthor);
         $booksOfAuthor = Book::query()
             ->select(['id','name','slug'])
-            ->WhereHas('author', function ($query) use ($id) {
-                $query->where('id', $id);
-            })
+            ->where('author_id', $idAuthor)
             ->with(['image:book_id,front_cover'])
+            ->inRandomOrder()
             ->limit(2)
             ->get();
-        
         return [
             'author' => $author,
             'books' =>BookResource::collection($booksOfAuthor)

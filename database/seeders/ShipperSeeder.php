@@ -1,5 +1,4 @@
 <?php
-
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
@@ -7,7 +6,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
 
-class AdminSeeder extends Seeder
+class ShipperSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -17,8 +16,9 @@ class AdminSeeder extends Seeder
     public function run()
     {
         DB::table('admins')->insert([
-            'name' => 'Admin',
-            'email' => 'staciabook@gmail.com',
+            'name' => 'Shipper 1',
+            'email' => 'shipper1@ghn.vn',
+            'role' => 0,
             'password' => Hash::make('password123'),
         ]);
     }

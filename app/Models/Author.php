@@ -18,4 +18,8 @@ class Author extends Model
     {
         return $this->hasMany(Book::class,'author_id','id');
     }
+    public function orderDetails()
+    {
+        return $this->hasManyThrough(OrderDetail::class, Book::class,'author_id', 'book_id', 'id');
+    }
 }

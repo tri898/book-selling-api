@@ -39,6 +39,11 @@ class OrderRequest extends FormRequest
                 'items.*.unit_price' => 'required|integer|min: 1',
                 'items.*.sale_price' => 'required|integer|min: 1',
             ];
+        }
+        if(request()->routeIs('shipper-orders.update')) {
+            return [
+                'status' =>'required|numeric|min:4|max:5', 
+            ];
         } elseif (request()->routeIs('orders.update')) {
             return [
                 'status' =>'required|numeric|min:2|max:6', 

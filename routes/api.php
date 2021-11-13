@@ -18,6 +18,9 @@ use App\Http\Controllers\Management\{
     DashboardController,
     SelectiveDataController
 };
+use App\Http\Controllers\Shipper\{
+    OrderController as ShipperOrderController
+};
 use App\Http\Controllers\User\{
     ProfileController,
     PasswordController,
@@ -31,6 +34,7 @@ use App\Http\Controllers\Data\{
     SliderController as BookSliderController,
     SelectiveDataController as BookSelectiveDataController
 };
+use App\Http\Middleware\CheckRole;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -100,7 +104,7 @@ Route::prefix('user')->group(function () {
 |Admin Protected Route
 |----------------------------------------------------------------
 */
-Route::group(['middleware' => ['auth:admins']], function () {
+Route::group(['middleware' => ['auth:admins',CheckRole::class]], function () {
 
     Route::prefix('admin')->group(function () {
         // logout admin route
@@ -147,6 +151,15 @@ Route::group(['middleware' => ['auth:admins']], function () {
 });
 /*
 |----------------------------------------------------------------
+|Shipper Protected Route
+|----------------------------------------------------------------
+*/
+Route::group(['middleware' => ['auth:admins'], 'prefix' => 'shipper'], function () {
+    Route::get('orders', [ShipperOrderController::class, 'index'])->name('shipper-orders.index');
+    Route::put('orders/{id}', [ShipperOrderController::class, 'update'])->name('shipper-orders.update');
+ });
+/*
+|----------------------------------------------------------------
 |User Protected Route
 |----------------------------------------------------------------
 */
@@ -171,7 +184,6 @@ Route::group(['middleware' => ['auth:users'], 'prefix' => 'user' ], function () 
     
 
 
-
-// Route::middleware('auth:api')->get('/user', function (Request $request) {
-//     return $request->user();
-// });
+\DB::listen(function($query) {
+    var_dump($query->sql);
+});
