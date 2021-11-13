@@ -181,9 +181,3 @@ Route::group(['middleware' => ['auth:users'], 'prefix' => 'user' ], function () 
 });
 
     Route::post('image/upload', [ImageController::class, 'store'])->name('images.store');
-    
-
-
-\DB::listen(function($query) {
-    var_dump($query->sql);
-});
