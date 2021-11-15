@@ -25,8 +25,7 @@ class DashboardController extends BaseController
         $month = $request->input('month', Carbon::now()->month);
         $year = $request->input('year', Carbon::now()->year);
 
-        $records = Book::query()
-            ->select('id','name')
+        $records = Book::select('id','name')
             ->with('inventory')
             ->withSum(['orders' => function ($query) use ($month, $year) {
                 $query->whereStatus(4)
@@ -120,8 +119,7 @@ class DashboardController extends BaseController
     }
     public function getBookStatistics()
     {
-        $records = Book::query()
-            ->select('id','name')
+        $records = Book::select('id','name')
             ->with('inventory')
             ->withSum(['goodsReceivedNotes as import' => function ($query) {
                 $query->whereStatus(1)

@@ -19,6 +19,10 @@ class CheckRole
         if (auth()->user()->role == 1) {
             return $next($request);
         }
-        return response()->json('Deny access');
+        $response = [
+            'success' => false,
+            'message' => 'Deny access',
+        ];
+        return response()->json($response, 400);
     }
 }

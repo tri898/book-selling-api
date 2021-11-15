@@ -22,13 +22,12 @@ class OrderController extends BaseController
     public function index(Request $request)
     {
         $type = $request->input('type');
-        if($request->has('type')) {
-            $records = Order::where('status',$type)
-                        ->with($this->query)
-                        ->orderByDesc('id')->get();
-        } else {
-            $records = Order::with($this->query)->orderByDesc('id')->get();   
-        }
+        $records = Order::with($this->query)
+            ->when($request->has('type'), function($q) use ($type){
+                $q->whereStatus($type);
+            })
+            ->orderByDesc('id')
+            ->get();
                
         return $this->sendResponse('Truy xuất danh sách đơn hàng thành công.',
                                     OrderResource::collection($records),200);

@@ -35,8 +35,7 @@ class BookController extends BaseController
      */
     public function getAllBook()
     {
-        $records = Book::query()
-            ->select($this->query)
+        $records = Book::select($this->query)
             ->with($this->subQuery)
             ->orderByDesc('id')
             ->paginate(12);
@@ -51,8 +50,7 @@ class BookController extends BaseController
     public function getNewBook(Request $request)
     {
         $limit =  $request->input('limit', 12);
-        $records = Book::query()
-            ->select($this->query)
+        $records = Book::select($this->query)
             ->with($this->subQuery)
             ->take($limit)
             ->orderByDesc('id')
@@ -71,8 +69,7 @@ class BookController extends BaseController
         $limit =  $request->input('limit', 12);
         $currentDate = Carbon::now()->format('Y-m-d');
         $threeMonthAgo = Carbon::now()->subMonths(3)->format('Y-m-d');
-        $records = Book::query()
-            ->select($this->query)
+        $records = Book::select($this->query)
             ->with($this->subQuery)
             ->withSum(['orders' => function ($query) use ($currentDate, $threeMonthAgo) {
                 $query->whereBetween('orders.created_at', [$threeMonthAgo, $currentDate]);               
@@ -81,9 +78,7 @@ class BookController extends BaseController
             ->take($limit)
             ->get();
        
-  
-       
-        return $this->sendResponse('Truy xuất sách bán chạy.',
+        return $this->sendResponse('Truy xuất sách bán chạy thành công.',
                                     BookResource::collection($records),200); 
     }
     /**
@@ -94,15 +89,14 @@ class BookController extends BaseController
     public function getRandomBook(Request $request)
     {
         $limit =  $request->input('limit', 12);
-        $records = Book::query()
-            ->select($this->query)
+        $records = Book::select($this->query)
             ->with($this->subQuery)
             ->inRandomOrder()
             ->take($limit)
             ->orderByDesc('id')
             ->get();
     
-        return $this->sendResponse('Truy xuất sách ngẫu nhiên.',
+        return $this->sendResponse('Truy xuất sách ngẫu nhiên thành công.',
                                     BookResource::collection($records),200); 
     }
     /**
@@ -134,11 +128,9 @@ class BookController extends BaseController
                     ->get();
 
         $idAuthor = $highlightAuthor[0]['id'];
-        $author = Author::query()
-                    ->select('id','name','description','slug','image')
+        $author = Author::select('id','name','description','slug','image')
                     ->find($idAuthor);
-        $booksOfAuthor = Book::query()
-            ->select(['id','name','slug'])
+        $booksOfAuthor = Book::select(['id','name','slug'])
             ->where('author_id', $idAuthor)
             ->with(['image:book_id,front_cover'])
             ->inRandomOrder()
@@ -157,8 +149,8 @@ class BookController extends BaseController
     public function bookSearch(Request $request)
     {
         $q =  $request->input('q');
-        $records = Book::query()
-            ->select($this->query)
+
+        $records = Book::select($this->query)
             ->where('name', 'like','%'.$q.'%')
             ->orWhereHas('author', function ($query) use ($q) {
                 $query->where('name', 'like', '%'.$q.'%');
@@ -192,12 +184,10 @@ class BookController extends BaseController
      */
     public function getBookOfCategory($id)
     {
-        $category = Category::query()
-            ->select('id','name','slug')
+        $category = Category::select('id','name','slug')
             ->find($id);
 
-        $booksOfCategory = Book::query()
-            ->select($this->query)
+        $booksOfCategory = Book::select($this->query)
             ->WhereHas('category', function ($query) use ($id) {
                 $query->where('categories.id', $id);
             })
@@ -221,11 +211,9 @@ class BookController extends BaseController
      */
     public function getBookOfAuthor($id)
     {
-        $author = Author::query()
-                    ->select('id','name','description','slug','image')
+        $author = Author::select('id','name','description','slug','image')
                     ->find($id);
-        $booksOfAuthor = Book::query()
-            ->select($this->query)
+        $booksOfAuthor = Book::select($this->query)
             ->WhereHas('author', function ($query) use ($id) {
                 $query->where('id', $id);
             })
