@@ -87,6 +87,7 @@ Route::get('main/sliders', [BookSliderController::class, 'index']);
 
 // Admin route
 Route::post('/admin/login', [AdminAuthController::class, 'login']); 
+Route::post('/shipper/login', [AdminAuthController::class, 'login']); 
 
 // User route
 Route::prefix('user')->group(function () {
@@ -157,6 +158,9 @@ Route::group(['middleware' => ['auth:admins',CheckRole::class]], function () {
 Route::group(['middleware' => ['auth:admins'], 'prefix' => 'shipper'], function () {
     Route::get('orders', [ShipperOrderController::class, 'index'])->name('shipper-orders.index');
     Route::put('orders/{id}', [ShipperOrderController::class, 'update'])->name('shipper-orders.update');
+    Route::post('goods-received-notes', [GoodsReceivedNoteController::class, 'store']);
+    Route::post('logout', [AdminAuthController::class, 'logout']);     
+
  });
 /*
 |----------------------------------------------------------------
