@@ -11,7 +11,7 @@
  - Using Laravel 8 framework
  - Authencation by Sanctum package.
 ## APIs
- *Admin:
+ ###Admin:
  - Login - Logout Admin
  - Ban/unban user
  - Manage category book
@@ -25,7 +25,7 @@
  - Manage slider
  - Manage order
  - Dashboard
- *User:
+ ###User:
  - Register user
  - Login logout
  - Order book
